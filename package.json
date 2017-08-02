@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
   "engineStrict": true,
+  "private": true,
   "engines": {
     "node": ">= 6.9.0"
   },
@@ -30,12 +31,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jsynowiec/node-typescript-boilerplate.git"
+    "url": "https://gitlab.iogates.com/iogates/transferapp.git"
   },
-  "bugs": {
-    "url": "https://github.com/jsynowiec/node-typescript-boilerplate/issues"
-  },
-  "homepage": "https://github.com/jsynowiec/node-typescript-boilerplate#readme",
   "dependencies": {
     "mt-downloader": "^2.2.2",
     "tslib": "~1.7.1",
