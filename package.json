@@ -1,0 +1,16 @@
+{
+  "name": "iogatestransfer",
+  "version": "0.0.1",
+  "description": "Internal downloadable app for IOGates.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.iogates.com:iogates/transferapp.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
