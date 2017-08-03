@@ -14,6 +14,11 @@
     "export-name": false,
     "promise-function-async": false,
     "no-void-expression": false,
+    "align": [true, "parameters", "statements"],
+    "no-unsafe-any": false,
+    "no-reserved-keywords": false,
+    "no-console": false,
+    "ordered-imports": false,
     "typedef": [
       true,
       "parameter",
