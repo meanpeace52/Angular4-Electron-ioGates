@@ -13,7 +13,7 @@ export class IOGates {
     this.token = '';
   }
 
-  public authenticateFromUrl(shareUrl: string) {
+  public authenticateFromUrl(shareUrl: string) : Promise<Type.Auth> {
     return new Promise((resolve: Function, reject: Function) => {
       this.getRequest().post({
         url: '/authtoken',

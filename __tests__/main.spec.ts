@@ -1,27 +1,28 @@
-import { greeter } from '../src/main';
+// const main = require('../src/main');
+import * as vorpal from '../src/main';
 
-describe('greeter function', () => {
-  // Read more about fake timers: http://facebook.github.io/jest/docs/en/timer-mocks.html#content
-  jest.useFakeTimers();
-
-  let hello: string;
-
-  // Act before assertions
-  beforeAll(async () => {
-    const p: Promise<string> = greeter('John');
-    jest.runOnlyPendingTimers();
-    hello = await p;
+describe('boot', () => {
+  beforeAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
+  });
+  const commands: any  = vorpal;
+  it('should export vorpal', () => {
+    expect(commands).toBeDefined();
   });
 
-  // Assert if setTimeout was called properly
-  it('delays the greeting by 2 seconds', () => {
-    expect((<jest.Mock<void>> setTimeout).mock.calls.length).toBe(1);
-    expect((<jest.Mock<void>> setTimeout).mock.calls[0][1]).toBe(2000);
+  it('should run download command', () => {
+    const tmpPath = '/tmp';
+    const shareUrl = 'https://share-web02-transferapp.iogates.com/show/15/59817e24914f1/bb56d48bc997112f511304b18b51806b/dir/373/373/0/0/0';
+
+    return commands
+      .exec(`download -m ${tmpPath} ${shareUrl}`)
+      .then((response: any) => {
+        console.log(response);
+        expect(true).toBe(true);
+      });
   });
 
-  // Assert greeter result
-  it('greets a user with `Hello, {name}` message', () => {
-    expect(hello).toBe('Hello, John');
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
   });
-
 });

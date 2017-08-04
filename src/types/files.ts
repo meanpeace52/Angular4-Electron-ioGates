@@ -4,5 +4,5 @@ import { File } from './file';
  */
 export class Files {
   public map: Map<string, string>;
-  public files: File;
+  public files: File[];
 }

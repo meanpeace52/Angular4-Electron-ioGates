@@ -3,7 +3,7 @@ import * as Type from '../../src/lib/types';
 
 const shareUrl = 'https://share-web02-transferapp.iogates.com/show/15/59817e24914f1/bb56d48bc997112f511304b18b51806b/dir/373/373/0/0/0';
 
-describe('IOGate', () => {
+describe.skip('IOGate', () => {
   let ioGates: IOGates;
 
   // Act before assertions

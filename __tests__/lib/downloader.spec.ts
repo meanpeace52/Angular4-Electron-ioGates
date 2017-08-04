@@ -3,7 +3,7 @@ import { File, UploadResponse } from '../../src/lib/types';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 
-describe('Downloader', () => {
+describe.skip('Downloader', () => {
   const resourceUrl = 'https://web02-transferapp.iogates.com/download-file/375/0/0/1/0/2U6VQiwovZfLQaVLoHbPMabSlJye2Voe';
   let downloader: Downloader;
 

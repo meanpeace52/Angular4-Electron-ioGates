@@ -18,6 +18,7 @@
     "no-unsafe-any": false,
     "no-reserved-keywords": false,
     "no-console": false,
+    "no-any": false,
     "ordered-imports": false,
     "typedef": [
       true,
