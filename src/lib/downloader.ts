@@ -9,12 +9,18 @@ import * as Type from './types';
  */
 export class Downloader {
 
-  // public downloadFiles(files: Type.File[], dest: string) {
+  public downloadFiles(files: Type.File[], dest: string) : Promise<Type.UploadResponse[]> {
+    const exec = [];
+    for (const file of files) {
+      exec.push(this.downloadFile(file, dest));
+    }
 
-  // }
+    return Promise.all(exec);
+  }
 
-  public downloadFile(file: Type.File, dest: string) {
-    // do something.
+  public downloadFile(file: Type.File, dest: string) : Promise<Type.UploadResponse> {
+    dest = this.getDestination(file, dest);
+
     const options = {
       url: file.download,
       path: dest
@@ -52,11 +58,21 @@ export class Downloader {
       .withLatestFrom(fdW$, fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
+    const closeFile = MultiDownloader.FILE.close(fd$).toPromise();
+    const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
 
-    return MultiDownloader.FILE.close(fd$).toPromise();
+    return uploadResponse.fromPromise(closeFile, file, dest);
   }
 
   private createDownload(options: object) {
     return MultiDownloader.CreateMTDFile(options).share();
+  }
+
+  private getDestination(file: Type.File, destination: string) : string {
+    if (destination.indexOf('.') === -1) {
+      destination += `/${file.name}`;
+    }
+
+    return destination;
   }
 }
