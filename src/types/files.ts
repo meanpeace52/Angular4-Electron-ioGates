@@ -1,4 +1,5 @@
 import { File } from './models/file';
+
 /**
  * Exports Files class.
  */

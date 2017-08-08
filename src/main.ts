@@ -1,16 +1,19 @@
 import * as vorpal from 'vorpal';
 import { downloadComand } from './commands/download';
-
+import { File } from './types/models/file';
+import { Share } from './types/models/share';
 import { Sequelize } from 'sequelize-typescript';
+
 const sequelize = new Sequelize({
   name: 'iogates',
   dialect: 'sqlite',
   username: 'root',
   password: '',
-  storage: `${__dirname}/iogates.sqlite`,
-  modelPaths: [`${__dirname}/types/models`]
+  storage: `${__dirname}/iogates.sqlite`
 });
-console.log(sequelize);
+
+sequelize.addModels([File, Share]);
+
 const commands = vorpal();
 commands
   .command('download [dir] [url]', 'Download folder from Share URL')
