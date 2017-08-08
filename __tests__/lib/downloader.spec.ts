@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 
 describe.skip('Downloader', () => {
-  const resourceUrl = 'https://web02-transferapp.iogates.com/download-file/375/0/0/1/0/2U6VQiwovZfLQaVLoHbPMabSlJye2Voe';
+  const resourceUrl = 'https://web02-transferapp.iogates.com/download-file/375/0/0/1/0/VBUbVTLJGPIAYsb3e0hy075JaGFkhhwK';
   let downloader: Downloader;
 
   beforeAll(() => {

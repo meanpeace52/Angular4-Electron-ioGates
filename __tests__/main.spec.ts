@@ -12,12 +12,11 @@ describe('boot', () => {
 
   it('should run download command', () => {
     const tmpPath = '/tmp';
-    const shareUrl = 'https://share-web02-transferapp.iogates.com/show/15/59817e24914f1/bb56d48bc997112f511304b18b51806b/dir/373/373/0/0/0';
+    const shareUrl = 'https://share-web02-transferapp.iogates.com/show/16/5989522a1b0a6/d5239e67c69a3ef76a807ae25ebf750b/dir/272/272/0/0/0';
 
     return commands
       .exec(`download -m ${tmpPath} ${shareUrl}`)
       .then((response: any) => {
-        console.log(response);
         expect(true).toBe(true);
       });
   });

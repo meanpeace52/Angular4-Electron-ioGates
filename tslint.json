@@ -20,6 +20,7 @@
     "no-console": false,
     "no-any": false,
     "ordered-imports": false,
+    "mocha-avoid-only": false,
     "typedef": [
       true,
       "parameter",

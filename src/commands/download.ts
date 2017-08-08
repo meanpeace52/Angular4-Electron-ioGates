@@ -15,9 +15,8 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       return downloader.downloadFiles(response.files, destination);
     })
     .then((responses: UploadResponse[]) => {
-      console.log('>>', responses);
       responses.forEach((response: UploadResponse) => {
-        console.log(`Success(${response.success}): ${response.file} -> ${response.dest}`);
+        console.log(`Success(${response.success}): ${response.file.name} -> ${response.dest}`);
       });
       done(null, responses);
     })
