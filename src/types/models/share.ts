@@ -1,7 +1,7 @@
 import {Table, Column, Model, HasMany} from 'sequelize-typescript';
 import { File } from './file';
 /**
- * Exports File class.
+ * Exports Share class.
  */
 @Table({
   timestamps: true,
@@ -26,6 +26,9 @@ export class Share extends Model<Share> {
     allowNull: false
   })
   public token: string;
+
+  @Column
+  public dir: string;
 
   @Column
   public complete: boolean;

@@ -1,7 +1,6 @@
 import * as vorpal from 'vorpal';
 import { downloadComand } from './commands/download';
-import { File } from './types/models/file';
-import { Share } from './types/models/share';
+import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
 
 const sequelize = new Sequelize({
@@ -12,7 +11,12 @@ const sequelize = new Sequelize({
   storage: `${__dirname}/iogates.sqlite`
 });
 
-sequelize.addModels([File, Share]);
+sequelize.addModels([Type.File, Type.Share]);
+sequelize
+  .sync()
+  .then(() => {
+    console.log('sync done....');
+  });
 
 const commands = vorpal();
 commands

@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as request from 'request';
-import * as Type from './types';
+import { Share, Auth, Files } from './types';
 
 /**
  * API wrapper class for IOGates
@@ -13,7 +13,7 @@ export class IOGates {
     this.token = '';
   }
 
-  public authenticateFromUrl(shareUrl: string) : Promise<Type.Auth> {
+  public authenticateFromUrl(shareUrl: string): Promise<Auth> {
     return new Promise((resolve: Function, reject: Function) => {
       this.getRequest().post({
         url: '/authtoken',
@@ -21,23 +21,32 @@ export class IOGates {
           url: shareUrl
         }
       },
-      (err: Error, r: http.IncomingMessage, data: Type.Auth) => {
-        if (r.statusCode !== 200) {
-           return reject(err);
-        }
-        this.token = data.token;
-
-        return resolve(data);
-      });
+        (err: Error, r: http.IncomingMessage, data: Auth) => {
+          if (r.statusCode !== 200) {
+            return reject(err);
+          }
+          this.token = data.token;
+          const share = new Share({
+            url: shareUrl,
+            dir: '',
+            token: '',
+            complete: false
+          });
+          share
+            .save()
+            .then(() => {
+              return resolve(data);
+            });
+        });
     });
   }
 
-  public readFiles() : Promise<Type.Files> {
+  public readFiles(): Promise<Files> {
     return new Promise((resolve: Function, reject: Function) => {
       this.getRequest().get({
         url: '/files',
         json: true
-      }, (err: Error, r: http.IncomingMessage, response: Type.Files) => {
+      }, (err: Error, r: http.IncomingMessage, response: Files) => {
         if (r.statusCode !== 200) {
           return reject(err);
         }
