@@ -2,8 +2,9 @@ import { CommandDownloadInput, Files, UploadResponse, Share } from '../lib/types
 import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
-import debug from 'debug';
-const log = debug('io:command:download');
+// import debug from 'debug';
+const log = console.log;
+// const log = debug('io:command:download');
 
 export function downloadComand(args: CommandDownloadInput, done: Function) {
   const destination = args.dir;

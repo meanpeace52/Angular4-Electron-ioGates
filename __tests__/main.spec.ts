@@ -11,7 +11,7 @@ describe('boot', () => {
   });
 
   it('should run download command', () => {
-    const tmpPath = '/tmp';
+    const tmpPath = '/tmp/random-folder';
     const shareUrl = 'https://share-web02-transferapp.iogates.com/show/16/5989522a1b0a6/d5239e67c69a3ef76a807ae25ebf750b/dir/272/272/0/0/0';
 
     return commands
