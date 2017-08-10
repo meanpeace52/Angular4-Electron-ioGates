@@ -13,12 +13,12 @@ export class IOGates {
     this.token = '';
   }
 
-  public authenticateFromUrl(shareUrl: string): Promise<Auth> {
+  public authenticateFromUrl(share: Share): Promise<Auth> {
     return new Promise((resolve: Function, reject: Function) => {
       this.getRequest().post({
         url: '/authtoken',
         json: {
-          url: shareUrl
+          url: share.url
         }
       },
         (err: Error, r: http.IncomingMessage, data: Auth) => {
@@ -26,17 +26,9 @@ export class IOGates {
             return reject(err);
           }
           this.token = data.token;
-          const share = new Share({
-            url: shareUrl,
-            dir: '',
-            token: '',
-            complete: false
-          });
-          share
-            .save()
-            .then(() => {
-              return resolve(data);
-            });
+          share.token = data.token;
+
+          return resolve(share);
         });
     });
   }

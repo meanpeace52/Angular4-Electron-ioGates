@@ -22,7 +22,10 @@ describe.skip('IOGate', () => {
 
   describe('flow through and', () => {
     beforeAll(async () => {
-      await ioGates.authenticateFromUrl(shareUrl);
+      const share = new Type.Share({
+        shareUrl: shareUrl
+      });
+      await ioGates.authenticateFromUrl(share);
     });
 
     it('retrieve files from server', () => {
