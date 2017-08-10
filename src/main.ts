@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
   dialect: 'sqlite',
   username: 'root',
   password: '',
-  storage: `${__dirname}/iogates.sqlite`
+  storage: `${process.cwd()}/iogates.sqlite`
 });
 
 sequelize.addModels([Type.File, Type.Share]);

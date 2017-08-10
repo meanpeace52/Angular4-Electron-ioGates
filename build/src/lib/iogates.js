@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
+const types_1 = require("./types");
 class IOGates {
     constructor() {
         this.baseUrl = 'https://share-web02-transferapp.iogates.com/api';
@@ -18,7 +19,17 @@ class IOGates {
                     return reject(err);
                 }
                 this.token = data.token;
-                return resolve(data);
+                const share = new types_1.Share({
+                    url: shareUrl,
+                    dir: '',
+                    token: '',
+                    complete: false
+                });
+                share
+                    .save()
+                    .then(() => {
+                    return resolve(data);
+                });
             });
         });
     }
