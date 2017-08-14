@@ -5,7 +5,7 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-
+import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
 /**
  * Exports File class.
@@ -45,4 +45,21 @@ export class File extends Model<File> {
 
   @BelongsTo(() => Share, 'shareId')
   public share: Share;
+
+  public static STORE_FILES(response: UploadResponse[], share: Share) : Promise<any> {
+    const promise = [];
+    response.forEach((upload: UploadResponse) => {
+      const file = new File();
+      file.name = upload.file.name;
+      file.type = upload.file.type;
+      file.parent = upload.file.parent;
+      file.href = upload.file.href;
+      file.download = upload.file.download;
+      file.md5 = upload.file.md5;
+      file.shareId = share.id;
+      promise.push(file.save());
+    });
+
+    return Promise.all(promise);
+  }
 }

@@ -14,6 +14,10 @@ export class Directory {
       console.log('Creating dir: ', this.path);
       fs.mkdir(this.path, (err: Object) => {
         if (err instanceof Error) {
+          if (/EEXIST/ig.test(err.message)) {
+
+            return resolve(null);
+          }
           return reject(err);
         }
         console.log('created dir: ', this.path);

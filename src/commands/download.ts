@@ -1,4 +1,10 @@
-import { CommandDownloadInput, Files, UploadResponse, Share } from '../lib/types';
+import {
+  CommandDownloadInput,
+  Files,
+  UploadResponse,
+  Share,
+  File
+} from '../lib/types';
 import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
@@ -12,11 +18,11 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const downloader: Downloader = new Downloader();
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
+  let outerShare;
   log('executing download');
   directory
     .create()
     .then(() => {
-      log(destination, 'created');
 
       return Share.LOOKUP(shareUrl, destination);
     })
@@ -33,7 +39,8 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
 
       return share.save(); // updated w/ token and stuff.
     })
-    .then(() => {
+    .then((share: Share) => {
+      outerShare = share;
       log('going to read files.');
 
       return ioGate.readFiles();
@@ -49,7 +56,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       responses.forEach((response: UploadResponse) => {
         console.log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
-      done(null, responses);
+
+      return File.STORE_FILES(responses, outerShare);
+    })
+    .then(() => {
+      console.log('done saving.');
+
+      return done(null);
     })
     .catch((e: Error) => {
       console.log(e);

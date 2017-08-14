@@ -1,39 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
-const types_1 = require("./types");
+const debug_1 = require("debug");
+const log = debug_1.default('io:lib:iogates');
 class IOGates {
     constructor() {
         this.baseUrl = 'https://share-web02-transferapp.iogates.com/api';
         this.token = '';
     }
-    authenticateFromUrl(shareUrl) {
+    authenticateFromUrl(share) {
+        log('called authenticateFromUrl');
         return new Promise((resolve, reject) => {
             this.getRequest().post({
                 url: '/authtoken',
                 json: {
-                    url: shareUrl
+                    url: share.url
                 }
             }, (err, r, data) => {
                 if (r.statusCode !== 200) {
                     return reject(err);
                 }
+                log('received token: ', data.token);
                 this.token = data.token;
-                const share = new types_1.Share({
-                    url: shareUrl,
-                    dir: '',
-                    token: '',
-                    complete: false
-                });
-                share
-                    .save()
-                    .then(() => {
-                    return resolve(data);
-                });
+                share.token = data.token;
+                return resolve(share);
             });
         });
     }
     readFiles() {
+        log('called readFiles');
         return new Promise((resolve, reject) => {
             this.getRequest().get({
                 url: '/files',
