@@ -3,13 +3,14 @@ import * as MultiDownloader from 'mt-downloader';
 import { Observable as O } from 'rx';
 import * as R from 'ramda';
 import * as Type from './types';
+import * as Progress from 'progress';
 
 /**
  * Helps download a file from IOGates
  */
 export class Downloader {
 
-  public downloadFiles(files: Type.File[], dest: string) : Promise<Type.UploadResponse[]> {
+  public downloadFiles(files: Type.File[], dest: string): Promise<Type.UploadResponse[]> {
     const exec = [];
     for (const file of files) {
       exec.push(this.downloadFile(file, dest));
@@ -18,7 +19,7 @@ export class Downloader {
     return Promise.all(exec);
   }
 
-  public downloadFile(file: Type.File, dest: string) : Promise<Type.UploadResponse> {
+  public downloadFile(file: Type.File, dest: string): Promise<Type.UploadResponse> {
     dest = this.getDestination(file, dest);
 
     const options = {
@@ -58,6 +59,12 @@ export class Downloader {
       .withLatestFrom(fdW$, fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
+    const bar = new Progress(':percent :bar', {
+      total: 1000,
+      complete: '█',
+      incomplete: '░'
+    })
+    MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i))
     const closeFile = MultiDownloader.FILE.close(fd$).toPromise();
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
 
@@ -68,7 +75,7 @@ export class Downloader {
     return MultiDownloader.CreateMTDFile(options).share();
   }
 
-  private getDestination(file: Type.File, destination: string) : string {
+  private getDestination(file: Type.File, destination: string): string {
     if (destination.indexOf('.') === -1) {
       destination += `/${file.name}`;
     }
