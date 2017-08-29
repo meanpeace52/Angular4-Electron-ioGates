@@ -37,6 +37,11 @@ export class File extends Model<File> {
   @Column
   public download: string;
 
+  @Column({
+    defaultValue: false
+  })
+  public downloaded: boolean;
+
   @Column
   public md5: string;
 
@@ -61,5 +66,14 @@ export class File extends Model<File> {
     });
 
     return Promise.all(promise);
+  }
+
+  public static bulkSave(files: File[]) {
+    const bulk = [];
+    files.forEach(file => {
+      const record = JSON.parse(file.toJSON());
+      bulk.push(record);
+    });
+    return Promise.resolve(File.bulkCreate(bulk));
   }
 }
