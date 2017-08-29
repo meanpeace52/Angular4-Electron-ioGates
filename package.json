@@ -1,12 +1,13 @@
 {
-  "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
+  "name": "iotransfer",
+  "version": "0.0.1",
+  "description": "Download and upload files from and to ioGates",
   "engineStrict": true,
   "private": true,
   "engines": {
     "node": ">= 6.9.0"
   },
+  "bin": "build/src/main.js",
   "devDependencies": {
     "@types/jest": "~20.0.4",
     "@types/node": "~6.0.85",
@@ -26,7 +27,8 @@
     "pretest": "npm run lint",
     "test": "npm run test-only",
     "test-only": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "pkg": "pkg package.json --targets node6-macos-x64,node6-linux-x64,node6-win-x64,node6-win-x86 --out-path ./dist"
   },
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "license": "MIT",
@@ -46,5 +48,11 @@
     "sqlite3": "^3.1.9",
     "tslib": "~1.7.1",
     "vorpal": "^1.12.0"
+  },
+  "pkg": {
+    "scripts": [
+      "node_modules/sequelize-typescript/lib/models/v4/Model.js",
+      "node_modules/sequelize-typescript/lib/models/v4/Sequelize.js"
+    ]
   }
 }
