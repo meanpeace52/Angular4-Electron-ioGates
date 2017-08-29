@@ -9,7 +9,6 @@ import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
 // import debug from 'debug';
-const log = console.log;
 // const log = debug('io:command:download');
 
 export function downloadComand(args: CommandDownloadInput, done: Function) {
@@ -18,6 +17,11 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const downloader: Downloader = new Downloader();
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
+  let log = function(...p) {};
+  if (args.options['v']) {
+    log = console.log;
+  }
+  // const log = console.log;
   let outerShare;
   log('executing download');
   directory
@@ -54,13 +58,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then((responses: UploadResponse[]) => {
       log('Uploaded files: ', responses.length);
       responses.forEach((response: UploadResponse) => {
-        console.log('Success(', response.success, '): ', response.file.name, '->', response.dest);
+        log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
 
       return File.STORE_FILES(responses, outerShare);
     })
     .then(() => {
-      console.log('done saving.');
+      log('done saving.');
 
       return done(null);
     })

@@ -8,6 +8,7 @@ const sequelize = new Sequelize({
   dialect: 'sqlite',
   username: 'root',
   password: '',
+  logging: false,
   storage: `${process.cwd()}/iogates.sqlite`
 });
 
@@ -22,6 +23,7 @@ const commands = vorpal();
 commands
   .command('download [dir] [url]', 'Download folder from Share URL')
   .option('-m', '--monitor', 'Shows download progress')
+  .option('-v', '--verbose', 'Shows debug logs')
   .action(downloadComand);
 commands
   .delimiter('iogates>')
