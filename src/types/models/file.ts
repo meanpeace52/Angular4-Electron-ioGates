@@ -18,9 +18,13 @@ import { Share } from './share';
 export class File extends Model<File> {
   @Column({
     primaryKey: true,
-    unique: true
+    unique: true,
+    autoIncrement: true
   })
   public id: number;
+
+  @Column
+  public fileId: number;
 
   @Column
   public name: string;
@@ -51,7 +55,7 @@ export class File extends Model<File> {
   @BelongsTo(() => Share, 'shareId')
   public share: Share;
 
-  public static STORE_FILES(response: UploadResponse[], share: Share) : Promise<any> {
+  public static STORE_FILES(response: UploadResponse[], share: Share): Promise<any> {
     const promise = [];
     response.forEach((upload: UploadResponse) => {
       const file = new File();
@@ -68,10 +72,24 @@ export class File extends Model<File> {
     return Promise.all(promise);
   }
 
-  public static bulkSave(files: File[]) {
+  public static bulkSave(files: File[], share: Share) {
     const bulk = [];
     files.forEach(file => {
-      const record = JSON.parse(file.toJSON());
+      file = new File(file);
+      let record = {
+        fileId: file.id,
+        name: file.name,
+        type: file.type,
+        parent: file.parent,
+        href: file.href,
+        download: file.download,
+        downloaded: false,
+        md5: file.md5,
+        shareId: share.id
+      };      
+      // file = new File(file);
+      // const record = file.get({plain: true});
+      // record.shareId = share.id;
       bulk.push(record);
     });
     return Promise.resolve(File.bulkCreate(bulk));

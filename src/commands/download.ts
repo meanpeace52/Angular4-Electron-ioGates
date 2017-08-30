@@ -51,11 +51,11 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then((response: Files) => {
       return File
-        .bulkSave(response.files)
+        .bulkSave(response.files, outerShare)
         .then(() => {
           return response;
         });
-    })
+    })  
     .then((response: Files) => {
       log('going to download files.');
       // check which files to download.

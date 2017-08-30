@@ -4,6 +4,7 @@ import { Observable as O } from 'rx';
 import * as R from 'ramda';
 import * as Type from './types';
 import * as Progress from 'progress';
+// import * as WebWorker from 'webworker-threads';
 
 /**
  * Helps download a file from IOGates
