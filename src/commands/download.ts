@@ -8,7 +8,7 @@ import {
 import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
-import * as windston from 'winston';
+import * as winston from 'winston';
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
@@ -20,7 +20,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const directory: Directory = new Directory(destination);
   let log = function(...p) {};
   if (args.options['v']) {
-    log = windston.log;
+    log = winston.info;
   }
   // const log = console.log;
   let outerShare;
@@ -51,6 +51,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       return ioGate.readFiles();
     })
     .then((response: Files) => {
+      return File
+        .bulkSave(response.files, outerShare)
+        .then(() => {
+          return response;
+        });
+    })  
+    .then((response: Files) => {
       log('going to download files.');
       // check which files to download.
 
@@ -58,11 +65,23 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then((responses: UploadResponse[]) => {
       log('Uploaded files: ', responses.length);
+      const successIds = [];
       responses.forEach((response: UploadResponse) => {
+        if (response.success === true) {
+          successIds.push(response.file.id);
+        }
         log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
+      return File
+        .update({
+          downloaded: true
+        }, {
+          where: {
+            fileId: successIds
+          }
+        });
 
-      return File.STORE_FILES(responses, outerShare);
+      // return File.STORE_FILES(responses, outerShare);
     })
     .then(() => {
       log('done saving.');
