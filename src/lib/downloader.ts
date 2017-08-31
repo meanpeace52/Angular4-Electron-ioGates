@@ -3,7 +3,8 @@ import * as MultiDownloader from 'mt-downloader';
 import { Observable as O } from 'rx';
 import * as R from 'ramda';
 import * as Type from './types';
-import * as Progress from 'progress';
+import * as Progress from 'ascii-progress';
+import * as queue from 'queue';
 
 /**
  * Helps download a file from IOGates
@@ -11,12 +12,27 @@ import * as Progress from 'progress';
 export class Downloader {
 
   public downloadFiles(files: Type.File[], dest: string): Promise<Type.UploadResponse[]> {
-    const exec = [];
-    for (const file of files) {
-      exec.push(this.downloadFile(file, dest));
-    }
+    const self = this;
+    return new Promise((resolve, reject) => {
+      const q = queue();
+      const results = [];
+      for (const file of files) {
+        q.push(function queueFn() {
+          return self
+            .downloadFile(file, dest)
+            .then((r: Type.UploadResponse) => {
+              results.push(r);
+              return r;
+            });
+        });
+      }
 
-    return Promise.all(exec);
+      q.start(function startFn(err) {
+        if (err) return reject(err);
+        return resolve(results);
+      });
+
+    });
   }
 
   public downloadFile(file: Type.File, dest: string): Promise<Type.UploadResponse> {
@@ -59,11 +75,7 @@ export class Downloader {
       .withLatestFrom(fdW$, fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
-    const bar = new Progress(':percent :bar', {
-      total: 1000,
-      complete: '█',
-      incomplete: '░'
-    })
+    const bar = new Progress();
     MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i))
     const closeFile = MultiDownloader.FILE.close(fd$).toPromise();
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
