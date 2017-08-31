@@ -75,7 +75,9 @@ export class Downloader {
       .withLatestFrom(fdW$, fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
-    const bar = new Progress();
+    const bar = new Progress({
+      schema: `${file.name} [:bar] :percent :etas`
+    });
     MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i))
     const closeFile = MultiDownloader.FILE.close(fd$).toPromise();
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
