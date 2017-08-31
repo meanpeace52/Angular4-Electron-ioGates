@@ -8,6 +8,7 @@ import {
 import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
+import * as winston from 'winston';
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
@@ -19,7 +20,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const directory: Directory = new Directory(destination);
   let log = function(...p) {};
   if (args.options['v']) {
-    log = console.log;
+    log = winston.info;
   }
   // const log = console.log;
   let outerShare;
@@ -76,7 +77,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
           downloaded: true
         }, {
           where: {
-            id: successIds
+            fileId: successIds
           }
         });
 

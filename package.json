@@ -37,9 +37,11 @@
     "url": "https://gitlab.iogates.com/iogates/transferapp.git"
   },
   "dependencies": {
+    "ascii-progress": "^1.0.5",
     "mt-downloader": "^2.2.2",
     "muxer": "^1.0.1",
     "progress": "^2.0.0",
+    "queue": "^4.4.0",
     "ramda": "^0.24.1",
     "reflect-metadata": "^0.1.10",
     "rx": "^4.1.0",
@@ -48,7 +50,7 @@
     "sqlite3": "^3.1.9",
     "tslib": "~1.7.1",
     "vorpal": "^1.12.0",
-    "webworker-threads": "^0.7.13"
+    "winston": "^2.3.1"
   },
   "pkg": {
     "scripts": [
