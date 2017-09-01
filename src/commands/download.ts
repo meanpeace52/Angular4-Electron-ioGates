@@ -61,7 +61,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       const successIds = [];
       responses.forEach((response: UploadResponse) => {
         if (response.success === true) {
-          successIds.push(response.file.id);
+          successIds.push(response.file.fileId);
         }
         log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
@@ -73,8 +73,6 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
             fileId: successIds
           }
         });
-
-      // return File.STORE_FILES(responses, outerShare);
     })
     .then(() => {
       log('done saving.');

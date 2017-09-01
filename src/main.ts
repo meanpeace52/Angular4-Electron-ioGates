@@ -15,12 +15,14 @@ const sequelize = new Sequelize({
   }
 });
 
+
 sequelize.addModels([Type.File, Type.Share]);
 sequelize
   .sync()
   .then(() => {
-    console.log('sync done....');
+
   });
+global['_DB'] = sequelize;
 
 const commands = vorpal();
 commands
