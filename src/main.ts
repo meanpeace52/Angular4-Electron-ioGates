@@ -9,7 +9,10 @@ const sequelize = new Sequelize({
   username: 'root',
   password: '',
   logging: false,
-  storage: `${process.cwd()}/iogates.sqlite`
+  storage: `${process.cwd()}/iogates.sqlite`,
+  pool: {
+    max: 1
+  }
 });
 
 sequelize.addModels([Type.File, Type.Share]);

@@ -23,7 +23,9 @@ export class File extends Model<File> {
   })
   public id: number;
 
-  @Column
+  @Column({
+    allowNull: false
+  })
   public fileId: number;
 
   @Column
@@ -72,11 +74,11 @@ export class File extends Model<File> {
     return Promise.all(promise);
   }
 
-  public static bulkSave(files: File[], share: Share) {
+  public static bulkSave(files: File[], share: Share) : Promise<File[]> {
     const bulk = [];
+    const toDownload = [];
     files.forEach(file => {
-      file = new File(file);
-      let record = {
+      const record = {
         fileId: file.id,
         name: file.name,
         type: file.type,
@@ -86,12 +88,29 @@ export class File extends Model<File> {
         downloaded: false,
         md5: file.md5,
         shareId: share.id
-      };      
-      // file = new File(file);
-      // const record = file.get({plain: true});
-      // record.shareId = share.id;
-      bulk.push(record);
+      };   
+      const fn = File
+        .findOrCreate({
+          where: {
+            fileId: file.id,
+            shareId: share.id
+          },
+          defaults: record
+        })
+        .spread((savedFile: File, created) => {
+          if (savedFile.downloaded === false) {
+            toDownload.push(savedFile);
+          } else {
+            console.log(`File <${file.name}>`, 'already exists, skipping download...');
+          }
+          return savedFile;
+        });
+      bulk.push(fn);
     });
-    return Promise.resolve(File.bulkCreate(bulk));
+    return Promise
+      .all(bulk)
+      .then(() => {
+        return toDownload;
+      });
   }
 }
