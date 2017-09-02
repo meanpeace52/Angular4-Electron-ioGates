@@ -38,7 +38,7 @@ export class Downloader {
 
   public downloadFile(file: Type.File, dest: string): Promise<Type.UploadResponse> {
     dest = this.getDestination(file, dest);
-    const mtdPath = MultiDownloader.MTDPath(dest);
+    const mtdPath : string = MultiDownloader.MTDPath(dest);
 
     const options = {
       url: file.download,
