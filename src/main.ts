@@ -9,15 +9,22 @@ const sequelize = new Sequelize({
   username: 'root',
   password: '',
   logging: false,
-  storage: `${process.cwd()}/iogates.sqlite`
+  storage: `${process.cwd()}/iogates.sqlite`,
+  pool: {
+    max: 1
+  }
 });
 
 sequelize.addModels([Type.File, Type.Share]);
-sequelize
-  .sync()
-  .then(() => {
-    console.log('sync done....');
-  });
+
+function syncSequelize() {
+  return sequelize.sync();
+}
+async function execIt() {
+  return await syncSequelize;
+}
+execIt();
+global['_DB'] = sequelize;
 
 const commands = vorpal();
 commands
