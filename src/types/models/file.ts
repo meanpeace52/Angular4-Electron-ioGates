@@ -23,7 +23,9 @@ export class File extends Model<File> {
   })
   public id: number;
 
-  @Column
+  @Column({
+    allowNull: false
+  })
   public fileId: number;
 
   @Column
@@ -72,26 +74,47 @@ export class File extends Model<File> {
     return Promise.all(promise);
   }
 
-  public static bulkSave(files: File[], share: Share) {
-    const bulk = [];
-    files.forEach(file => {
-      file = new File(file);
-      let record = {
-        fileId: file.id,
-        name: file.name,
-        type: file.type,
-        parent: file.parent,
-        href: file.href,
-        download: file.download,
-        downloaded: false,
-        md5: file.md5,
-        shareId: share.id
-      };      
-      // file = new File(file);
-      // const record = file.get({plain: true});
-      // record.shareId = share.id;
-      bulk.push(record);
+  public static bulkSave(files: File[], share: Share): Promise<File[]> {
+    return global['_DB'].transaction(function transactionFn(transaction) {
+      const bulk = [];
+      const toDownload = [];
+      files.forEach(file => {
+        const record = {
+          fileId: file.id,
+          name: file.name,
+          type: file.type,
+          parent: file.parent,
+          href: file.href,
+          download: file.download,
+          downloaded: false,
+          md5: file.md5,
+          shareId: share.id
+        };
+        const fn = File
+          .findOrCreate({
+            where: {
+              fileId: file.id,
+              shareId: share.id
+            },
+            defaults: record,
+            transaction: transaction
+          })
+          .spread((savedFile: File, created) => {
+            if (savedFile.downloaded === false) {
+              toDownload.push(savedFile);
+            } else {
+              console.log(`File <${file.name}>`, 'already exists, skipping download...');
+            }
+            return savedFile;
+          });
+        bulk.push(fn);
+      });
+      return Promise
+        .all(bulk)
+        .then(() => {
+          return toDownload;
+        });
     });
-    return Promise.resolve(File.bulkCreate(bulk));
   }
+
 }

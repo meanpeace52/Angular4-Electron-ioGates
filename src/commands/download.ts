@@ -51,24 +51,17 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       return ioGate.readFiles();
     })
     .then((response: Files) => {
-      return File
-        .bulkSave(response.files, outerShare)
-        .then(() => {
-          return response;
-        });
+      return File.bulkSave(response.files, outerShare)
     })  
-    .then((response: Files) => {
-      log('going to download files.');
-      // check which files to download.
-
-      return downloader.downloadFiles(response.files, destination);
+    .then((files: File[]) => {
+      return downloader.downloadFiles(files, destination);
     })
     .then((responses: UploadResponse[]) => {
       log('Uploaded files: ', responses.length);
       const successIds = [];
       responses.forEach((response: UploadResponse) => {
         if (response.success === true) {
-          successIds.push(response.file.id);
+          successIds.push(response.file.fileId);
         }
         log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
@@ -80,8 +73,6 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
             fileId: successIds
           }
         });
-
-      // return File.STORE_FILES(responses, outerShare);
     })
     .then(() => {
       log('done saving.');

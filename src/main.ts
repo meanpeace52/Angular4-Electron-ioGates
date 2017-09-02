@@ -15,6 +15,7 @@ const sequelize = new Sequelize({
   }
 });
 
+
 sequelize.addModels([Type.File, Type.Share]);
 
 function syncSequelize() {
