@@ -117,8 +117,10 @@ export class File extends Model<File> {
     });
   }
 
-  public static findNotExists(ids: Array<string>): Promise<Array<number>> {
-    const downloadIds = [];
+  public static filterForDownload(files: File[]): Promise<Array<File>> {
+    const download = [];
+    const ids = [];
+    files.forEach(file => ids.push(file.id));
     const promise = File
       .findAll({
         where: {
@@ -129,12 +131,12 @@ export class File extends Model<File> {
       })
       .then((existingFiles: File[]) => {
         const foundIds = existingFiles.map(r => r.fileId);
-        ids.forEach(id => {
-          if(foundIds.indexOf(+id) === -1) {
-            downloadIds.push(id);
+        files.forEach(file => {
+          if (foundIds.indexOf(file.id) === -1) {
+            download.push(file);
           }
         });
-        return downloadIds; 
+        return download; 
       });
     return Promise.resolve(promise);
   }
