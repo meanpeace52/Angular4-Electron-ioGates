@@ -117,4 +117,26 @@ export class File extends Model<File> {
     });
   }
 
+  public static findNotExists(ids: Array<string>): Promise<Array<number>> {
+    const downloadIds = [];
+    const promise = File
+      .findAll({
+        where: {
+          fileId: ids
+        },
+        attributes: ['fileId'],
+        raw: true
+      })
+      .then((existingFiles: File[]) => {
+        const foundIds = existingFiles.map(r => r.fileId);
+        ids.forEach(id => {
+          if(foundIds.indexOf(+id) === -1) {
+            downloadIds.push(id);
+          }
+        });
+        return downloadIds; 
+      });
+    return Promise.resolve(promise);
+  }
+
 }

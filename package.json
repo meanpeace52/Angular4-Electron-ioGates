@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "ascii-progress": "^1.0.5",
+    "async-polling": "^0.2.1",
     "mt-downloader": "^2.2.2",
     "muxer": "^1.0.1",
     "progress": "^2.0.0",

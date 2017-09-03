@@ -9,6 +9,7 @@ import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
+import * as AsyncPolling from 'async-polling';
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
@@ -18,8 +19,8 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const downloader: Downloader = new Downloader();
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
-  let log = function(...p) {};
-  if (args.options['v']) {
+  let log = function (...p) { };
+  if (args.options['verbose']) {
     log = winston.info;
   }
   // const log = console.log;
@@ -28,20 +29,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   directory
     .create()
     .then(() => {
-
       return Share.LOOKUP(shareUrl, destination);
     })
     .then((share: Share) => {
       log('share created: ', share.id, '(', share.complete, ')');
-      if (share.complete) {
-        // completed share.
-      }
-
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
-      log('share saved after auth.');
-
       return share.save(); // updated w/ token and stuff.
     })
     .then((share: Share) => {
@@ -52,7 +46,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then((response: Files) => {
       return File.bulkSave(response.files, outerShare)
-    })  
+    })
     .then((files: File[]) => {
       return downloader.downloadFiles(files, destination);
     })
@@ -76,8 +70,37 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then(() => {
       log('done saving.');
-
-      return done(null);
+      /**
+         * start polling for 1 minute.
+         * on api/response,check if those files exists in our system.
+         * if yes, ignore
+         * if not, store in sqlite and download.
+         */
+      if (args.options['watch']) {
+        // start watching here.
+        const delay = 10000;
+        console.log('[watch] for new files after every', delay / 1000, 'seconds');
+        const watch = AsyncPolling(function asyncFn(end) {
+          console.log('checking...');
+          ioGate
+            .readFiles()
+            .then((response: Files) => {
+              const ids = [];
+              response.files.forEach(f => ids.push(f.id));
+              return File.findNotExists(ids);
+            })
+            .then((downloadIds: Array<number>) => {
+              end();
+            });
+        }, delay);
+        watch.on('error', (e) => {
+          console.log('[watch] failed');
+          return done(e);
+        });
+        watch.run();
+      } else {
+        return done(null);
+      }
     })
     .catch((e: Error) => {
       console.log(e);

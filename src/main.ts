@@ -30,8 +30,9 @@ global['_DB'] = sequelize;
 const commands = vorpal();
 commands
   .command('download [dir] [url]', 'Download folder from Share URL')
-  .option('-m', '--monitor', 'Shows download progress')
-  .option('-v', '--verbose', 'Shows debug logs')
+  .option('-m, --monitor', 'Shows download progress')
+  .option('-v, --verbose', 'Shows debug logs')
+  .option('-w, --watch', 'Watch for changes and auto-download')
   .action(downloadComand);
 commands
   .delimiter('iogates>')
