@@ -40,6 +40,7 @@
     "url": "https://gitlab.iogates.com/iogates/transferapp.git"
   },
   "dependencies": {
+    "async-polling": "^0.2.1",
     "cli-progress": "^1.5.0",
     "mt-downloader": "^2.2.2",
     "muxer": "^1.0.1",

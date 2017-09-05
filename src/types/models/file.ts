@@ -117,4 +117,28 @@ export class File extends Model<File> {
     });
   }
 
+  public static filterForDownload(files: File[]): Promise<Array<File>> {
+    const download = [];
+    const ids = [];
+    files.forEach(file => ids.push(file.id));
+    const promise = File
+      .findAll({
+        where: {
+          fileId: ids
+        },
+        attributes: ['fileId'],
+        raw: true
+      })
+      .then((existingFiles: File[]) => {
+        const foundIds = existingFiles.map(r => r.fileId);
+        files.forEach(file => {
+          if (foundIds.indexOf(file.id) === -1) {
+            download.push(file);
+          }
+        });
+        return download; 
+      });
+    return Promise.resolve(promise);
+  }
+
 }

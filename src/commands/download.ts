@@ -9,6 +9,8 @@ import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
+import { DownloadWatcher } from '../lib/watcher';
+
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
@@ -18,8 +20,8 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const downloader: Downloader = new Downloader();
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
-  let log = function(...p) {};
-  if (args.options['v']) {
+  let log = function (...p) { };
+  if (args.options['verbose']) {
     log = winston.info;
   }
   // const log = console.log;
@@ -28,20 +30,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   directory
     .create()
     .then(() => {
-
       return Share.LOOKUP(shareUrl, destination);
     })
     .then((share: Share) => {
       log('share created: ', share.id, '(', share.complete, ')');
-      if (share.complete) {
-        // completed share.
-      }
-
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
-      log('share saved after auth.');
-
       return share.save(); // updated w/ token and stuff.
     })
     .then((share: Share) => {
@@ -52,7 +47,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then((response: Files) => {
       return File.bulkSave(response.files, outerShare)
-    })  
+    })
     .then((files: File[]) => {
       return downloader.downloadFiles(files, destination);
     })
@@ -76,8 +71,16 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then(() => {
       log('done saving.');
-
-      return done(null);
+      if (args.options['watch']) {
+        console.log('[watch] for new files.');
+        const watcher = new DownloadWatcher(destination);
+        watcher.watch(outerShare);
+        watcher.on('error', (err) => {
+          log('[watch] error: ', err);
+        });
+      } else {
+        return done(null);
+      }
     })
     .catch((e: Error) => {
       console.log(e);

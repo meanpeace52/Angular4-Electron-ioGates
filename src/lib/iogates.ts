@@ -68,4 +68,8 @@ export class IOGates {
 
     return request.defaults(options);
   }
+
+  public setToken(token: string) {
+    this.token = token;
+  }
 }
