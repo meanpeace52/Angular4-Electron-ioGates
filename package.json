@@ -30,7 +30,7 @@
     "test:watch": "jest --watch",
     "pkg-mac": "pkg package.json --targets node6-macos-x64 --out-path ./dist/mac && cp ./assets/sqlite3/node-v48-darwin-x64/node_sqlite3.node ./dist/mac/",
     "pkg-linux": "pkg package.json --targets node6-linux-x64 --out-path ./dist/linux && cp ./assets/sqlite3/node-v48-linux-x64/node_sqlite3.node ./dist/linux/",
-    "pkg-win-x84": "pkg package.json --targets node6-win-x86 --out-path ./dist/win-x86 && cp ./assets/sqlite3/node-v48-win32-ia32/node_sqlite3.node ./dist/win-x86/",
+    "pkg-win-x86": "pkg package.json --targets node6-win-x86 --out-path ./dist/win-x86 && cp ./assets/sqlite3/node-v48-win32-ia32/node_sqlite3.node ./dist/win-x86/",
     "pkg-win-x64": "pkg package.json --targets node6-win-x64 --out-path ./dist/win-x64 && cp ./assets/sqlite3/node-v48-win32-x64/node_sqlite3.node ./dist/win-x64/"
   },
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
