@@ -13,22 +13,25 @@
     "@types/node": "~6.0.85",
     "@types/request": "^2.0.0",
     "jest": "~20.0.0",
+    "pkg": "^4.2.4",
     "rimraf": "~2.6.1",
     "tslint": "~5.5.0",
     "tslint-microsoft-contrib": "~5.0.1",
     "tsutils": "~2.7.1",
-    "typescript": "~2.4.2"
+    "typescript": "^2.4.2"
   },
   "scripts": {
+    "prestart": "npm run build",
+    "start": "node build/src/main.js",
     "clean": "rimraf coverage build tmp",
-    "build": "tsc -p tsconfig.release.json",
-    "watch": "tsc -w -p tsconfig.release.json",
+    "build": "node_modules/.bin/tsc -p tsconfig.release.json",
+    "watch": "node_modules/.bin/tsc -w -p tsconfig.release.json",
     "lint": "tslint -t stylish --type-check --project 'tsconfig.json'",
     "pretest": "npm run lint",
     "test": "npm run test-only",
     "test-only": "jest --coverage",
     "test:watch": "jest --watch",
-    "pkg": "pkg package.json --targets node6-macos-x64,node6-linux-x64,node6-win-x64,node6-win-x86 --out-path ./dist"
+    "pkg": "node_modules/.bin/pkg package.json --targets node6-macos-x64,node6-linux-x64,node6-win-x64,node6-win-x86 --out-path ./dist"
   },
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "license": "MIT",

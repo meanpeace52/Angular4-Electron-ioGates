@@ -1,5 +1,5 @@
 import * as AsyncPolling from 'async-polling';
-import { Downloader } from '../lib/downloader';
+import { Downloader } from './downloader';
 import { Share } from '../types/models/share';
 import { File } from '../types/models/file';
 import { Files } from '../types/files';
