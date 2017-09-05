@@ -3,3 +3,4 @@ jest_*
 coverage/
 build/
 *.sqlite
+.idea
