@@ -18,13 +18,11 @@ const sequelize = new Sequelize({
 
 sequelize.addModels([Type.File, Type.Share]);
 
-function syncSequelize() {
-  return sequelize.sync();
+async function syncDatabase() {
+  await sequelize.sync();
+  return true;
 }
-async function execIt() {
-  return await syncSequelize;
-}
-execIt();
+syncDatabase();
 global['_DB'] = sequelize;
 
 const commands = vorpal();
