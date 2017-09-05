@@ -52,7 +52,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       return downloader.downloadFiles(files, destination);
     })
     .then((responses: UploadResponse[]) => {
-      log('Uploaded files: ', responses.length);
+      log('Downloaded files: ', responses.length);
       const successIds = [];
       responses.forEach((response: UploadResponse) => {
         if (response.success === true) {
