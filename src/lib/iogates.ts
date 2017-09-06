@@ -72,4 +72,23 @@ export class IOGates {
   public setToken(token: string) {
     this.token = token;
   }
+
+  public setBaseUrl(url: string) {
+    this.baseUrl = url;
+    console.log(this.baseUrl);
+  }
+
+  public setBaseUrlFromShareUrl(url: string) {
+    this.setBaseUrl(this.getBaseUrlFromShareUrl(url));
+  }
+
+  public getBaseUrlFromShareUrl(url: string): string {
+    const re = /^(https?\:\/\/[a-zA-Z\-\.\_0-9]+)(\/.*)$/i;
+    const matches = re.exec(url);
+    if (matches !== null) {
+      return matches[1] + "/api";
+    } else {
+      throw "Unknown Share URL scheme";
+    }
+  }
 }

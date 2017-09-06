@@ -34,6 +34,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     })
     .then((share: Share) => {
       log('share created: ', share.id, '(', share.complete, ')');
+      ioGate.setBaseUrlFromShareUrl(share.url);
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
