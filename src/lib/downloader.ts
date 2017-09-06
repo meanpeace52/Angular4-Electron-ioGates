@@ -3,8 +3,9 @@ import * as MultiDownloader from 'mt-downloader';
 import { Observable as O } from 'rx';
 import * as R from 'ramda';
 import * as Type from './types';
-import * as Progress from 'ascii-progress';
-import * as queue from 'queue';
+//import * as Progress from 'ascii-progress';
+import * as CliProgress from 'cli-progress';
+//import * as queue from 'queue';
 import * as fs from 'fs';
 
 /**
@@ -14,25 +15,17 @@ export class Downloader {
 
   public downloadFiles(files: Type.File[], dest: string): Promise<Type.UploadResponse[]> {
     const self = this;
-    return new Promise((resolve, reject) => {
-      const q = queue();
+    return new Promise(async (resolve, reject) => {
       const results = [];
       for (const file of files) {
-        q.push(function queueFn() {
-          return self
-            .downloadFile(file, dest)
-            .then((r: Type.UploadResponse) => {
-              results.push(r);
-              return r;
-            });
-        });
+        try {
+          const r: Type.UploadResponse = await self.downloadFile(file, dest);
+          results.push(r);
+        } catch (err) {
+          
+        }
       }
-
-      q.start(function startFn(err) {
-        if (err) return reject(err);
-        return resolve(results);
-      });
-
+      return resolve(results);
     });
   }
 
@@ -85,14 +78,20 @@ export class Downloader {
       .map(R.tail)
       .flatMap(R.map(R.of));
 
-    const bar = new Progress({
+    /*const bar = new Progress({
       schema: `${file.name} [:bar] :percent :elapsed/:eta s`
-    });
-    
-    MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i));
-    const closeFile = MultiDownloader.FILE.close(fd$).toPromise();
-    const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
+    });*/
+    const bar = new CliProgress.Bar({
+      format: `${file.name} [{bar}] {percentage}% | ETA: {eta}s`,
+      stopOnComplete: true,
+      clearOnComplete: false
+    }, CliProgress.Presets.shades_classic);
+    bar.start(1, 0);
 
+    MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i));
+    const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
+    const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
+    
     return uploadResponse.fromPromise(closeFile, file, dest);
   }
 

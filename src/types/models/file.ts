@@ -48,6 +48,11 @@ export class File extends Model<File> {
   })
   public downloaded: boolean;
 
+  @Column({
+    defaultValue: false
+  })
+  public uploaded: boolean;
+
   @Column
   public md5: string;
 
