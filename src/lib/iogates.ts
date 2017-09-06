@@ -75,7 +75,6 @@ export class IOGates {
 
   public setBaseUrl(url: string) {
     this.baseUrl = url;
-    console.log(this.baseUrl);
   }
 
   public setBaseUrlFromShareUrl(url: string) {
