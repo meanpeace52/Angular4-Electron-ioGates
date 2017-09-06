@@ -9,10 +9,10 @@ export class UploadResponse {
   public success: boolean;
   public timeTaken: number;
 
-  public fromPromise(promise: Promise<undefined>, file: File, dest: string) : Promise<UploadResponse> {
+  public fromPromise(promise: Promise<undefined>, file: File) : Promise<UploadResponse> {
     return promise
       .then(() => {
-        this.dest = dest;
+        this.dest = file.destination;
         this.file = file;
         this.success = true;
 
