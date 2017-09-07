@@ -66,12 +66,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
         }
         log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
+      if (successIds.length === 0) return null; 
       return File
         .update({
           downloaded: true
         }, {
           where: {
-            fileId: successIds
+            file_id: successIds
           }
         });
     })
@@ -85,6 +86,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
           log('[watch] error: ', err);
         });
       } else {
+        console.log('[download] is completed.');
         return done(null);
       }
     })

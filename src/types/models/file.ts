@@ -69,17 +69,9 @@ export class File extends Model<File> {
       const bulk = [];
       const toDownload = [];
       files.forEach(file => {
-        const record = {
-          file_id: file.id,
-          name: file.name,
-          type: file.type,
-          parent: file.parent,
-          href: file.href,
-          download: file.download,
-          downloaded: false,
-          md5: file.md5,
-          share_id: share.id
-        };
+        const record = file.get({plain: true});
+        delete record['id'];
+        record.share_id = share.id;
         const fn = File
           .findOrCreate({
             where: {
@@ -114,7 +106,7 @@ export class File extends Model<File> {
     const promise = File
       .findAll({
         where: {
-          fileId: ids
+          file_id: ids
         },
         attributes: ['fileId'],
         raw: true
@@ -129,6 +121,11 @@ export class File extends Model<File> {
         return download; 
       });
     return Promise.resolve(promise);
+  }
+
+  static fromPlain(file: object) {
+    file['file_id'] = Number(file['id']);    
+    return new File(file);
   }
 
 }

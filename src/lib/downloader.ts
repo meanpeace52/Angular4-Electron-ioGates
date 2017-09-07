@@ -7,6 +7,7 @@ import * as Type from './types';
 import * as CliProgress from 'cli-progress';
 //import * as queue from 'queue';
 import * as fs from 'fs';
+import { Directory } from '../lib/directory';
 
 /**
  * Helps download a file from IOGates
@@ -22,7 +23,7 @@ export class Downloader {
           const r: Type.UploadResponse = await self.downloadFile(file);
           results.push(r);
         } catch (err) {
-
+          return reject(err);
         }
       }
       return resolve(results);
@@ -76,12 +77,19 @@ export class Downloader {
       .withLatestFrom(fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
+    let fileName = file.name;
+    if (fileName.length > 50) {
+      fileName = fileName.substr(0, 47) + '...';
+    } else {
+      let len = fileName.length;
+      while (len < 50) {
+        fileName += ' ';
+        ++len;
+      }
+    }
 
-    /*const bar = new Progress({
-      schema: `${file.name} [:bar] :percent :elapsed/:eta s`
-    });*/
     const bar = new CliProgress.Bar({
-      format: `${file.name} [{bar}] {percentage}% | ETA: {eta}s`,
+      format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s`,
       stopOnComplete: true,
       clearOnComplete: false
     }, CliProgress.Presets.shades_classic);
@@ -98,16 +106,23 @@ export class Downloader {
   public setupHierarchy(entries: Type.File[], destination: string) {
     const tree = new Map();
     const files = [];
-    for (let entry of entries) {
-      entry = new Type.File(entry);
-      console.log(entry);
+    const dirs = [];
+    for (let entry of entries.filter(Boolean)) {
       entry.destination = this.location(entry, destination, tree);
-      tree.set( entry.file_id, entry);
-      if (!entry.isDirectory()) {
-        files.push(entry);
+      tree.set(entry.file_id, entry);
+      if (entry.isDirectory()) {
+        const dir = new Directory(entry.destination);
+        dirs.push(dir.create());
+        continue;
       }
+      files.push(entry);
     }
-    return files;
+
+    return Promise
+      .all(dirs)
+      .then(() => {
+        return files;
+      });
   }
 
   private location(file: Type.File, destination: string, tree: Map<number, object>) {
@@ -116,7 +131,7 @@ export class Downloader {
     }
     let parent = <Type.File>tree.get(+file.parent);
     let path = this.location(parent, destination, tree);
-    if (parent.isDirectory()) {
+    if (parent.type === 'dir') {
       path = [path, file.name].join('/');
     } else {
       path = path.split('/');
