@@ -91,11 +91,20 @@ export class Downloader {
     const bar = new CliProgress.Bar({
       format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s`,
       stopOnComplete: true,
-      clearOnComplete: false
+      clearOnComplete: false,
+      etaBuffer: 20,
+      fps: 5
     }, CliProgress.Presets.shades_classic);
-    bar.start(1, 0);
+    bar.start(1000, 0);
 
-    MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i));
+    MultiDownloader
+      .Completion(meta$)
+      .subscribe((i) => {
+        const p = Math.ceil(i*1000);
+        if (bar.value != p) {
+          bar.update(p)
+        }
+      });
     const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
 
