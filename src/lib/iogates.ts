@@ -2,6 +2,7 @@ import * as http from 'http';
 import * as request from 'request';
 import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
+import * as CONFIG from '../../config';
 const log = debug('io:lib:iogates');
 
 /**
@@ -11,7 +12,7 @@ export class IOGates {
   private token: string;
   private baseUrl: string;
   constructor() {
-    this.baseUrl = 'https://share-web02-transferapp.iogates.com/api';
+    this.baseUrl = CONFIG.api.base;
     this.token = '';
   }
 
@@ -20,7 +21,7 @@ export class IOGates {
 
     return new Promise((resolve: Function, reject: Function) => {
       this.getRequest().post({
-        url: '/authtoken',
+        url: CONFIG.api.auth,
         json: {
           url: share.url
         }
@@ -43,7 +44,7 @@ export class IOGates {
 
     return new Promise((resolve: Function, reject: Function) => {
       this.getRequest().get({
-        url: '/files',
+        url: CONFIG.api.files,
         json: true
       }, (err: Error, r: http.IncomingMessage, response: Files) => {
         if (r.statusCode !== 200) {
