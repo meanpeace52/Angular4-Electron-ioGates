@@ -25,9 +25,7 @@ export class File extends Model<File> {
   })
   public id: number;
 
-  @Column({
-    allowNull: false
-  })
+  @Column
   public fileId: number;
 
   @Column
