@@ -1,11 +1,13 @@
 import {
   CommandUploadInput,
-  Share
+  Share,
+  File
 } from '../lib/types';
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
 import {Uploader} from "../lib/uploader";
+import {ReadableStreamFile} from "../types/files";
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
   const destination = args.dir;
@@ -17,13 +19,14 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   if (args.options['verbose']) {
     log = winston.info;
   }
-  let directoryBlobs: any[];
-  log('executing download');
+  let readStreamFiles: ReadableStreamFile[];
+  let outerShare: Share;
+  log('executing upload');
 
   directory
     .read()
-    .then((files: any[]) => {
-      directoryBlobs = files;
+    .then((files: ReadableStreamFile[]) => {
+      readStreamFiles = files;
       return Promise.resolve();
     })
     .then(() => {
@@ -35,9 +38,12 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     .then((share: Share) => {
       return share.save(); // updated w/ token and stuff.
     })
-    .then(() => {
-      console.log(directoryBlobs.length);
-      return uploader.uploadFiles(directoryBlobs);
+    .then((share) => {
+      outerShare = share;
+      return File.saveReadStreamFiles(readStreamFiles, share);
+    })
+    .then((files: File[]) => {
+      return uploader.uploadFiles(files, outerShare);
     })
     .then(() => {
       return done(null);

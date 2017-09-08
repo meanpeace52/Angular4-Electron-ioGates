@@ -7,6 +7,7 @@ import {
 } from 'sequelize-typescript';
 import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
+import {ReadableStreamFile} from "../files";
 /**
  * Exports File class.
  */
@@ -55,6 +56,17 @@ export class File extends Model<File> {
 
   @Column
   public md5: string;
+
+  @Column
+  public stream: ReadableStreamFile;
+
+  @Column
+  public resumeAble: boolean;
+
+  @Column({
+    defaultValue: false
+  })
+  public uploadStarted: boolean;
 
   @ForeignKey(() => Share)
   public shareId: number;
@@ -144,6 +156,20 @@ export class File extends Model<File> {
         return download; 
       });
     return Promise.resolve(promise);
+  }
+
+  public static saveReadStreamFiles(files: ReadableStreamFile[], share: Share): Promise<Array<File>> {
+    let promise = [];
+
+    files.forEach(streamFile => {
+      let file = new File();
+      file.name = streamFile.fileName;
+      file.resumeAble = true;
+      file.shareId = share.id;
+      promise.push(file.save());
+    });
+
+    return Promise.all(promise);
   }
 
 }

@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as File from 'vinyl';
+import {ReadableStreamFile} from "../types/files";
+import * as uuid from 'uuid/v1';
+import {ReadStream} from "fs";
 
 /**
  *  Exports class Directory.
@@ -22,24 +24,19 @@ export class Directory {
           }
           return reject(err);
         }
-        // console.log('created dir: ', this.path);
-
         return resolve(null);
       });
     });
   }
 
-  public read(): Promise<Array<File>> {
+  public read(): Promise<Array<ReadableStreamFile>> {
     return new Promise((resolve: Function, reject: Function) => {
       try {
-        let blobs = this.walkSync(this.path, []).map((filePath): File => {
-          let buffer = fs.readFileSync(filePath);
-          // let arrayBuffer = Uint8Array.from(buffer).buffer;
-          // let fileNameSplit = filePath.split('/');
-          // let fileName = fileNameSplit[fileNameSplit.length - 1];
-          let file = new File();
-          file.contents = buffer;
-          return file;
+        let blobs = this.walkSync(this.path, []).map((filePath): ReadableStreamFile => {
+          let size = fs.statSync(filePath).size;
+          let fileNameSplit = filePath.split('/');
+          let fileName = fileNameSplit[fileNameSplit.length - 1];
+          return new ReadableStreamFile(filePath, fileName, size, uuid());
         });
         return resolve(blobs);
       }
@@ -47,6 +44,10 @@ export class Directory {
         return reject(e);
       }
     });
+  }
+
+  public static getStream(path: string): ReadStream {
+    return fs.createReadStream(path);
   }
 
   public walkSync(dir: string, fileList:Array<string> ): Array<string> {

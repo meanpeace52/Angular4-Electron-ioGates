@@ -7,3 +7,12 @@ export class Files {
   public map: Map<string, string>;
   public files: File[];
 }
+
+export class ReadableStreamFile {
+  constructor(
+    public path: string,
+    public fileName: string,
+    public size: number,
+    public uuid: string
+  ) {}
+}

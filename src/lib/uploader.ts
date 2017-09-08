@@ -1,14 +1,18 @@
 import { Upload } from 'tus-js-client';
-// import * as Type from './types';
+import * as Type from './types';
 import * as CliProgress from 'cli-progress';
-import * as File from 'vinyl';
+import {UploadOptionsExtended} from "../types/uploadOptionExtended";
+import {Directory} from "./directory";
+
 // import * as fs from 'fs';
 
 
 export class Uploader {
   public baseUrl = 'https://share-web02-transferapp.iogates.com/api';
-  public uploadFiles(files: File[]) {
+  public token = '';
+  public uploadFiles(files: Type.File[], share: Type.Share) {
     const self = this;
+    this.token = share.token;
     return new Promise(async (resolve, reject) => {
       const results = [];
       for (const file of files) {
@@ -24,7 +28,7 @@ export class Uploader {
     });
   }
 
-  public uploadFile(file: any): Promise<any> {
+  public uploadFile(file: Type.File): Promise<any> {
 
     return new Promise((resolve: Function, reject: Function) => {
 
@@ -36,11 +40,17 @@ export class Uploader {
 
       bar.start(1, 0);
 
-      let tusUploader = new Upload(file, {
-        endpoint: 'https://master.tus.io/files//',//`${this.baseUrl}/file`,
+      let uploadOptions: UploadOptionsExtended  = {
+        endpoint: `${this.baseUrl}/upload/tus/${this.token}/`,
+        uploadUrl: null,
         resume: true,
         retryDelays: [0, 1000, 3000, 5000],
+        metadata: {
+          filename: file.stream.fileName,
+          uuid: file.stream.uuid
+        },
         onError: function(error) {
+          tusUploader.abort();
           return reject(error);
         },
         onProgress: function(bytesUploaded, bytesTotal) {
@@ -51,11 +61,19 @@ export class Uploader {
           return resolve({});
           // console.log("Download %s from %s", upload.file.name, upload.url)
         }
-      });
+      };
 
+      if(file.uploadStarted) {
+        uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.stream.uuid}`;
+      }
 
+      let stream = <any> Directory.getStream(file.stream.path);
+      let tusUploader = new Upload(stream, uploadOptions);
 
       tusUploader.start();
+      file.uploadStarted = true;
+      file.resumeAble = true;
+      file.save();
     });
 
 
