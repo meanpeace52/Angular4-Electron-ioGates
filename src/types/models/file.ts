@@ -57,7 +57,7 @@ export class File extends Model<File> {
   @ForeignKey(() => Share)
   public share_id: number;
 
-  @BelongsTo(() => Share, 'shareId')
+  @BelongsTo(() => Share, 'share_id')
   public share: Share;
 
   public isDirectory() {

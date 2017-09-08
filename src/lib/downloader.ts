@@ -93,9 +93,13 @@ export class Downloader {
       stopOnComplete: true,
       clearOnComplete: false
     }, CliProgress.Presets.shades_classic);
-    bar.start(1, 0);
+    bar.start(100, 0);
 
-    MultiDownloader.Completion(meta$).subscribe((i) => bar.update(i));
+    MultiDownloader
+      .Completion(meta$)
+      .subscribe((i) => {
+         bar.update(i * 100)
+      });
     const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
 
