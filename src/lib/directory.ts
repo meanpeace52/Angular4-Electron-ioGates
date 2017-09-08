@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as File from 'vinyl';
 
 /**
  *  Exports class Directory.
@@ -28,12 +29,17 @@ export class Directory {
     });
   }
 
-  public read(): Promise<Array<Blob>> {
+  public read(): Promise<Array<File>> {
     return new Promise((resolve: Function, reject: Function) => {
       try {
-        let blobs = this.walkSync(this.path, []).map((filePath): Blob => {
+        let blobs = this.walkSync(this.path, []).map((filePath): File => {
           let buffer = fs.readFileSync(filePath);
-          return new Blob([buffer]);
+          // let arrayBuffer = Uint8Array.from(buffer).buffer;
+          // let fileNameSplit = filePath.split('/');
+          // let fileName = fileNameSplit[fileNameSplit.length - 1];
+          let file = new File();
+          file.contents = buffer;
+          return file;
         });
         return resolve(blobs);
       }

@@ -1,5 +1,6 @@
 import * as vorpal from 'vorpal';
 import { downloadComand } from './commands/download';
+import { uploadCommand } from './commands/upload';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
 
@@ -28,9 +29,15 @@ sequelize.sync().then(() => {
     .option('-v', '--verbose', 'Shows debug logs')
     .action(downloadComand);
   commands
+    .command('upload [dir] [url]', 'Upload to Share URL from folder')
+    .option('-m', '--monitor', 'Shows upload progress')
+    .option('-v', '--verbose', 'Shows debug logs')
+    .action(uploadCommand);
+  commands
     .delimiter('iogates>')
     .show()
     .parse(process.argv);
+
   commands.commands = commands.commands;
   
   module.exports = commands;
