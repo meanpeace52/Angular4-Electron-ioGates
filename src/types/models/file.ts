@@ -5,7 +5,7 @@ import {
   BelongsTo,
   ForeignKey
 } from 'sequelize-typescript';
-import { UploadResponse } from '../uploadResponse';
+// import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
 /**
  * Exports File class.
@@ -26,7 +26,7 @@ export class File extends Model<File> {
   @Column({
     allowNull: false
   })
-  public fileId: number;
+  public file_id: number;
 
   @Column
   public name: string;
@@ -49,29 +49,19 @@ export class File extends Model<File> {
   public downloaded: boolean;
 
   @Column
-  public md5: string;
+  public md5: string; 
+
+  @Column
+  public destination: string;
 
   @ForeignKey(() => Share)
-  public shareId: number;
+  public share_id: number;
 
   @BelongsTo(() => Share, 'shareId')
   public share: Share;
 
-  public static STORE_FILES(response: UploadResponse[], share: Share): Promise<any> {
-    const promise = [];
-    response.forEach((upload: UploadResponse) => {
-      const file = new File();
-      file.name = upload.file.name;
-      file.type = upload.file.type;
-      file.parent = upload.file.parent;
-      file.href = upload.file.href;
-      file.download = upload.file.download;
-      file.md5 = upload.file.md5;
-      file.shareId = share.id;
-      promise.push(file.save());
-    });
-
-    return Promise.all(promise);
+  public isDirectory() {
+    return this.type === 'dir';
   }
 
   public static bulkSave(files: File[], share: Share): Promise<File[]> {
@@ -79,22 +69,14 @@ export class File extends Model<File> {
       const bulk = [];
       const toDownload = [];
       files.forEach(file => {
-        const record = {
-          fileId: file.id,
-          name: file.name,
-          type: file.type,
-          parent: file.parent,
-          href: file.href,
-          download: file.download,
-          downloaded: false,
-          md5: file.md5,
-          shareId: share.id
-        };
+        const record = file.get({plain: true});
+        delete record['id'];
+        record.share_id = share.id;
         const fn = File
           .findOrCreate({
             where: {
-              fileId: file.id,
-              shareId: share.id
+              file_id: file.file_id,
+              share_id: share.id
             },
             defaults: record,
             transaction: transaction
@@ -124,21 +106,26 @@ export class File extends Model<File> {
     const promise = File
       .findAll({
         where: {
-          fileId: ids
+          file_id: ids
         },
         attributes: ['fileId'],
         raw: true
       })
       .then((existingFiles: File[]) => {
-        const foundIds = existingFiles.map(r => r.fileId);
+        const foundIds = existingFiles.map(r => r.file_id);
         files.forEach(file => {
-          if (foundIds.indexOf(file.id) === -1) {
+          if (foundIds.indexOf(file.file_id) === -1) {
             download.push(file);
           }
         });
         return download; 
       });
     return Promise.resolve(promise);
+  }
+
+  static fromPlain(file: object) {
+    file['file_id'] = Number(file['id']);    
+    return new File(file);
   }
 
 }

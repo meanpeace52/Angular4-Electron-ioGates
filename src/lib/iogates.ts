@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as request from 'request';
-import { Share, Auth, Files } from './types';
+import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
 const log = debug('io:lib:iogates');
 
@@ -49,6 +49,10 @@ export class IOGates {
         if (r.statusCode !== 200) {
           return reject(err);
         }
+
+        response.files = response.files.map(file => {
+          return File.fromPlain(file);
+        });
 
         return resolve(response);
       });

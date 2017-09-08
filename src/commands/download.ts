@@ -27,8 +27,11 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   // const log = console.log;
   let outerShare;
   log('executing download');
-  directory
-    .create()
+  global['_DB']
+    .sync()
+    .then(() => {
+      return directory.create();
+    })
     .then(() => {
       return Share.LOOKUP(shareUrl, destination);
     })
@@ -47,26 +50,30 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       return ioGate.readFiles();
     })
     .then((response: Files) => {
-      return File.bulkSave(response.files, outerShare)
+      return downloader.setupHierarchy(response.files, destination);
     })
     .then((files: File[]) => {
-      return downloader.downloadFiles(files, destination);
+      return File.bulkSave(files, outerShare);      
+    })
+    .then((files: File[]) => {
+      return downloader.downloadFiles(files);
     })
     .then((responses: UploadResponse[]) => {
       log('Downloaded files: ', responses.length);
       const successIds = [];
       responses.forEach((response: UploadResponse) => {
         if (response.success === true) {
-          successIds.push(response.file.fileId);
+          successIds.push(response.file.file_id);
         }
         log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
+      if (successIds.length === 0) return null; 
       return File
         .update({
           downloaded: true
         }, {
           where: {
-            fileId: successIds
+            file_id: successIds
           }
         });
     })
@@ -80,6 +87,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
           log('[watch] error: ', err);
         });
       } else {
+        console.log('[download] is completed.');
         return done(null);
       }
     })
