@@ -50,13 +50,13 @@ export class DownloadWatcher extends Watcher {
           return File
             .bulkSave(files, share)
             .then((files: File[]) => {
-              return this.downloader.downloadFiles(files, this.destination);
+              return this.downloader.downloadFiles(files);
             })
             .then((responses: UploadResponse[]) => {
               const successIds = [];
               responses.forEach((response: UploadResponse) => {
                 if (response.success === true) {
-                  successIds.push(response.file.fileId);
+                  successIds.push(response.file.file_id);
                 }
               });
               return File
@@ -75,25 +75,6 @@ export class DownloadWatcher extends Watcher {
         .catch(e => {
           this.emit('error', e);
         });
-      // .then((responses: UploadResponse[]) => {
-      //   const successIds = [];
-      //   responses.forEach((response: UploadResponse) => {
-      //     if (response.success === true) {
-      //       successIds.push(response.file.fileId);
-      //     }
-      //   });
-      //   return File
-      //     .update({
-      //       downloaded: true
-      //     }, {
-      //       where: {
-      //         fileId: successIds
-      //       }
-      //     });
-      // })
-      // .then(() => {
-      //   return end();
-      // });
     }, this.delay);
     polling.on('error', (err) => {
       this.emit('error', err);

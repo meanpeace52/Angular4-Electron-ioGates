@@ -18,29 +18,30 @@ const sequelize = new Sequelize({
 
 
 sequelize.addModels([Type.File, Type.Share]);
+global['_DB'] = sequelize;
 
-sequelize.sync().then(() => {
-  global['_DB'] = sequelize;
-  
-  const commands = vorpal();
-  commands
-    .command('download [dir] [url]', 'Download folder from Share URL')
-    .option('-m', '--monitor', 'Shows download progress')
-    .option('-v', '--verbose', 'Shows debug logs')
-    .action(downloadComand);
-  commands
-    .command('upload [dir] [url]', 'Upload to Share URL from folder')
-    .option('-m', '--monitor', 'Shows upload progress')
-    .option('-v', '--verbose', 'Shows debug logs')
-    .action(uploadCommand);
-  commands
-    .delimiter('iogates>')
-    .show()
-    .parse(process.argv);
+const commands = vorpal();
+commands
+  .command('download [dir] [url]', 'Download folder from Share URL')
+  .option('-m, --monitor', 'Shows download progress')
+  .option('-v, --verbose', 'Shows debug logs')
+  .option('-w, --watch', 'Watch for changes and auto-download')
+  .action(downloadComand);
 
-  commands.commands = commands.commands;
-  
-  module.exports = commands;
-}).error((error) => {
-  console.log(error);
-});
+commands
+  .command('upload [dir] [url]', 'Upload to Share URL from folder')
+  .option('-m', '--monitor', 'Shows upload progress')
+  .option('-v', '--verbose', 'Shows debug logs')
+  .action(uploadCommand);
+commands
+  .delimiter('iogates>')
+  .show()
+  .parse(process.argv);
+commands.commands = commands.commands;
+
+module.exports = commands;
+// sequelize.sync().then(() => {
+
+// }).error((error) => {
+//   console.log(error);
+// });

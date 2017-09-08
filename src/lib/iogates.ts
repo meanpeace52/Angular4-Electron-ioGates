@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as request from 'request';
-import { Share, Auth, Files } from './types';
+import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
 const log = debug('io:lib:iogates');
 
@@ -50,6 +50,10 @@ export class IOGates {
           return reject(err);
         }
 
+        response.files = response.files.map(file => {
+          return File.fromPlain(file);
+        });
+
         return resolve(response);
       });
     });
@@ -71,5 +75,23 @@ export class IOGates {
 
   public setToken(token: string) {
     this.token = token;
+  }
+
+  public setBaseUrl(url: string) {
+    this.baseUrl = url;
+  }
+
+  public setBaseUrlFromShareUrl(url: string) {
+    this.setBaseUrl(this.getBaseUrlFromShareUrl(url));
+  }
+
+  public getBaseUrlFromShareUrl(url: string): string {
+    const re = /^(https?\:\/\/[a-zA-Z\-\.\_0-9]+)(\/.*)$/i;
+    const matches = re.exec(url);
+    if (matches !== null) {
+      return matches[1] + "/api";
+    } else {
+      throw "Unknown Share URL scheme";
+    }
   }
 }
