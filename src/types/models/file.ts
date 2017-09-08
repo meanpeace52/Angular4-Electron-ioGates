@@ -149,7 +149,7 @@ export class File extends Model<File> {
     let promises = [];
 
     files.forEach(file => {
-      file.shareId = share.id;
+      file.share_id = share.id;
       let promise = File
         .findOrCreate({
           where: {

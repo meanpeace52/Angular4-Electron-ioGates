@@ -17,7 +17,7 @@ const sequelize = new Sequelize({
 });
 
 
-sequelize.addModels([Type.File, Type.Share]);
+sequelize.addModels([Type.Share, Type.File]);
 global['_DB'] = sequelize;
 
 const commands = vorpal();
