@@ -17,7 +17,6 @@ export class Uploader {
       const results = [];
       for (const file of files) {
         try {
-          console.log(file);
           const r = await self.uploadFile(file);
           results.push(r);
         } catch (err) {
