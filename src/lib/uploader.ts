@@ -46,8 +46,8 @@ export class Uploader {
         resume: true,
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
-          filename: file.stream.fileName,
-          uuid: file.stream.uuid
+          filename: file.name,
+          uuid: file.uuid
         },
         onError: function(error) {
           tusUploader.abort();
@@ -64,15 +64,15 @@ export class Uploader {
       };
 
       if(file.uploadStarted) {
-        uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.stream.uuid}`;
+        uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.uuid}`;
       }
 
-      let stream = <any> Directory.getStream(file.stream.path);
+      let stream = <any> Directory.getStream(file.stream_path);
       let tusUploader = new Upload(stream, uploadOptions);
 
       tusUploader.start();
       file.uploadStarted = true;
-      file.resumeAble = true;
+      file.resume_able = true;
       file.save();
     });
 

@@ -2,12 +2,11 @@ import {
   CommandUploadInput,
   Share,
   File
-} from '../lib/types';
+} from '../types';
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
 import {Uploader} from "../lib/uploader";
-import {ReadableStreamFile} from "../types/files";
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
   const destination = args.dir;
@@ -19,13 +18,13 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   if (args.options['verbose']) {
     log = winston.info;
   }
-  let readStreamFiles: ReadableStreamFile[];
+  let readStreamFiles: File[];
   let outerShare: Share;
   log('executing upload');
 
   directory
     .read()
-    .then((files: ReadableStreamFile[]) => {
+    .then((files: File[]) => {
       readStreamFiles = files;
       return Promise.resolve();
     })

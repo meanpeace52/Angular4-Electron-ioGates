@@ -7,7 +7,8 @@ import {
 } from 'sequelize-typescript';
 import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
-import {ReadableStreamFile} from "../files";
+import { createHash } from 'crypto'
+import * as fs from 'fs';
 /**
  * Exports File class.
  */
@@ -58,10 +59,16 @@ export class File extends Model<File> {
   public md5: string;
 
   @Column
-  public stream: ReadableStreamFile;
+  public size: number;
 
   @Column
-  public resumeAble: boolean;
+  public stream_path: string;
+
+  @Column
+  public uuid: string;
+
+  @Column
+  public resume_able: boolean;
 
   @Column({
     defaultValue: false
@@ -153,23 +160,44 @@ export class File extends Model<File> {
             download.push(file);
           }
         });
-        return download; 
+        return download;
       });
     return Promise.resolve(promise);
   }
 
-  public static saveReadStreamFiles(files: ReadableStreamFile[], share: Share): Promise<Array<File>> {
-    let promise = [];
+  public static saveReadStreamFiles(files: File[], share: Share): Promise<Array<File>> {
+    let promises = [];
 
-    files.forEach(streamFile => {
-      let file = new File();
-      file.name = streamFile.fileName;
-      file.resumeAble = true;
+    files.forEach(file => {
       file.shareId = share.id;
-      promise.push(file.save());
+      let promise = File
+        .findOrCreate({
+          where: {
+            md5: file.md5,
+            stream_path: file.stream_path
+          },
+          defaults: file
+        })
+        .spread((file) => file);
+      promises.push(promise);
     });
 
-    return Promise.all(promise);
+    return Promise.resolve(promises);
+  }
+
+  public static createMd5(file: File): Promise<File> {
+    let hash = createHash('md5');
+    let stream = fs.createReadStream(file.stream_path);
+
+    return new Promise((resolve: Function, reject: Function) => {
+      stream.on('data', (data) => hash.update(data));
+
+      stream.on('end', () => {
+        file.md5 = hash.digest('hex');
+        return resolve(file);
+      })
+    })
+
   }
 
 }
