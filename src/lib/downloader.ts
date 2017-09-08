@@ -91,7 +91,8 @@ export class Downloader {
     const bar = new CliProgress.Bar({
       format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s`,
       stopOnComplete: true,
-      clearOnComplete: false
+      clearOnComplete: false,
+      etaBuffer: 20
     }, CliProgress.Presets.shades_classic);
     bar.start(100, 0);
 
