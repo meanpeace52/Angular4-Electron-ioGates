@@ -21,9 +21,11 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   let readStreamFiles: File[];
   let outerShare: Share;
   log('executing upload');
-
-  directory
-    .read()
+  global['_DB']
+    .sync()
+    .then(() => {
+      return directory.read();
+    })
     .then((files: File[]) => {
       readStreamFiles = files;
       return Promise.resolve();
