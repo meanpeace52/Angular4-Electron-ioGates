@@ -3,6 +3,7 @@ import * as Type from './types';
 import * as CliProgress from 'cli-progress';
 import {UploadOptionsExtended} from "../types/uploadOptionExtended";
 import {Directory} from "./directory";
+import * as winston from 'winston';
 
 // import * as fs from 'fs';
 
@@ -57,7 +58,7 @@ export class Uploader {
           bar.update(bytesUploaded / bytesTotal);
         },
         onSuccess: function() {
-          return resolve({});
+          return resolve(file);
           // console.log("Download %s from %s", upload.file.name, upload.url)
         }
       };
@@ -68,7 +69,8 @@ export class Uploader {
 
       let stream = <any> Directory.getStream(file.stream_path);
       let tusUploader = new Upload(stream, uploadOptions);
-
+      winston.info(`\n\r${file.md5}`);
+      winston.info(`\n\r${file.name}`);
       tusUploader.start();
       file.uploadStarted = true;
       file.resume_able = true;

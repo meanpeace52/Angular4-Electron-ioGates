@@ -9,6 +9,8 @@ import {
 import { Share } from './share';
 import { createHash } from 'crypto'
 import * as fs from 'fs';
+import * as winston from 'winston';
+
 /**
  * Exports File class.
  */
@@ -54,7 +56,7 @@ export class File extends Model<File> {
   public uploaded: boolean;
 
   @Column
-  public md5: string; 
+  public md5: string;
 
   @Column
   public destination: string;
@@ -146,23 +148,57 @@ export class File extends Model<File> {
   }
 
   public static saveReadStreamFiles(files: File[], share: Share): Promise<Array<File>> {
-    let promises = [];
-
-    files.forEach(file => {
-      file.share_id = share.id;
-      let promise = File
-        .findOrCreate({
-          where: {
-            md5: file.md5,
-            stream_path: file.stream_path
-          },
-          defaults: file
-        })
-        .spread((file) => file);
-      promises.push(promise);
+    return global['_DB'].transaction(function transactionFn(transaction) {
+      const bulk = [];
+      const toUpload = [];
+      files.forEach(file => {
+        const record = file.get({plain: true});
+        delete record['id'];
+        record.share_id = share.id;
+        const fn = File
+          .findOrCreate({
+            where: {
+              md5: file.md5,
+              stream_path: file.stream_path
+            },
+            defaults: record,
+            transaction: transaction
+          })
+          .spread((savedFile: File, created) => {
+            winston.info(`Created: ${created}`);
+            winston.info(`Upload Started: ${savedFile.uploadStarted}`);
+            if (!savedFile.uploaded) {
+              toUpload.push(savedFile);
+            } else {
+              console.log(`File <${file.name}>`, 'already uploaded, skipping upload...');
+            }
+            return savedFile;
+          });
+        bulk.push(fn);
+      });
+      return Promise
+        .all(bulk)
+        .then(() => {
+          return toUpload;
+        });
     });
-
-    return Promise.resolve(promises);
+    // let promises = [];
+    //
+    // files.forEach(file => {
+    //   file.share_id = share.id;
+    //   let promise = File
+    //     .findOrCreate({
+    //       where: {
+    //         md5: file.md5,
+    //         stream_path: file.stream_path
+    //       },
+    //       defaults: file
+    //     })
+    //     .spread((file) => file);
+    //   promises.push(promise);
+    // });
+    //
+    // return Promise.resolve(promises);
   }
 
   public static createMd5(file: File): Promise<File> {
@@ -181,7 +217,7 @@ export class File extends Model<File> {
   }
 
   public static fromPlain(file: object) {
-    file['file_id'] = Number(file['id']);    
+    file['file_id'] = Number(file['id']);
     return new File(file);
   }
 
