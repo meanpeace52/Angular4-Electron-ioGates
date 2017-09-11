@@ -7,7 +7,7 @@ import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
 import {Uploader} from "../lib/uploader";
-// import {UploadWatcher} from "../lib/watcher";
+import {UploadWatcher} from "../lib/watcher";
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
   const destination = args.dir;
@@ -74,17 +74,17 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     })
     .then(() => {
       winston.info('done saving.');
-      // if (args.options['watch']) {
-      //   console.log('[watch] for new files.');
-      //   const watcher = new UploadWatcher(destination);
-      //   watcher.watch(outerShare);
-      //   watcher.on('error', (err) => {
-      //     log('[watch] error: ', err);
-      //   });
-      // } else {
-      //   console.log('[upload] is completed.');
-      //   return done(null);
-      // }
+      if (args.options['watch']) {
+        console.log('[watch] for new files.');
+        const watcher = new UploadWatcher(destination);
+        watcher.watch(outerShare);
+        watcher.on('error', (err) => {
+          log('[watch] error: ', err);
+        });
+      } else {
+        console.log('[upload] is completed.');
+        return done(null);
+      }
     })
     .catch((err: Error) => {
       console.log(err);

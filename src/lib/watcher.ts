@@ -91,6 +91,7 @@ export class UploadWatcher extends Watcher {
   uploader: Uploader;
   destination: string;
   directory: Directory;
+  files: File[];
 
   constructor(destination: string, delay?: number) {
     super();
@@ -107,54 +108,55 @@ export class UploadWatcher extends Watcher {
     }
     this.api.setToken(share.token);
 
-    /*const polling = AsyncPolling((end) => {
+    const polling = AsyncPolling((end) => {
       // console.log('<checking...>');
-      // this.directory
-      //   .read()
-      this.api
-        .readFiles()
-        .then((response: Files) => {
-          const files = response.files;
-          return File.filterForDownload(files);
+      this.directory
+        .read()
+        .then((files: File[]) => {
+          this.files = files;
+          return files;
+        })
+        .then(() => {
+          this.api.setApiUrlFromShareUrl(share.url);
+          return this.api.authenticateFromUrl(share);
+        })
+        .then(() => {
+          return File.saveReadStreamFiles(this.files, share);
         })
         .then((files: File[]) => {
-          if (files.length === 0) {
-            return end();
-          }
-          // save them in db.
-          return File
-            .bulkSave(files, share)
-            .then((files: File[]) => {
-              return this.downloader.downloadFiles(files);
-            })
-            .then((responses: UploadResponse[]) => {
-              const successIds = [];
-              responses.forEach((response: UploadResponse) => {
-                if (response.success === true) {
-                  successIds.push(response.file.file_id);
-                }
-              });
-              return File
-                .update({
-                  downloaded: true
-                }, {
-                  where: {
-                    fileId: successIds
-                  }
-                });
-            })
-            .then(() => {
-              end();
-            })
+          // winston.info('Going to create files on ioGates.');
+
+          return this.api.createFiles(files);
+        })
+        .then((files: File[]) => {
+          // winston.info(`Files created: ${files.length}`);
+
+          return this.uploader.uploadFiles(files, share);
+        })
+        .then((files: File[]) => {
+          let successIds = [];
+
+          files.forEach(file => {
+            if(file.uploaded) {
+              successIds.push(file.file_id);
+            }
+            // console.info(`Success(${file.uploaded}): ${file.name}`);
+          });
+          return Promise.resolve(null);
+        })
+        .then(() => {
+          end();
         })
         .catch(e => {
           this.emit('error', e);
         });
-    }, this.delay);*/
 
-    /*polling.on('error', (err) => {
+    }, this.delay);
+
+    polling.on('error', (err) => {
       this.emit('error', err);
     });
-    polling.run();*/
+
+    polling.run();
   }
 }
