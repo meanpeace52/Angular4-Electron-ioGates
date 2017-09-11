@@ -10,10 +10,5 @@ module.exports = {
     pool: {
       max: 1
     }
-  },
-  api: {
-    base: 'https://share-web02-transferapp.iogates.com/api',
-    auth: '/authtoken',
-    files: '/files'
   }
 };
