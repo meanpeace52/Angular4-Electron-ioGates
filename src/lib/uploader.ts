@@ -4,7 +4,7 @@ import * as CliProgress from 'cli-progress';
 import {UploadOptionsExtended} from "../types/uploadOptionExtended";
 import {Directory} from "./directory";
 import * as winston from 'winston';
-
+import * as _ from 'lodash';
 // import * as fs from 'fs';
 
 
@@ -37,7 +37,7 @@ export class Uploader {
   public uploadFile(file: Type.File): Promise<Type.File> {
 
     return new Promise((resolve: Function, reject: Function) => {
-
+      let extIndex = _.lastIndexOf(file.name, '.');
       const bar = new CliProgress.Bar({
         format: `${file.name} [{bar}] {percentage}% | ETA: {eta}s`,
         stopOnComplete: true,
@@ -56,7 +56,7 @@ export class Uploader {
         chunkSize: 1000000,
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
-          filename: file.upload_filename,
+          filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`,
           uuid: file.uuid
         },
         onError: function(error) {
