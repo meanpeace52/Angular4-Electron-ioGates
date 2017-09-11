@@ -3,7 +3,8 @@ import * as request from 'request';
 import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
 const log = debug('io:lib:iogates');
-
+import * as winston from 'winston';
+import * as _ from 'lodash';
 /**
  * API wrapper class for IOGates
  */
@@ -56,6 +57,36 @@ export class IOGates {
 
         return resolve(response);
       });
+    });
+  }
+
+  public createFiles(files: File[]): Promise<Array<File>> {
+    winston.info('Called createFiles');
+    return new Promise((resolve: Function, reject: Function) => {
+      let filesToBeCreated = files.map((file) => {
+        return {
+          name: file.name,
+          type: 'Other',
+          attributes: [{ name: 'path', value: file.stream_path }]
+        };
+      });
+
+      this.getRequest().post({
+        url: '/files',
+        json: true,
+        body: { files: filesToBeCreated }
+      }, (err: Error, r: http.IncomingMessage, response: Files) => {
+        if (r.statusCode !== 200) {
+          return reject(err);
+        }
+
+        let createdFiles = files.map(file => {
+          file.upload_filename = _.find(response.files, { name: file.name }).upload_filename;
+          return file;
+        });
+
+        return resolve(createdFiles);
+      })
     });
   }
 

@@ -20,7 +20,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   }
   let readStreamFiles: File[];
   let outerShare: Share;
-  log('executing upload');
+  winston.info('executing upload');
   global['_DB']
     .sync()
     .then(() => {
@@ -34,19 +34,46 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       return Share.LOOKUP(shareUrl, destination);
     })
     .then((share: Share) => {
+      winston.info('share created: ', share.id, '(', share.complete, ')');
+
+      ioGate.setBaseUrlFromShareUrl(share.url);
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
       return share.save(); // updated w/ token and stuff.
     })
     .then((share) => {
+      winston.info('Saving the files in local db');
+
       outerShare = share;
       return File.saveReadStreamFiles(readStreamFiles, share);
     })
     .then((files: File[]) => {
+      winston.info('Going to create files on ioGates.');
+
+      return ioGate.createFiles(files);
+    })
+    .then((files: File[]) => {
+      winston.info(`Files created: ${files.length}`);
+
       return uploader.uploadFiles(files, outerShare);
     })
+    .then((files: File[]) => {
+      winston.info('Uploaded files: ', files.length);
+      let successIds = [];
+
+      files.forEach(file => {
+        if(file.uploaded) {
+          successIds.push(file.file_id);
+        }
+        winston.info(`Success(${file.uploaded}): ${file.name}`);
+      });
+      if (successIds.length === 0) return null;
+      return Promise.resolve(null);
+    })
     .then(() => {
+      winston.info('done saving.');
+
       return done(null);
     })
     .catch((err: Error) => {

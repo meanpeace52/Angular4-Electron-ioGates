@@ -9,57 +9,72 @@ import * as winston from 'winston';
 
 
 export class Uploader {
-  public baseUrl = 'https://share-web02-transferapp.iogates.com/api';
+  public baseUrl = 'https://share-web02-transferapp.iogates.com';
   public token = '';
-  public uploadFiles(files: Type.File[], share: Type.Share) {
-    const self = this;
+  public uploadFiles(files: Type.File[], share: Type.Share): Promise<Array<Type.File>> {
     this.token = share.token;
-    return new Promise(async (resolve, reject) => {
-      const results = [];
-      for (const file of files) {
-        try {
-          const r = await self.uploadFile(file);
-          results.push(r);
-        } catch (err) {
-
-        }
-      }
-      return resolve(results);
-    });
+    // let self = this;
+    const results = [];
+    for (const file of files) {
+      results.push(this.uploadFile(file));
+    }
+    return Promise.all(results)
+      .then(files => files);
+    // return new Promise(async (resolve, reject) => {
+    //   for (const file of files) {
+    //     results.push(this.uploadFile(file));
+        // try {
+        //   const r: Type.File = await self.uploadFile(file);
+        //   results.push(r);
+        // } catch (err) {
+        //
+        // }
+      // }
+      // return resolve(results)
+    // });
   }
 
-  public uploadFile(file: Type.File): Promise<any> {
+  public uploadFile(file: Type.File): Promise<Type.File> {
 
     return new Promise((resolve: Function, reject: Function) => {
 
       const bar = new CliProgress.Bar({
-        format: `[{bar}] {percentage}%`,
+        format: `${file.name} [{bar}] {percentage}% | ETA: {eta}s`,
         stopOnComplete: true,
-        clearOnComplete: false
+        clearOnComplete: false,
+        etaBuffer: 20,
+        fps: 5
       }, CliProgress.Presets.shades_classic);
 
-      bar.start(1, 0);
+      bar.start(100, 0);
 
       let uploadOptions: UploadOptionsExtended  = {
         endpoint: `${this.baseUrl}/upload/tus/${this.token}/`,
         uploadUrl: null,
+        uploadSize: file.size,
         resume: true,
+        chunkSize: 1000000,
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
-          filename: file.name,
+          filename: file.upload_filename,
           uuid: file.uuid
         },
         onError: function(error) {
+          winston.info(`error occured: ${JSON.stringify(error)}`);
+
           tusUploader.abort();
           return reject(error);
         },
         onProgress: function(bytesUploaded, bytesTotal) {
-          // let percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
-          bar.update(bytesUploaded / bytesTotal);
+          let percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
+          bar.update(percentage);
         },
         onSuccess: function() {
-          return resolve(file);
-          // console.log("Download %s from %s", upload.file.name, upload.url)
+          file.uploaded = true;
+          file.save()
+            .then(file => {
+              return resolve(file);
+            });
         }
       };
 
@@ -69,8 +84,6 @@ export class Uploader {
 
       let stream = <any> Directory.getStream(file.stream_path);
       let tusUploader = new Upload(stream, uploadOptions);
-      winston.info(`\n\r${file.md5}`);
-      winston.info(`\n\r${file.name}`);
       tusUploader.start();
       file.uploadStarted = true;
       file.resume_able = true;

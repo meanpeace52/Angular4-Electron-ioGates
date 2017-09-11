@@ -9,7 +9,7 @@ import {
 import { Share } from './share';
 import { createHash } from 'crypto'
 import * as fs from 'fs';
-import * as winston from 'winston';
+// import * as winston from 'winston';
 
 /**
  * Exports File class.
@@ -32,6 +32,9 @@ export class File extends Model<File> {
 
   @Column
   public name: string;
+
+  @Column
+  public upload_filename: string;
 
   @Column
   public type: string;
@@ -165,8 +168,6 @@ export class File extends Model<File> {
             transaction: transaction
           })
           .spread((savedFile: File, created) => {
-            winston.info(`Created: ${created}`);
-            winston.info(`Upload Started: ${savedFile.uploadStarted}`);
             if (!savedFile.uploaded) {
               toUpload.push(savedFile);
             } else {
@@ -216,7 +217,7 @@ export class File extends Model<File> {
 
   }
 
-  public static fromPlain(file: object) {
+  public static fromPlain(file: object): File {
     file['file_id'] = Number(file['id']);
     return new File(file);
   }
