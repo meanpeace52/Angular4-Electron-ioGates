@@ -6,3 +6,9 @@ export class CommandDownloadInput {
   public dir: string;
   public url: string;
 }
+
+export class CommandUploadInput {
+  public options: object;
+  public dir: string;
+  public url: string;
+}

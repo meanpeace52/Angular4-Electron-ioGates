@@ -7,6 +7,10 @@ import {
 } from 'sequelize-typescript';
 // import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
+import { createHash } from 'crypto'
+import * as fs from 'fs';
+// import * as winston from 'winston';
+
 /**
  * Exports File class.
  */
@@ -23,13 +27,14 @@ export class File extends Model<File> {
   })
   public id: number;
 
-  @Column({
-    allowNull: false
-  })
+  @Column
   public file_id: number;
 
   @Column
   public name: string;
+
+  @Column
+  public upload_filename: string;
 
   @Column
   public type: string;
@@ -48,11 +53,33 @@ export class File extends Model<File> {
   })
   public downloaded: boolean;
 
+  @Column({
+    defaultValue: false
+  })
+  public uploaded: boolean;
+
   @Column
-  public md5: string; 
+  public md5: string;
 
   @Column
   public destination: string;
+
+  @Column
+  public size: number;
+
+  @Column
+  public stream_path: string;
+
+  @Column
+  public uuid: string;
+
+  @Column
+  public resume_able: boolean;
+
+  @Column({
+    defaultValue: false
+  })
+  public uploadStarted: boolean;
 
   @ForeignKey(() => Share)
   public share_id: number;
@@ -118,13 +145,80 @@ export class File extends Model<File> {
             download.push(file);
           }
         });
-        return download; 
+        return download;
       });
     return Promise.resolve(promise);
   }
 
-  static fromPlain(file: object) {
-    file['file_id'] = Number(file['id']);    
+  public static saveReadStreamFiles(files: File[], share: Share): Promise<Array<File>> {
+    return global['_DB'].transaction(function transactionFn(transaction) {
+      const bulk = [];
+      const toUpload = [];
+      files.forEach(file => {
+        const record = file.get({plain: true});
+        delete record['id'];
+        record.share_id = share.id;
+        const fn = File
+          .findOrCreate({
+            where: {
+              md5: file.md5,
+              stream_path: file.stream_path
+            },
+            defaults: record,
+            transaction: transaction
+          })
+          .spread((savedFile: File, created) => {
+            if (!savedFile.uploaded) {
+              toUpload.push(savedFile);
+            } else {
+              console.log(`File <${file.name}>`, 'already uploaded, skipping upload...');
+            }
+            return savedFile;
+          });
+        bulk.push(fn);
+      });
+      return Promise
+        .all(bulk)
+        .then(() => {
+          return toUpload;
+        });
+    });
+    // let promises = [];
+    //
+    // files.forEach(file => {
+    //   file.share_id = share.id;
+    //   let promise = File
+    //     .findOrCreate({
+    //       where: {
+    //         md5: file.md5,
+    //         stream_path: file.stream_path
+    //       },
+    //       defaults: file
+    //     })
+    //     .spread((file) => file);
+    //   promises.push(promise);
+    // });
+    //
+    // return Promise.resolve(promises);
+  }
+
+  public static createMd5(file: File): Promise<File> {
+    let hash = createHash('md5');
+    let stream = fs.createReadStream(file.stream_path);
+
+    return new Promise((resolve: Function, reject: Function) => {
+      stream.on('data', (data) => hash.update(data));
+
+      stream.on('end', () => {
+        file.md5 = hash.digest('hex');
+        return resolve(file);
+      })
+    })
+
+  }
+
+  public static fromPlain(file: object): File {
+    file['file_id'] = Number(file['id']);
     return new File(file);
   }
 
