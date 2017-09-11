@@ -36,7 +36,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     .then((share: Share) => {
       winston.info('share created: ', share.id, '(', share.complete, ')');
 
-      ioGate.setBaseUrlFromShareUrl(share.url);
+      ioGate.setApiUrlFromShareUrl(share.url);
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {

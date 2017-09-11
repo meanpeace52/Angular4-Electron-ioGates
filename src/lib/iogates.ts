@@ -112,15 +112,15 @@ export class IOGates {
     this.baseUrl = url;
   }
 
-  public setBaseUrlFromShareUrl(url: string) {
-    this.setBaseUrl(this.getBaseUrlFromShareUrl(url));
+  public setApiUrlFromShareUrl(url: string) {
+    this.setBaseUrl(IOGates.getBaseUrlFromShareUrl(url) + '/api');
   }
 
-  public getBaseUrlFromShareUrl(url: string): string {
+  public static getBaseUrlFromShareUrl(url: string): string {
     const re = /^(https?\:\/\/[a-zA-Z\-\.\_0-9]+)(\/.*)$/i;
     const matches = re.exec(url);
     if (matches !== null) {
-      return matches[1] + "/api";
+      return matches[1];
     } else {
       throw "Unknown Share URL scheme";
     }

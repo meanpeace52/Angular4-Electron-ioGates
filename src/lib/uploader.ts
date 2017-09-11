@@ -3,6 +3,7 @@ import * as Type from './types';
 import * as CliProgress from 'cli-progress';
 import {UploadOptionsExtended} from "../types/uploadOptionExtended";
 import {Directory} from "./directory";
+import {IOGates} from './iogates';
 import * as winston from 'winston';
 import * as _ from 'lodash';
 // import * as fs from 'fs';
@@ -13,6 +14,7 @@ export class Uploader {
   public token = '';
   public uploadFiles(files: Type.File[], share: Type.Share): Promise<Array<Type.File>> {
     this.token = share.token;
+    this.baseUrl = IOGates.getBaseUrlFromShareUrl(share.url);
     // let self = this;
     const results = [];
     for (const file of files) {
