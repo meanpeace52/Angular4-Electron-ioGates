@@ -4,6 +4,7 @@ import { uploadCommand } from './commands/upload';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
+import { machineIdSync } from 'node-machine-id';
 import * as CONFIG from '../config';
 
 // setup db and copy to global
@@ -38,6 +39,7 @@ const logger = new winston.Logger({
   exitOnError: true
 });
 global['logger'] = logger;
+global['machine-id'] = machineIdSync();
 
 const commands = vorpal();
 commands

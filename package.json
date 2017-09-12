@@ -58,6 +58,7 @@
     "mime-types": "^2.1.17",
     "mt-downloader": "^2.2.2",
     "muxer": "^1.0.1",
+    "node-machine-id": "^1.1.9",
     "queue": "^4.4.0",
     "ramda": "^0.24.1",
     "reflect-metadata": "^0.1.10",
