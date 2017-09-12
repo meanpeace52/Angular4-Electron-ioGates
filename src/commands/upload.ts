@@ -120,6 +120,6 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       }
     })
     .catch((err: Error) => {
-        winston.error(err);
+        // winston.error(err);
     });
 }
