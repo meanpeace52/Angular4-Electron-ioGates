@@ -3,7 +3,7 @@ import * as request from 'request';
 import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
 const log = debug('io:lib:iogates');
-import * as winston from 'winston';
+//import * as winston from 'winston';
 import * as _ from 'lodash';
 /**
  * API wrapper class for IOGates
@@ -71,8 +71,6 @@ export class IOGates {
   }
 
   public createFiles(files: File[]): Promise<File[]> {
-    winston.info('Called createFiles');
-
     return new Promise((resolve: Function, reject: Function) => {
       const filesToBeCreated = files.map((file: File) => {
         return {

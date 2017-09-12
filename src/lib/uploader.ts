@@ -6,7 +6,6 @@ import {Directory} from './directory';
 import {IOGates} from './iogates';
 import * as winston from 'winston';
 import * as _ from 'lodash';
-// import * as fs from 'fs';
 
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';

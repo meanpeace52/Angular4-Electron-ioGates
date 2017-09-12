@@ -7,8 +7,15 @@ export class CommandDownloadInput {
   public url: string;
 }
 
+export class CommandUploadOptions {
+  public delete: boolean;
+  public verbose: boolean;
+  public watch: boolean;
+  public delay: boolean|number;
+}
+
 export class CommandUploadInput {
-  public options: object;
+  public options: CommandUploadOptions;
   public dir: string;
   public url: string;
 }

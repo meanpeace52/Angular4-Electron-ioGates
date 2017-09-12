@@ -86,12 +86,12 @@ export class DownloadWatcher extends Watcher {
 
 export class UploadWatcher extends Watcher {
 
-  api: IOGates;
-  delay: number;
-  uploader: Uploader;
-  destination: string;
-  directory: Directory;
-  files: File[];
+  private api: IOGates;
+  private delay: number;
+  private uploader: Uploader;
+  private destination: string;
+  private directory: Directory;
+  private files: File[];
 
   constructor(destination: string, delay?: number) {
     super();
@@ -114,10 +114,12 @@ export class UploadWatcher extends Watcher {
         .read()
         .then((files: File[]) => {
           this.files = files;
+
           return files;
         })
         .then(() => {
           this.api.setApiUrlFromShareUrl(share.url);
+
           return this.api.authenticateFromUrl(share);
         })
         .then(() => {
@@ -136,12 +138,14 @@ export class UploadWatcher extends Watcher {
         .then((files: File[]) => {
           let successIds = [];
 
-          files.forEach(file => {
-            if(file.uploaded) {
+          files.forEach((file: File) => {
+            if (file.uploaded) {
               successIds.push(file.file_id);
+              this.emit('success', file);
             }
             // console.info(`Success(${file.uploaded}): ${file.name}`);
           });
+
           return Promise.resolve(null);
         })
         .then(() => {
