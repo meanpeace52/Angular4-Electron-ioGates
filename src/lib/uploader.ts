@@ -15,33 +15,34 @@ export class Uploader {
   public uploadFiles(files: Type.File[], share: Type.Share): Promise<Array<Type.File>> {
     this.token = share.token;
     this.baseUrl = IOGates.getBaseUrlFromShareUrl(share.url);
-    // let self = this;
+    let self = this;
     const results = [];
-    for (const file of files) {
-      results.push(this.uploadFile(file));
-    }
-    return Promise.all(results)
-      .then(files => files);
-    // return new Promise(async (resolve, reject) => {
-    //   for (const file of files) {
-    //     results.push(this.uploadFile(file));
-        // try {
-        //   const r: Type.File = await self.uploadFile(file);
-        //   results.push(r);
-        // } catch (err) {
-        //
-        // }
-      // }
-      // return resolve(results)
-    // });
+    // for (const file of files) {
+    //   results.push(this.uploadFile(file));
+    // }
+    // return Promise.all(results)
+    //   .then(files => files);
+    return new Promise(async (resolve, reject) => {
+      for (const file of files) {
+        // results.push(this.uploadFile(file));
+        try {
+          const r: Type.File = await self.uploadFile(file);
+          results.push(r);
+        } catch (err) {
+
+        }
+      }
+      return resolve(results)
+    });
   }
 
   public uploadFile(file: Type.File): Promise<Type.File> {
 
     return new Promise((resolve: Function, reject: Function) => {
       let extIndex = _.lastIndexOf(file.name, '.');
+      let calculations = {mbps: 0, previousTimeStamp: 0, previousBytes: 0};
       const bar = new CliProgress.Bar({
-        format: `${file.name} [{bar}] {percentage}% | ETA: {eta}s`,
+        format: `${file.name} \t [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
         stopOnComplete: true,
         clearOnComplete: false,
         etaBuffer: 20,
@@ -69,7 +70,15 @@ export class Uploader {
         },
         onProgress: function(bytesUploaded, bytesTotal) {
           let percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
-          bar.update(percentage);
+          calculations = Uploader.CalculateUploadTransferSpeed(
+            bytesUploaded,
+            calculations.previousTimeStamp,
+            calculations.previousBytes
+          );
+
+          bar.update(percentage, {
+            speed: `${calculations.mbps.toFixed(2)} MB/S`
+          });
         },
         onSuccess: function() {
           file.uploaded = true;
@@ -86,14 +95,23 @@ export class Uploader {
 
       let stream = <any> Directory.getStream(file.stream_path);
       let tusUploader = new Upload(stream, uploadOptions);
+      calculations.previousTimeStamp = Date.now();
       tusUploader.start();
       file.uploadStarted = true;
       file.resume_able = true;
       file.save();
     });
+  }
 
-
-
+  static CalculateUploadTransferSpeed(bytesUploaded: number, previousTimeStamp: number, previousBytes: number): any {
+    let currentDateTimeStamp = Date.now();
+    let bytes: number = bytesUploaded - previousBytes;
+    let megaBytes: number = (bytes / 1024) / 1024;
+    if((currentDateTimeStamp - previousTimeStamp) >= 1000) {
+      bytes = bytesUploaded - previousBytes;
+      megaBytes = (bytes / 1024) / 1024;
+    }
+    return { mbps: megaBytes, previousBytes: bytesUploaded, previousTimeStamp: currentDateTimeStamp };
   }
 
 
