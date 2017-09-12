@@ -6,8 +6,9 @@ import {
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
-import {Uploader} from "../lib/uploader";
-// import {UploadWatcher} from "../lib/watcher";
+import {Uploader} from '../lib/uploader';
+import {UploadWatcher} from '../lib/watcher';
+import * as fs from 'fs';
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
   const destination = args.dir;
@@ -15,13 +16,14 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   const ioGate: IOGates = new IOGates();
   const uploader: Uploader = new Uploader();
   const directory: Directory = new Directory(destination);
-  let log = function (...p) { };
-  if (args.options['verbose']) {
+  let log = (...p) => { };
+  if (args.options.verbose) {
     log = winston.info;
   }
+  const deleteAfterUpload: boolean = args.options.delete;
   let readStreamFiles: File[];
   let outerShare: Share;
-  winston.info('executing upload');
+  log('executing upload');
   global['_DB']
     .sync()
     .then(() => {
@@ -29,65 +31,95 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     })
     .then((files: File[]) => {
       readStreamFiles = files;
+
       return Promise.resolve();
     })
     .then(() => {
       return Share.LOOKUP(shareUrl, destination);
     })
     .then((share: Share) => {
-      winston.info('share created: ', share.id, '(', share.complete, ')');
+      log('share created: ', share.id, '(', share.complete, ')');
 
       ioGate.setApiUrlFromShareUrl(share.url);
+
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
       return share.save(); // updated w/ token and stuff.
     })
-    .then((share) => {
-      winston.info('Saving the files in local db');
+    .then((share: Share) => {
+      log('Saving the files in local db');
 
       outerShare = share;
+
       return File.saveReadStreamFiles(readStreamFiles, share);
     })
     .then((files: File[]) => {
-      winston.info('Going to create files on ioGates.');
+      log('Going to create files on ioGates.');
 
       return ioGate.createFiles(files);
     })
     .then((files: File[]) => {
-      winston.info(`Files created: ${files.length}`);
+      log(`Files created: ${files.length}`);
 
       return uploader.uploadFiles(files, outerShare);
     })
     .then((files: File[]) => {
-      winston.info('Uploaded files: ', files.length);
-      let successIds = [];
+      log('Uploaded files: ', files.length);
+      const successIds = [];
 
-      files.forEach(file => {
-        if(file.uploaded) {
+      files.forEach((file: File) => {
+        if (file.uploaded) {
           successIds.push(file.file_id);
+
+          if (deleteAfterUpload === true) {
+            fs.unlink(file.stream_path, (err: Error) => {
+              if (err) {
+                winston.error(`Could not delete ${file.name}. ${err}`);
+              } else {
+                log(`Deleted file: ${file.name}.`);
+              }
+            });
+          }
         }
-        winston.info(`Success(${file.uploaded}): ${file.name}`);
+        log(`Success(${file.uploaded}): ${file.name}`);
       });
-      if (successIds.length === 0) return null;
+      if (successIds.length === 0) { return null; }
+
       return Promise.resolve(null);
     })
     .then(() => {
-      winston.info('done saving.');
-      // if (args.options['watch']) {
-      //   console.log('[watch] for new files.');
-      //   const watcher = new UploadWatcher(destination);
-      //   watcher.watch(outerShare);
-      //   watcher.on('error', (err) => {
-      //     log('[watch] error: ', err);
-      //   });
-      // } else {
-      //   console.log('[upload] is completed.');
-      //   return done(null);
-      // }
+      log('done saving.');
+      if (args.options.watch) {
+        log('[watch] for new files.');
+        let watcher: UploadWatcher;
+        if (args.options.delay) {
+          watcher = new UploadWatcher(destination, +args.options.delay);
+        } else {
+          watcher = new UploadWatcher(destination);
+        }
+        watcher.watch(outerShare);
+        watcher.on('error', (err) => {
+          winston.error('[watch] error: ', err);
+        });
+        watcher.on('success', (file: File) => {
+          if (deleteAfterUpload === true) {
+              fs.unlink(file.stream_path, (err: Error) => {
+                  if (err) {
+                      winston.error(`Could not delete ${file.name}. ${err}`);
+                  } else {
+                      log(`Deleted file: ${file.name}.`);
+                  }
+              });
+          }
+        });
+      } else {
+        log('[upload] is completed.');
+
+        return done(null);
+      }
     })
     .catch((err: Error) => {
-      console.log(err);
-    })
-
+        winston.error(err);
+    });
 }

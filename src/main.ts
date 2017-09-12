@@ -20,13 +20,18 @@ commands
 
 commands
   .command('upload [dir] [url]', 'Upload to Share URL from folder')
-  .option('-m', '--monitor', 'Shows upload progress')
-  .option('-v', '--verbose', 'Shows debug logs')
+  .option('-m, --monitor', 'Shows upload progress')
+  .option('-v, --verbose', 'Shows debug logs')
+  .option('-w, --watch', 'Watch for changes and auto-upload')
+  .option('--delete', 'Delete file after successful upload')
+  .option('--delay <delay>', 'Delay between directory scans')
   .action(uploadCommand);
+
 commands
   .delimiter('iogates>')
   .show()
   .parse(process.argv);
+
 commands.commands = commands.commands;
 
 module.exports = commands;
