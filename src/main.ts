@@ -32,11 +32,14 @@ commands
   .command('upload [dir] [url]', 'Upload to Share URL from folder')
   .option('-m', '--monitor', 'Shows upload progress')
   .option('-v', '--verbose', 'Shows debug logs')
+  .option('-w, --watch', 'Watch for changes and auto-download')
   .action(uploadCommand);
+
 commands
   .delimiter('iogates>')
   .show()
   .parse(process.argv);
+
 commands.commands = commands.commands;
 
 module.exports = commands;
