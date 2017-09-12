@@ -3,19 +3,9 @@ import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
+import * as CONFIG from '../config';
 
-const sequelize = new Sequelize({
-  name: 'iogates',
-  dialect: 'sqlite',
-  username: 'root',
-  password: '',
-  logging: false,
-  storage: `${process.cwd()}/iogates.sqlite`,
-  pool: {
-    max: 1
-  }
-});
-
+const sequelize = new Sequelize(CONFIG.database);
 
 sequelize.addModels([Type.Share, Type.File]);
 global['_DB'] = sequelize;
@@ -44,8 +34,3 @@ commands
 commands.commands = commands.commands;
 
 module.exports = commands;
-// sequelize.sync().then(() => {
-
-// }).error((error) => {
-//   console.log(error);
-// });

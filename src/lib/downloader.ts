@@ -88,21 +88,36 @@ export class Downloader {
       }
     }
 
+    let sentValues = [];
+    let sentTimestamps = [];
     const bar = new CliProgress.Bar({
-      format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s`,
+      format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
       stopOnComplete: true,
       clearOnComplete: false,
       etaBuffer: 20,
-      fps: 5
+      fps: 5,
+      custom: {speed: 'N/A'}
     }, CliProgress.Presets.shades_classic);
     bar.start(1000, 0);
+
+    const Downloaded:O = (meta$:O) => {
+      return meta$.map(meta => {
+        return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1
+      })
+    };
+    Downloaded(meta$).subscribe((d) => {
+      sentValues.push(d);
+      sentTimestamps.push(+ new Date());
+    });
 
     MultiDownloader
       .Completion(meta$)
       .subscribe((i) => {
         const p = Math.ceil(i*1000);
         if (bar.value != p) {
-          bar.update(p)
+          bar.update(p, {
+            speed: this.calculateTransferSpeed(sentValues, sentTimestamps, i==1 ? null : 10 ).toFixed(1) + 'MB/s'
+          })
         }
       });
     const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
@@ -111,6 +126,24 @@ export class Downloader {
     return uploadResponse.fromPromise(closeFile, file);
   }
 
+  public calculateTransferSpeed(sent:Array<number>, timestamps:Array<number>, buffer:number|null = null) {
+    if (sent.length === 0 || timestamps.length === 0)
+      return 0;
+      
+    let bytes, ms;
+    if (buffer === null) {
+      bytes = sent.splice(-1)[0] - sent[0];
+      ms = timestamps.splice(-1)[0] - timestamps[0];
+    } else {
+      bytes = (sent.splice(-1)[0] - sent.splice(-buffer)[0]);
+      ms = (timestamps.splice(-1)[0] - timestamps.splice(-buffer)[0]);
+    }
+    
+    if (ms === 0)
+      return 0;
+    
+    return (bytes/1048576) / (ms/1000);
+  }
 
   public setupHierarchy(entries: Type.File[], destination: string) {
     const tree = new Map();
