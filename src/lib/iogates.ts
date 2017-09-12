@@ -16,6 +16,16 @@ export class IOGates {
     this.token = '';
   }
 
+  public static GET_BASE_URL(url: string): string {
+      const re = /^(https?:\/\/[a-zA-Z\-._0-9]+)(\/.*)$/i;
+      const matches = re.exec(url);
+      if (matches !== null) {
+          return matches[1];
+      } else {
+          throw Error('Unknown Share URL scheme');
+      }
+  }
+
   public authenticateFromUrl(share: Share): Promise<Auth> {
     log('called authenticateFromUrl');
 
@@ -51,7 +61,7 @@ export class IOGates {
           return reject(err);
         }
 
-        response.files = response.files.map(file => {
+        response.files = response.files.map((file: File) => {
           return File.fromPlain(file);
         });
 
@@ -60,10 +70,11 @@ export class IOGates {
     });
   }
 
-  public createFiles(files: File[]): Promise<Array<File>> {
+  public createFiles(files: File[]): Promise<File[]> {
     winston.info('Called createFiles');
+
     return new Promise((resolve: Function, reject: Function) => {
-      let filesToBeCreated = files.map((file) => {
+      const filesToBeCreated = files.map((file: File) => {
         return {
           name: file.name,
           type: 'Other',
@@ -80,28 +91,15 @@ export class IOGates {
           return reject(err);
         }
 
-        let createdFiles = files.map(file => {
+        const createdFiles = files.map((file: File) => {
           file.upload_filename = _.find(response.files, { name: file.name }).upload_filename;
+
           return file;
         });
 
         return resolve(createdFiles);
-      })
+      });
     });
-  }
-
-  private getRequest() {
-    const options = {
-      baseUrl: this.baseUrl,
-      headers: {
-        token: ''
-      }
-    };
-    if (this.token.length > 0) {
-      options.headers.token = this.token;
-    }
-
-    return request.defaults(options);
   }
 
   public setToken(token: string) {
@@ -113,16 +111,20 @@ export class IOGates {
   }
 
   public setApiUrlFromShareUrl(url: string) {
-    this.setBaseUrl(IOGates.getBaseUrlFromShareUrl(url) + '/api');
+    this.setBaseUrl(`${IOGates.GET_BASE_URL(url)}/api`);
   }
 
-  public static getBaseUrlFromShareUrl(url: string): string {
-    const re = /^(https?\:\/\/[a-zA-Z\-\.\_0-9]+)(\/.*)$/i;
-    const matches = re.exec(url);
-    if (matches !== null) {
-      return matches[1];
-    } else {
-      throw "Unknown Share URL scheme";
+    private getRequest() {
+        const options = {
+            baseUrl: this.baseUrl,
+            headers: {
+                token: ''
+            }
+        };
+        if (this.token.length > 0) {
+            options.headers.token = this.token;
+        }
+
+        return request.defaults(options);
     }
-  }
 }
