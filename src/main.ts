@@ -3,12 +3,15 @@ import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
+import { machineIdSync } from 'node-machine-id';
 import * as CONFIG from '../config';
 
 const sequelize = new Sequelize(CONFIG.database);
 
 sequelize.addModels([Type.Share, Type.File]);
 global['_DB'] = sequelize;
+
+global['machine-id'] = machineIdSync();
 
 const commands = vorpal();
 commands
