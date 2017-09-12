@@ -3,14 +3,42 @@ import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
+import * as winston from 'winston';
 import { machineIdSync } from 'node-machine-id';
 import * as CONFIG from '../config';
 
+// setup db and copy to global
 const sequelize = new Sequelize(CONFIG.database);
-
 sequelize.addModels([Type.Share, Type.File]);
 global['_DB'] = sequelize;
 
+// setup logger and copy to global.
+let transports: any = [
+  new (winston.transports.Console)({
+    name: 'console'
+  }),
+];
+if (CONFIG.logs.devMode === false) {
+  transports = [
+    new (winston.transports.File)({
+      name: 'info-file',
+      filename: CONFIG.logs.info,
+      level: 'info',
+      json: false
+    }),
+    new (winston.transports.File)({
+      name: 'error-file',
+      filename: CONFIG.logs.error,
+      level: 'error',
+      json: false
+    })
+  ]
+}
+const logger = new winston.Logger({
+  transports: transports,
+  exitOnError: true
+});
+global['logger'] = logger;
 global['machine-id'] = machineIdSync();
 
 const commands = vorpal();
