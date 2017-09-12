@@ -2,9 +2,9 @@ import * as http from 'http';
 import * as request from 'request';
 import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
-const log = debug('io:lib:iogates');
-//import * as winston from 'winston';
 import * as _ from 'lodash';
+const log = debug('io:lib:iogates');
+
 /**
  * API wrapper class for IOGates
  */
@@ -33,7 +33,8 @@ export class IOGates {
       this.getRequest().post({
         url: '/authtoken',
         json: {
-          url: share.url
+          url: share.url,
+          deviceId: global['machine-id']
         }
       },
         (err: Error, r: http.IncomingMessage, data: Auth) => {
