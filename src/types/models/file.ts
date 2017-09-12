@@ -150,7 +150,7 @@ export class File extends Model<File> {
     return Promise.resolve(promise);
   }
 
-  public static saveReadStreamFiles(files: File[], share: Share): Promise<Array<File>> {
+  public static saveReadStreamFiles(files: File[], share: Share, logging?: boolean): Promise<Array<File>> {
     return global['_DB'].transaction(function transactionFn(transaction) {
       const bulk = [];
       const toUpload = [];

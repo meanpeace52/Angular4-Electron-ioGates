@@ -52,7 +52,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
 
       outerShare = share;
 
-      return File.saveReadStreamFiles(readStreamFiles, share);
+      return File.saveReadStreamFiles(readStreamFiles, share, args.options.verbose);
     })
     .then((files: File[]) => {
       log('Going to create files on ioGates.');
