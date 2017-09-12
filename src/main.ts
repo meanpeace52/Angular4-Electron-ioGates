@@ -33,6 +33,7 @@ commands
   .option('-m', '--monitor', 'Shows upload progress')
   .option('-v', '--verbose', 'Shows debug logs')
   .option('-w, --watch', 'Watch for changes and auto-download')
+  .option('-d, --delay <delay>', 'Watch for changes and auto-download')
   .action(uploadCommand);
 
 commands

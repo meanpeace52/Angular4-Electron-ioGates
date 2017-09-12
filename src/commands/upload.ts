@@ -76,7 +76,13 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       winston.info('done saving.');
       if (args.options['watch']) {
         console.log('[watch] for new files.');
-        const watcher = new UploadWatcher(destination);
+        let watcher: UploadWatcher;
+        if(args.options['delay']) {
+          watcher = new UploadWatcher(destination, +args.options['delay']);
+        }
+        else {
+          watcher = new UploadWatcher(destination);
+        }
         watcher.watch(outerShare);
         watcher.on('error', (err) => {
           log('[watch] error: ', err);
