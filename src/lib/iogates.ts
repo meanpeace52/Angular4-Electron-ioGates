@@ -34,7 +34,7 @@ export class IOGates {
         url: '/authtoken',
         json: {
           url: share.url,
-          deviceId: global['machine-id']
+          deviceId: global['device-id']
         }
       },
         (err: Error, r: http.IncomingMessage, data: Auth) => {

@@ -39,7 +39,7 @@ const logger = new winston.Logger({
   exitOnError: true
 });
 global['logger'] = logger;
-global['machine-id'] = machineIdSync();
+global['device-id'] = machineIdSync();
 
 const commands = vorpal();
 commands
