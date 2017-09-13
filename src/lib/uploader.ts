@@ -60,7 +60,7 @@ export class Uploader {
         clearOnComplete: false,
         etaBuffer: 20,
         fps: 5,
-        custom: {speed: 'N/A'}
+        payload: {speed: 'N/A'}
       }, CliProgress.Presets.shades_classic);
 
       bar.start(100, 0);
