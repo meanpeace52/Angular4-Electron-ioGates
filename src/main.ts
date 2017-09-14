@@ -1,6 +1,7 @@
 import * as vorpal from 'vorpal';
 import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
+import { listCommand } from './commands/list';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
@@ -57,6 +58,11 @@ commands
   .option('--delete', 'Delete file after successful upload')
   .option('--delay <delay>', 'Delay between directory scans')
   .action(uploadCommand);
+
+commands
+  .command('list [entity]', 'List (share|files) on local storage')
+  .option('-e, --entity <entity>', 'Entity to list down')
+  .action(listCommand);
 
 commands
   .delimiter('iogates>')

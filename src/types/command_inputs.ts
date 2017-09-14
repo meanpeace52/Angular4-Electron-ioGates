@@ -19,3 +19,10 @@ export class CommandUploadInput {
   public dir: string;
   public url: string;
 }
+
+export interface CommandListInput {
+  entity:string;
+  options?: {
+    entity: string
+  };
+}
