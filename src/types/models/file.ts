@@ -151,6 +151,7 @@ export class File extends Model<File> {
   }
 
   public static saveReadStreamFiles(files: File[], share: Share): Promise<Array<File>> {
+    let logger = global['logger'];
     return global['_DB'].transaction(function transactionFn(transaction) {
       const bulk = [];
       const toUpload = [];
@@ -171,7 +172,7 @@ export class File extends Model<File> {
             if (!savedFile.uploaded) {
               toUpload.push(savedFile);
             } else {
-              console.log(`File <${file.name}>`, 'already uploaded, skipping upload...');
+              logger(`File <${file.name}>`, 'already uploaded, skipping upload...');
             }
             return savedFile;
           });
@@ -183,23 +184,6 @@ export class File extends Model<File> {
           return toUpload;
         });
     });
-    // let promises = [];
-    //
-    // files.forEach(file => {
-    //   file.share_id = share.id;
-    //   let promise = File
-    //     .findOrCreate({
-    //       where: {
-    //         md5: file.md5,
-    //         stream_path: file.stream_path
-    //       },
-    //       defaults: file
-    //     })
-    //     .spread((file) => file);
-    //   promises.push(promise);
-    // });
-    //
-    // return Promise.resolve(promises);
   }
 
   public static createMd5(file: File): Promise<File> {

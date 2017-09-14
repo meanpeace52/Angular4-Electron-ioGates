@@ -8,6 +8,7 @@ import { IOGates } from './iogates';
 import { EventEmitter } from 'events';
 import { Uploader } from "./uploader";
 import {Directory} from "./directory";
+import { watch, FSWatcher } from 'chokidar';
 
 export class Watcher extends EventEmitter {
 
@@ -87,19 +88,26 @@ export class DownloadWatcher extends Watcher {
 export class UploadWatcher extends Watcher {
 
   private api: IOGates;
-  private delay: number;
   private uploader: Uploader;
   private destination: string;
   private directory: Directory;
   private files: File[];
+  private watcher: FSWatcher;
 
-  constructor(destination: string, delay?: number) {
+  constructor(destination: string) {
     super();
     this.api = new IOGates();
-    this.delay = delay || 6000;
     this.uploader = new Uploader();
     this.destination = destination;
     this.directory = new Directory(this.destination);
+    this.watcher = watch(this.destination, {
+      awaitWriteFinish: {
+        stabilityThreshold: 5000,
+        pollInterval: 100
+      },
+      ignorePermissionErrors: true,
+      persistent: true
+    });
   }
 
   public watch(share: Share) {
@@ -108,59 +116,57 @@ export class UploadWatcher extends Watcher {
     }
     this.api.setToken(share.token);
 
-    const polling = AsyncPolling((end) => {
-      // console.log('<checking...>');
-      this.directory
-        .read()
-        .then((files: File[]) => {
-          this.files = files;
+    this.watcher
+      .on('add', () => this.initiateUpload(share))
+      .on('change', () => this.initiateUpload(share))
+      .on('addDir', () => this.initiateUpload(share))
 
-          return files;
-        })
-        .then(() => {
-          this.api.setApiUrlFromShareUrl(share.url);
+  }
 
-          return this.api.authenticateFromUrl(share);
-        })
-        .then(() => {
-          return File.saveReadStreamFiles(this.files, share);
-        })
-        .then((files: File[]) => {
-          // winston.info('Going to create files on ioGates.');
+  private initiateUpload(share: Share) {
+    this.directory
+      .read()
+      .then((files: File[]) => {
+        this.files = files;
 
-          return this.api.createFiles(files);
-        })
-        .then((files: File[]) => {
-          // winston.info(`Files created: ${files.length}`);
+        return files;
+      })
+      .then(() => {
+        this.api.setApiUrlFromShareUrl(share.url);
 
-          return this.uploader.uploadFiles(files, share);
-        })
-        .then((files: File[]) => {
-          let successIds = [];
+        return this.api.authenticateFromUrl(share);
+      })
+      .then(() => {
+        return File.saveReadStreamFiles(this.files, share);
+      })
+      .then((files: File[]) => {
+        // winston.info('Going to create files on ioGates.');
 
-          files.forEach((file: File) => {
-            if (file.uploaded) {
-              successIds.push(file.file_id);
-              this.emit('success', file);
-            }
-            // console.info(`Success(${file.uploaded}): ${file.name}`);
-          });
+        return this.api.createFiles(files);
+      })
+      .then((files: File[]) => {
+        // winston.info(`Files created: ${files.length}`);
 
-          return Promise.resolve(null);
-        })
-        .then(() => {
-          end();
-        })
-        .catch(e => {
-          this.emit('error', e);
+        return this.uploader.uploadFiles(files, share);
+      })
+      .then((files: File[]) => {
+        let successIds = [];
+
+        files.forEach((file: File) => {
+          if (file.uploaded) {
+            successIds.push(file.file_id);
+            this.emit('success', file);
+          }
+          // console.info(`Success(${file.uploaded}): ${file.name}`);
         });
 
-    }, this.delay);
-
-    polling.on('error', (err) => {
-      this.emit('error', err);
-    });
-
-    polling.run();
+        return Promise.resolve(files);
+      })
+      .then((files: File[]) => {
+        this.emit('success-all', files);
+      })
+      .catch(e => {
+        this.emit('error', e);
+      });
   }
 }
