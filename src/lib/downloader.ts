@@ -46,10 +46,12 @@ export class Downloader {
        * MTD file exists, resume
        */
       downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
+      global['logger'].info('resume %s', file.destination);
     } else {
       /**
        * Create new download
        */
+      global['logger'].info('download %s', file.destination);
       const createMTDFile$ = this.createDownload(options);
 
       downloadFromMTDFile$ = createMTDFile$
@@ -98,7 +100,7 @@ export class Downloader {
       clearOnComplete: false,
       etaBuffer: 20,
       fps: 5,
-      custom: {speed: 'N/A'}
+      payload: { speed: 'N/A' }
     }, CliProgress.Presets.shades_classic);
     bar.start(1000, 0);
 
@@ -118,7 +120,7 @@ export class Downloader {
         const p = Math.ceil(i * 1000);
         if (bar.value !== p) {
           bar.update(p, {
-            speed: `${this.calculateTransferSpeed(sentValues, sentTimestamps, i === 1 ? null : 10 ).toFixed(1)} MB/s`
+            speed: `${this.calculateTransferSpeed(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1)} MB/s`
           });
         }
       });
@@ -128,7 +130,7 @@ export class Downloader {
     return uploadResponse.fromPromise(closeFile, file);
   }
 
-  public calculateTransferSpeed(sent: number[], timestamps: number[], buffer: number|null = null) {
+  public calculateTransferSpeed(sent: number[], timestamps: number[], buffer: number | null = null) {
     if (sent.length === 0 || timestamps.length === 0) {
       return 0;
     }

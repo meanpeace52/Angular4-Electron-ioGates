@@ -15,6 +15,7 @@ export class UploadResponse {
         this.dest = file.destination;
         this.file = file;
         this.success = true;
+        global['logger'].info('completed %s', file.destination);
 
         return this;
       });

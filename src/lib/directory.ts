@@ -16,7 +16,7 @@ export class Directory {
 
   public create() : Promise<null> {
     return new Promise((resolve: Function, reject: Function) => {
-      // console.log('Creating dir: ', this.path);
+      global['logger'].info('creating dir %s', this.path);
       fs.mkdir(this.path, (err: Object) => {
         if (err instanceof Error) {
           if (/EEXIST/ig.test(err.message)) {
