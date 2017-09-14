@@ -6,8 +6,8 @@ import {
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
 import * as winston from 'winston';
-import {Uploader} from '../lib/uploader';
-import {UploadWatcher} from '../lib/watcher';
+import { Uploader } from '../lib/uploader';
+import { UploadWatcher } from '../lib/watcher';
 import * as fs from 'fs';
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
@@ -49,7 +49,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
 
       outerShare = share;
 
-      return File.saveReadStreamFiles(readStreamFiles, share, args.options.verbose);
+      return File.saveReadStreamFiles(readStreamFiles, share);
     })
     .then((files: File[]) => {
       logger('Going to create files on ioGates.');
@@ -90,24 +90,25 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       if (args.options.watch) {
         logger('[watch] for new files.');
         let watcher: UploadWatcher;
-        if (args.options.delay) {
-          watcher = new UploadWatcher(destination, +args.options.delay);
-        } else {
-          watcher = new UploadWatcher(destination);
-        }
+        // if (args.options.delay) {
+        //   watcher = new UploadWatcher(destination, +args.options.delay);
+        // } else {
+        // }
+        watcher = new UploadWatcher(destination);
+
         watcher.watch(outerShare);
         watcher.on('error', (err) => {
           winston.error('[watch] error: ', err);
         });
         watcher.on('success', (file: File) => {
           if (deleteAfterUpload === true) {
-              fs.unlink(file.stream_path, (err: Error) => {
-                  if (err) {
-                      logger(`Could not delete ${file.name}. ${err}`);
-                  } else {
-                      logger(`Deleted file: ${file.name}.`);
-                  }
-              });
+            fs.unlink(file.stream_path, (err: Error) => {
+              if (err) {
+                logger(`Could not delete ${file.name}. ${err}`);
+              } else {
+                logger(`Deleted file: ${file.name}.`);
+              }
+            });
           }
         });
       } else {
@@ -117,7 +118,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       }
     })
     .catch((err: Error) => {
-        // winston.error(err);
-        logger(`JSON.stringify(err)`);
+      // winston.error(err);
+      logger(`JSON.stringify(err)`);
     });
 }

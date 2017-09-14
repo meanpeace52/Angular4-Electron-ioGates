@@ -54,4 +54,12 @@ export class Share extends Model<Share> {
 
     return Promise.resolve(promise);
   }
+
+  static ForTableOutput(shares: Array<Object>) {
+    const arr = [];
+    shares.forEach(share => {
+      arr.push(Object.keys(share).map(key => share[key]));
+    });
+    return arr;
+  }
 }
