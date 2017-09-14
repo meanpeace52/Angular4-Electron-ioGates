@@ -56,6 +56,7 @@
     "blob-util": "^1.3.0",
     "chokidar": "^1.7.0",
     "cli-progress": "git+https://github.com/tobiasps/Node.CLI-Progress.git",
+    "cli-table": "^0.3.1",
     "lodash": "^4.17.4",
     "mime-types": "^2.1.17",
     "mt-downloader": "^2.2.2",
