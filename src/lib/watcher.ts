@@ -88,17 +88,15 @@ export class DownloadWatcher extends Watcher {
 export class UploadWatcher extends Watcher {
 
   private api: IOGates;
-  private delay: number;
   private uploader: Uploader;
   private destination: string;
   private directory: Directory;
   private files: File[];
   private watcher: FSWatcher;
 
-  constructor(destination: string, delay?: number) {
+  constructor(destination: string) {
     super();
     this.api = new IOGates();
-    this.delay = delay || 6000;
     this.uploader = new Uploader();
     this.destination = destination;
     this.directory = new Directory(this.destination);
@@ -121,25 +119,11 @@ export class UploadWatcher extends Watcher {
     this.watcher
       .on('add', () => this.initiateUpload(share))
       .on('change', () => this.initiateUpload(share))
-      .on('unlink', () => this.initiateUpload(share))
       .on('addDir', () => this.initiateUpload(share))
 
-
-
-    /*const polling = AsyncPolling((end) => {
-      // console.log('<checking...>');
-
-
-    }, this.delay);
-
-    polling.on('error', (err) => {
-      this.emit('error', err);
-    });
-
-    polling.run();*/
   }
 
-  public initiateUpload(share: Share) {
+  private initiateUpload(share: Share) {
     this.directory
       .read()
       .then((files: File[]) => {

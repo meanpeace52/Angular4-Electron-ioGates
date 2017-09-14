@@ -4,7 +4,6 @@ import * as CliProgress from 'cli-progress';
 import {UploadOptionsExtended} from '../types/uploadOptionExtended';
 import {Directory} from './directory';
 import {IOGates} from './iogates';
-import * as winston from 'winston';
 import * as _ from 'lodash';
 
 export class Uploader {
@@ -14,13 +13,18 @@ export class Uploader {
   static CalculateUploadTransferSpeed(bytesUploaded: number, previousTimeStamp: number, previousBytes: number): any {
       const currentDateTimeStamp = Date.now();
       let bytes: number = bytesUploaded - previousBytes;
+      let unit = 'MB/s';
       let megaBytes: number = (bytes / 1024) / 1024;
       if ((currentDateTimeStamp - previousTimeStamp) >= 1000) {
           bytes = bytesUploaded - previousBytes;
-          megaBytes = (bytes / 1024) / 1024;
+          megaBytes = ((bytes / 1024) / 1024);
+      }
+      if(megaBytes < 1) {
+        megaBytes = megaBytes * 1024;
+        unit = 'KB/s';
       }
 
-      return { mbps: megaBytes, previousBytes: bytesUploaded, previousTimeStamp: currentDateTimeStamp };
+      return { rate: Math.floor(megaBytes), previousBytes: bytesUploaded, previousTimeStamp: currentDateTimeStamp, unit: unit };
   }
 
   public uploadFiles(files: Type.File[], share: Type.Share): Promise<Type.File[]> {
@@ -50,10 +54,11 @@ export class Uploader {
   }
 
   public uploadFile(file: Type.File): Promise<Type.File> {
+    let logger = global['logger'];
 
     return new Promise((resolve: Function, reject: Function) => {
       const extIndex = _.lastIndexOf(file.name, '.');
-      let calculations = {mbps: 0, previousTimeStamp: 0, previousBytes: 0};
+      let calculations = {rate: 0, previousTimeStamp: 0, previousBytes: 0, unit: 'MB/s'};
       const bar = new CliProgress.Bar({
         format: `${file.name} \t [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
         stopOnComplete: true,
@@ -77,10 +82,8 @@ export class Uploader {
           uuid: file.uuid
         },
         onError: (error) => {
-          winston.info(`error occured: ${JSON.stringify(error)}`);
-
+          logger(JSON.stringify(error));
           tusUploader.abort();
-
           return reject(error);
         },
         onProgress: (bytesUploaded: number, bytesTotal: number) => {
@@ -92,7 +95,7 @@ export class Uploader {
           );
 
           bar.update(percentage, {
-            speed: `${calculations.mbps.toFixed(2)} MB/S`
+            speed: `${calculations.rate} ${calculations.unit}`
           });
         },
         onSuccess: () => {
