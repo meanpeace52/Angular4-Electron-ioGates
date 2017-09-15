@@ -26,3 +26,10 @@ export interface CommandListInput {
     entity: string
   };
 }
+
+export interface CommandAddInput {
+  direction: string;
+  dir: string;
+  url: string;
+  options: object;
+}
