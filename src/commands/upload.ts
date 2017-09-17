@@ -42,6 +42,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
+      share.direction = Share.DIRECTION_UPLOAD;
       return share.save(); // updated w/ token and stuff.
     })
     .then((share: Share) => {
