@@ -23,6 +23,8 @@ export class Downloader {
         try {
           const r: Type.UploadResponse = await self.downloadFile(file);
           results.push(r);
+          r.file.downloaded = true;
+          r.file.save();
         } catch (err) {
           return reject(err);
         }
@@ -40,13 +42,36 @@ export class Downloader {
       path: file.destination
     };
 
+    let fileName = file.name;
+    if (fileName.length > 50) {
+        fileName = `${fileName.substr(0, 47)}...`;
+    } else {
+        let len = fileName.length;
+        while (len < 50) {
+            fileName += ' ';
+            len += 1;
+        }
+    }
+
+    const sentValues = [];
+    const sentTimestamps = [];
+    const bar = new CliProgress.Bar({
+        format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
+        stopOnComplete: true,
+        clearOnComplete: false,
+        etaBuffer: 20,
+        fps: 5,
+        payload: { speed: 'N/A' }
+    }, CliProgress.Presets.shades_classic);
+    bar.start(1000, 0);
+
     let downloadFromMTDFile$;
     if (fs.existsSync(mtdPath)) {
       /**
        * MTD file exists, resume
        */
-      downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
       global['logger'].info('resume %s', file.destination);
+      downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
     } else {
       /**
        * Create new download
@@ -59,8 +84,7 @@ export class Downloader {
         .map(mtdPath)
         .flatMap(MultiDownloader.DownloadFromMTDFile).share();
     }
-
-    const [{ fdR$, meta$ }] = demux(downloadFromMTDFile$, 'meta$', 'fdR$');
+    const [{ fdR$, meta$ }] = demux(downloadFromMTDFile$, 'fdR$', 'meta$');
 
     /**
      * Finalize Downloaded FILE
@@ -81,35 +105,9 @@ export class Downloader {
       .withLatestFrom(fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
-    let fileName = file.name;
-    if (fileName.length > 50) {
-      fileName = `${fileName.substr(0, 47)}...`;
-    } else {
-      let len = fileName.length;
-      while (len < 50) {
-        fileName += ' ';
-        len += 1;
-      }
-    }
+    const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
 
-    const sentValues = [];
-    const sentTimestamps = [];
-    const bar = new CliProgress.Bar({
-      format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
-      stopOnComplete: true,
-      clearOnComplete: false,
-      etaBuffer: 20,
-      fps: 5,
-      payload: { speed: 'N/A' }
-    }, CliProgress.Presets.shades_classic);
-    bar.start(1000, 0);
-
-    const downloaded: O = (m: O) => {
-      return m.map((meta) => {
-        return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1;
-      });
-    };
-    downloaded(meta$).subscribe((d: number) => {
+    this.downloaded(meta$).subscribe((d: number) => {
       sentValues.push(d);
       sentTimestamps.push(+ new Date());
     });
@@ -124,10 +122,16 @@ export class Downloader {
           });
         }
       });
-    const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
+
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
 
     return uploadResponse.fromPromise(closeFile, file);
+  }
+
+  public downloaded: O = (m: O) => {
+    return m.map((meta) => {
+        return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1;
+    });
   }
 
   public calculateTransferSpeed(sent: number[], timestamps: number[], buffer: number | null = null) {

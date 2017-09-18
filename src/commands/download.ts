@@ -61,18 +61,13 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
         }
         logger.log('Success(', response.success, '): ', response.file.name, '->', response.dest);
       });
-      if (successIds.length === 0) return null;
-      return File
-        .update({
-          downloaded: true
-        }, {
-          where: {
-            file_id: successIds
-          }
-        });
+      if (successIds.length === 0) {
+        return null;
+      } else {
+        return true;
+      }
     })
     .then(() => {
-      logger.log('done saving.');
       if (args.options['watch']) {
         console.log('[watch] for new files.');
         const watcher = new DownloadWatcher(destination);
