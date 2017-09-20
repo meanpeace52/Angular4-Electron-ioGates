@@ -20,7 +20,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   const deleteAfterUpload: boolean = args.options.delete;
   let readStreamFiles: File[];
   let outerShare: Share;
-  logger('executing upload');
+  logger.info('executing upload');
   global['_DB']
     .sync()
     .then(() => {
@@ -35,7 +35,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       return Share.LOOKUP(shareUrl, destination);
     })
     .then((share: Share) => {
-      logger('share created: ', share.id, '(', share.complete, ')');
+      logger.info('share created: ', share.id, '(', share.complete, ')');
 
       ioGate.setApiUrlFromShareUrl(share.url);
 
@@ -43,27 +43,28 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     })
     .then((share: Share) => {
       share.direction = Share.DIRECTION_UPLOAD;
+
       return share.save(); // updated w/ token and stuff.
     })
     .then((share: Share) => {
-      logger('Saving the files in local db');
+      logger.info('Saving the files in local db');
 
       outerShare = share;
 
       return File.saveReadStreamFiles(readStreamFiles, share);
     })
     .then((files: File[]) => {
-      logger('Going to create files on ioGates.');
+      logger.info('Going to create files on ioGates.');
 
       return ioGate.createFiles(files);
     })
     .then((files: File[]) => {
-      logger(`Files created: ${files.length}`);
+      logger.info(`Files created: ${files.length}`);
 
       return uploader.uploadFiles(files, outerShare);
     })
     .then((files: File[]) => {
-      logger('Uploaded files: ', files.length);
+      logger.info('Uploaded files: ', files.length);
       const successIds = [];
 
       files.forEach((file: File) => {
@@ -73,23 +74,23 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
           if (deleteAfterUpload === true) {
             fs.unlink(file.stream_path, (err: Error) => {
               if (err) {
-                logger(`Could not delete ${file.name}. ${err}`);
+                logger.error(`Could not delete ${file.name}. ${err}`);
               } else {
-                logger(`Deleted file: ${file.name}.`);
+                logger.info(`Deleted file: ${file.name}.`);
               }
             });
           }
         }
-        logger(`Success(${file.uploaded}): ${file.name}`);
+        logger.info(`Success(${file.uploaded}): ${file.name}`);
       });
       if (successIds.length === 0) { return null; }
 
       return Promise.resolve(null);
     })
     .then(() => {
-      logger('done saving.');
+      logger.info('done saving.');
       if (args.options.watch) {
-        logger('[watch] for new files.');
+        logger.info('[watch] for new files.');
         let watcher: UploadWatcher;
         // if (args.options.delay) {
         //   watcher = new UploadWatcher(destination, +args.options.delay);
@@ -105,21 +106,21 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
           if (deleteAfterUpload === true) {
             fs.unlink(file.stream_path, (err: Error) => {
               if (err) {
-                logger(`Could not delete ${file.name}. ${err}`);
+                logger.error(`Could not delete ${file.name}. ${err}`);
               } else {
-                logger(`Deleted file: ${file.name}.`);
+                logger.info(`Deleted file: ${file.name}.`);
               }
             });
           }
         });
       } else {
-        logger('[upload] is completed.');
+        logger.info('[upload] is completed.');
 
         return done(null);
       }
     })
     .catch((err: Error) => {
       // winston.error(err);
-      logger(`JSON.stringify(err)`);
+      logger.error(`JSON.stringify(err)`);
     });
 }

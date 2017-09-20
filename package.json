@@ -1,6 +1,6 @@
 {
   "name": "iotransfer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Download and upload files from and to ioGates",
   "engineStrict": true,
   "private": true,

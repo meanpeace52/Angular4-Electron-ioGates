@@ -13,6 +13,32 @@ import { Directory } from '../lib/directory';
  * Helps download a file from IOGates
  */
 export class Downloader {
+  public static CALCULATE_TRANSFER_SPEED(sent: number[], timestamps: number[], buffer: number | null = null) {
+      const sentLen = sent.length;
+      const timeLen = timestamps.length;
+      if (sentLen === 0 || timeLen === 0 || sentLen !== timeLen) {
+          return 0;
+      }
+      const lastIdx = sentLen - 1;
+      let bytes;
+      let ms;
+      if (buffer === null) {
+          bytes = sent[lastIdx] - sent[0];
+          ms = timestamps[lastIdx] - timestamps[0];
+      } else {
+          let bufferIdx = lastIdx - buffer;
+          if (bufferIdx < 0) {
+              bufferIdx = 0;
+          }
+          bytes = (sent[lastIdx] - sent[bufferIdx]);
+          ms = (timestamps[lastIdx] - timestamps[bufferIdx]);
+      }
+      if (ms === 0) {
+          return 0;
+      }
+
+      return (bytes / 1048576) / (ms / 1000);
+  }
 
   public downloadFiles(files: Type.File[]): Promise<Type.UploadResponse[]> {
     const self = this;
@@ -118,7 +144,7 @@ export class Downloader {
         const p = Math.ceil(i * 1000);
         if (bar.value !== p) {
           bar.update(p, {
-            speed: `${this.calculateTransferSpeed(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1)} MB/s`
+            speed: `${Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1)} MB/s`
           });
         }
       });
@@ -132,26 +158,6 @@ export class Downloader {
     return m.map((meta) => {
         return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1;
     });
-  }
-
-  public calculateTransferSpeed(sent: number[], timestamps: number[], buffer: number | null = null) {
-    if (sent.length === 0 || timestamps.length === 0) {
-      return 0;
-    }
-    let bytes;
-    let ms;
-    if (buffer === null) {
-      bytes = sent.splice(-1)[0] - sent[0];
-      ms = timestamps.splice(-1)[0] - timestamps[0];
-    } else {
-      bytes = (sent.splice(-1)[0] - sent.splice(-buffer)[0]);
-      ms = (timestamps.splice(-1)[0] - timestamps.splice(-buffer)[0]);
-    }
-    if (ms === 0) {
-      return 0;
-    }
-
-    return (bytes / 1048576) / (ms / 1000);
   }
 
   public setupHierarchy(entries: Type.File[], destination: string) {
