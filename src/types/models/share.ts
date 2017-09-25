@@ -62,4 +62,46 @@ export class Share extends Model<Share> {
     });
     return arr;
   }
+
+  static DeleteByUrl(shareUrl: string) {
+    const runFn = Share
+      .findOne({
+        where: {
+          url: shareUrl
+        }
+      })
+      .then(share => {
+        if (!share) return null;
+        return share.destroy({ force: true });
+      });
+    return Promise.resolve(runFn);
+  }
+
+  static DeleteById(id: number) {
+    const runFn = Share
+      .findOne({
+        where: {
+          id: id
+        }
+      })
+      .then(share => {
+        if (!share) return null;
+        return share.destroy({ force: true });
+      });
+    return Promise.resolve(runFn);
+  }
+
+  static DeleteByDir(dir: string) {
+    const runFn = Share
+      .findOne({
+        where: {
+          dir: dir
+        }
+      })
+      .then(share => {
+        if (!share) return null;
+        return share.destroy({ force: true });
+      });
+    return Promise.resolve(runFn);
+  }
 }

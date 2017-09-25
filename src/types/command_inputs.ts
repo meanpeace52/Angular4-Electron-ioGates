@@ -11,7 +11,7 @@ export class CommandUploadOptions {
   public delete: boolean;
   public verbose: boolean;
   public watch: boolean;
-  public delay: boolean|number;
+  public delay: boolean | number;
 }
 
 export class CommandUploadInput {
@@ -21,8 +21,17 @@ export class CommandUploadInput {
 }
 
 export interface CommandListInput {
-  entity:string;
+  entity: string;
   options?: {
     entity: string
+  };
+}
+
+export interface CommandRemoveInput {
+  options: {
+    dir: string;
+    url: string;
+    id: number;
+    remove: boolean;
   };
 }

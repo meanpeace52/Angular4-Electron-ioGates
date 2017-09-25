@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { File} from "../types";
+import { File } from "../types";
 import * as uuid from 'uuid/v1';
-import {ReadStream} from "fs";
+import { ReadStream } from "fs";
 import * as mime from 'mime-types';
 
 /**
@@ -14,7 +14,7 @@ export class Directory {
     this.path = path;
   }
 
-  public create() : Promise<null> {
+  public create(): Promise<null> {
     return new Promise((resolve: Function, reject: Function) => {
       global['logger'].info('creating dir %s', this.path);
       fs.mkdir(this.path, (err: Object) => {
@@ -26,6 +26,20 @@ export class Directory {
           return reject(err);
         }
         return resolve(null);
+      });
+    });
+  }
+
+  public static delete(dir: string) {
+    return new Promise((resolve, reject) => {
+      fs.rmdir(dir, (err) => {
+        if (err instanceof Error) {
+          if (/ENOENT/ig.test(err.message)) {
+            return resolve();
+          }
+          return reject(err);
+        }
+        return resolve();
       });
     });
   }
@@ -65,14 +79,14 @@ export class Directory {
     return fs.createReadStream(path);
   }
 
-  public walkSync(dir: string, fileList:Array<string> ): Array<string> {
-    let files =  fs.readdirSync(dir);
-    if(!Array.isArray(fileList)) {
+  public walkSync(dir: string, fileList: Array<string>): Array<string> {
+    let files = fs.readdirSync(dir);
+    if (!Array.isArray(fileList)) {
       fileList = [];
     }
 
     files.forEach(file => {
-      if(fs.statSync(path.join(dir, file)).isDirectory()) {
+      if (fs.statSync(path.join(dir, file)).isDirectory()) {
         fileList = this.walkSync(path.join(dir, file), fileList);
       }
       else {

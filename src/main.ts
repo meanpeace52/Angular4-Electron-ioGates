@@ -2,6 +2,7 @@ import * as vorpal from 'vorpal';
 import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import { listCommand } from './commands/list';
+import { removeCommand } from './commands/remove';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
@@ -58,6 +59,15 @@ commands
   .option('--delete', 'Delete file after successful upload')
   .option('--delay <delay>', 'Delay between directory scans')
   .action(uploadCommand);
+
+commands
+  .command('remove', 'List (share|files) on local storage')
+  .option('-d, --dir <dir>', 'Share directory to delete')
+  .option('-u, --url <url>', 'Share url to delete')
+  .option('-id, --id <share_id>', 'Share ID to delete')
+  .option('-r, --remove', 'If remove files from disk too <true|false>')
+  .action(removeCommand);
+
 
 commands
   .command('list [entity]', 'List (share|files) on local storage')
