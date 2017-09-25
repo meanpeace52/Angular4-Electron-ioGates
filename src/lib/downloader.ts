@@ -13,6 +13,32 @@ import { Directory } from '../lib/directory';
  * Helps download a file from IOGates
  */
 export class Downloader {
+  public static CALCULATE_TRANSFER_SPEED(sent: number[], timestamps: number[], buffer: number | null = null) {
+      const sentLen = sent.length;
+      const timeLen = timestamps.length;
+      if (sentLen === 0 || timeLen === 0 || sentLen !== timeLen) {
+          return 0;
+      }
+      const lastIdx = sentLen - 1;
+      let bytes;
+      let ms;
+      if (buffer === null) {
+          bytes = sent[lastIdx] - sent[0];
+          ms = timestamps[lastIdx] - timestamps[0];
+      } else {
+          let bufferIdx = lastIdx - buffer;
+          if (bufferIdx < 0) {
+              bufferIdx = 0;
+          }
+          bytes = (sent[lastIdx] - sent[bufferIdx]);
+          ms = (timestamps[lastIdx] - timestamps[bufferIdx]);
+      }
+      if (ms === 0) {
+          return 0;
+      }
+
+      return (bytes / 1048576) / (ms / 1000);
+  }
 
   public downloadFiles(files: Type.File[]): Promise<Type.UploadResponse[]> {
     const self = this;
@@ -23,6 +49,8 @@ export class Downloader {
         try {
           const r: Type.UploadResponse = await self.downloadFile(file);
           results.push(r);
+          r.file.downloaded = true;
+          r.file.save();
         } catch (err) {
           return reject(err);
         }
@@ -40,13 +68,36 @@ export class Downloader {
       path: file.destination
     };
 
+    let fileName = file.name;
+    if (fileName.length > 50) {
+        fileName = `${fileName.substr(0, 47)}...`;
+    } else {
+        let len = fileName.length;
+        while (len < 50) {
+            fileName += ' ';
+            len += 1;
+        }
+    }
+
+    const sentValues = [];
+    const sentTimestamps = [];
+    const bar = new CliProgress.Bar({
+        format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
+        stopOnComplete: true,
+        clearOnComplete: false,
+        etaBuffer: 20,
+        fps: 5,
+        payload: { speed: 'N/A' }
+    }, CliProgress.Presets.shades_classic);
+    bar.start(1000, 0);
+
     let downloadFromMTDFile$;
     if (fs.existsSync(mtdPath)) {
       /**
        * MTD file exists, resume
        */
-      downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
       global['logger'].info('resume %s', file.destination);
+      downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
     } else {
       /**
        * Create new download
@@ -59,8 +110,7 @@ export class Downloader {
         .map(mtdPath)
         .flatMap(MultiDownloader.DownloadFromMTDFile).share();
     }
-
-    const [{ fdR$, meta$ }] = demux(downloadFromMTDFile$, 'meta$', 'fdR$');
+    const [{ fdR$, meta$ }] = demux(downloadFromMTDFile$, 'fdR$', 'meta$');
 
     /**
      * Finalize Downloaded FILE
@@ -81,35 +131,9 @@ export class Downloader {
       .withLatestFrom(fdR$)
       .map(R.tail)
       .flatMap(R.map(R.of));
-    let fileName = file.name;
-    if (fileName.length > 50) {
-      fileName = `${fileName.substr(0, 47)}...`;
-    } else {
-      let len = fileName.length;
-      while (len < 50) {
-        fileName += ' ';
-        len += 1;
-      }
-    }
+    const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
 
-    const sentValues = [];
-    const sentTimestamps = [];
-    const bar = new CliProgress.Bar({
-      format: `${fileName} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
-      stopOnComplete: true,
-      clearOnComplete: false,
-      etaBuffer: 20,
-      fps: 5,
-      payload: { speed: 'N/A' }
-    }, CliProgress.Presets.shades_classic);
-    bar.start(1000, 0);
-
-    const downloaded: O = (m: O) => {
-      return m.map((meta) => {
-        return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1;
-      });
-    };
-    downloaded(meta$).subscribe((d: number) => {
+    this.downloaded(meta$).subscribe((d: number) => {
       sentValues.push(d);
       sentTimestamps.push(+ new Date());
     });
@@ -120,34 +144,20 @@ export class Downloader {
         const p = Math.ceil(i * 1000);
         if (bar.value !== p) {
           bar.update(p, {
-            speed: `${this.calculateTransferSpeed(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1)} MB/s`
+            speed: `${Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1)} MB/s`
           });
         }
       });
-    const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
+
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
 
     return uploadResponse.fromPromise(closeFile, file);
   }
 
-  public calculateTransferSpeed(sent: number[], timestamps: number[], buffer: number | null = null) {
-    if (sent.length === 0 || timestamps.length === 0) {
-      return 0;
-    }
-    let bytes;
-    let ms;
-    if (buffer === null) {
-      bytes = sent.splice(-1)[0] - sent[0];
-      ms = timestamps.splice(-1)[0] - timestamps[0];
-    } else {
-      bytes = (sent.splice(-1)[0] - sent.splice(-buffer)[0]);
-      ms = (timestamps.splice(-1)[0] - timestamps.splice(-buffer)[0]);
-    }
-    if (ms === 0) {
-      return 0;
-    }
-
-    return (bytes / 1048576) / (ms / 1000);
+  public downloaded: O = (m: O) => {
+    return m.map((meta) => {
+        return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1;
+    });
   }
 
   public setupHierarchy(entries: Type.File[], destination: string) {

@@ -1,4 +1,4 @@
-import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany, Sequelize } from 'sequelize-typescript';
 import { File } from './file';
 /**
  * Exports Share class.
@@ -27,6 +27,14 @@ export class Share extends Model<Share> {
   })
   public token: string;
 
+  @Column({
+    type: Sequelize.ENUM({
+      values: ['UPLOAD', 'DOWNLOAD', 'BI']
+    }),
+    defaultValue: 'DOWNLOAD'
+  })
+  public direction: string;
+
   @Column
   public dir: string;
 
@@ -35,6 +43,9 @@ export class Share extends Model<Share> {
 
   @HasMany(() => File)
   public files: File[];
+
+  static DIRECTION_UPLOAD = 'upload';
+  static DIRECT_DOWNLOAD = 'download';
 
   public static LOOKUP(shareUrl: string, destination: string): Promise<Share> {
     const promise = Share

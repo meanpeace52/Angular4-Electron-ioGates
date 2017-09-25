@@ -34,4 +34,9 @@ export interface CommandRemoveInput {
     id: number;
     remove: boolean;
   };
+export interface CommandAddInput {
+  direction: string;
+  dir: string;
+  url: string;
+  options: object;
 }

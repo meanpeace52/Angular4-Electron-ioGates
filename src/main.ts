@@ -3,6 +3,7 @@ import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import { listCommand } from './commands/list';
 import { removeCommand } from './commands/remove';
+import { addCommand } from './commands/add';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
@@ -68,6 +69,10 @@ commands
   .option('-r, --remove', 'If remove files from disk too <true|false>')
   .action(removeCommand);
 
+commands
+  .command('add [direction] [dir] [url]', 'Adds a share in registry')
+  .option('-d --delete', 'Delete the local file if direction is upload')
+  .action(addCommand);
 
 commands
   .command('list [entity]', 'List (share|files) on local storage')

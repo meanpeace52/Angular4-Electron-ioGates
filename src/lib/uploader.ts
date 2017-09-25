@@ -5,27 +5,12 @@ import {UploadOptionsExtended} from '../types/uploadOptionExtended';
 import {Directory} from './directory';
 import {IOGates} from './iogates';
 import * as _ from 'lodash';
+import {Downloader} from './downloader';
+import {Error} from 'tslint/lib/error';
 
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';
   public token: string = '';
-
-  static CalculateUploadTransferSpeed(bytesUploaded: number, previousTimeStamp: number, previousBytes: number): any {
-      const currentDateTimeStamp = Date.now();
-      let bytes: number = bytesUploaded - previousBytes;
-      let unit = 'MB/s';
-      let megaBytes: number = (bytes / 1024) / 1024;
-      if ((currentDateTimeStamp - previousTimeStamp) >= 1000) {
-          bytes = bytesUploaded - previousBytes;
-          megaBytes = ((bytes / 1024) / 1024);
-      }
-      if(megaBytes < 1) {
-        megaBytes = megaBytes * 1024;
-        unit = 'KB/s';
-      }
-
-      return { rate: Math.floor(megaBytes), previousBytes: bytesUploaded, previousTimeStamp: currentDateTimeStamp, unit: unit };
-  }
 
   public uploadFiles(files: Type.File[], share: Type.Share): Promise<Type.File[]> {
     this.token = share.token;
@@ -55,10 +40,11 @@ export class Uploader {
 
   public uploadFile(file: Type.File): Promise<Type.File> {
     let logger = global['logger'];
+    const sentValues = [];
+    const sentTimestamps = [];
 
     return new Promise((resolve: Function, reject: Function) => {
       const extIndex = _.lastIndexOf(file.name, '.');
-      let calculations = {rate: 0, previousTimeStamp: 0, previousBytes: 0, unit: 'MB/s'};
       const bar = new CliProgress.Bar({
         format: `${file.name} \t [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
         stopOnComplete: true,
@@ -81,21 +67,21 @@ export class Uploader {
           filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`,
           uuid: file.uuid
         },
-        onError: (error) => {
-          logger(JSON.stringify(error));
+        onError: (error: Error) => {
+          logger.error(JSON.stringify(error));
           tusUploader.abort();
+
           return reject(error);
         },
         onProgress: (bytesUploaded: number, bytesTotal: number) => {
-          const percentage = (bytesUploaded / bytesTotal * 100).toFixed(2);
-          calculations = Uploader.CalculateUploadTransferSpeed(
-            bytesUploaded,
-            calculations.previousTimeStamp,
-            calculations.previousBytes
-          );
+          sentValues.push(bytesUploaded);
+          sentTimestamps.push(+ new Date());
+          const progress = bytesUploaded / bytesTotal;
+          const percentage = (progress * 100).toFixed(2);
+          const rate = Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, progress >= 1 ? null : 10);
 
           bar.update(percentage, {
-            speed: `${calculations.rate} ${calculations.unit}`
+            speed: `${rate.toFixed(1)} MB/s`
           });
         },
         onSuccess: () => {
@@ -104,6 +90,7 @@ export class Uploader {
             .then((f: Type.File) => {
               return resolve(f);
             });
+          bar.update(100);
         }
       };
 
@@ -112,7 +99,6 @@ export class Uploader {
       }
       const stream = <any> Directory.getStream(file.stream_path);
       const tusUploader = new Upload(stream, uploadOptions);
-      calculations.previousTimeStamp = Date.now();
       tusUploader.start();
       file.uploadStarted = true;
       file.resume_able = true;
