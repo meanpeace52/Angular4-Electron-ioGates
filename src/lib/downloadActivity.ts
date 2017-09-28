@@ -76,7 +76,7 @@ export class DownloadActivity implements IActivity {
       type: this.type,
       action: "progress",
       payload: {
-        file: this.file.id,
+        file: this.file.file_id,
         percent: percent,
         rate: rate
       }
@@ -89,10 +89,22 @@ export class DownloadActivity implements IActivity {
       type: this.type,
       action: "complete",
       payload: {
-        file: this.file.id
+        file: this.file.file_id
       }
     };
     this.socket.send(payload);
+  }
+
+  public failed(err?: string) {
+    const payload = {
+      type: this.type,
+      action: 'failed',
+      payload: {
+        file: this.file.file_id,
+        reason: err
+      }
+    };
+    return this.send(payload);
   }
 
   public getType() {

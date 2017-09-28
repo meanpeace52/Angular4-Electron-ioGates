@@ -59,6 +59,25 @@ describe('download activity', () => {
   });
 
   it('should `resume` the activity', () => {
-    expect(activity.resume()).toBeInstanceOf(Object);
-  })
+    const data = activity.resume();
+    expect(data.type).toBe('download');
+    expect(data.action).toBe('resume');
+    expect(data.payload).toBeInstanceOf(Object);
+    expect(data.payload.file).toBeDefined();
+    expect(data.payload.file).toBe(file.file_id);
+  });
+
+  it('should have a `failed` method', () => {
+    expect(activity.failed).toBeDefined();
+  });
+
+  it('should `failed` the activity', () => {
+    const data = activity.failed('FAKE_MESSAGE');
+    expect(data).toBeInstanceOf(Object);
+    expect(data.type).toBe('download');
+    expect(data.action).toBe('failed');
+    expect(data.payload.file).toBeDefined();
+    expect(data.payload.file).toBe(file.file_id);
+    expect(data.payload.reason).toBe('FAKE_MESSAGE');
+  });
 });
