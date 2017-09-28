@@ -53,4 +53,12 @@ describe('download activity', () => {
     expect(data.payload.file).toBeDefined();
     expect(data.payload.file).toBe(file.file_id);
   });
+
+  it('should have a `resume` method', () => {
+    expect(activity.resume).toBeDefined();
+  });
+
+  it('should `resume` the activity', () => {
+    expect(activity.resume()).toBeInstanceOf(Object);
+  })
 });

@@ -43,6 +43,12 @@ export class DownloadActivity implements IActivity {
     return this.file;
   }
 
+  public send(payload) {
+    debug('sending' + JSON.stringify(payload));    
+    this.socket.send(JSON.stringify(payload));
+    return payload;
+  }
+
   public start() {
     const payload = {
       type: this.type,
@@ -51,9 +57,7 @@ export class DownloadActivity implements IActivity {
         file: this.file.file_id
       }
     };
-    debug('sending' + JSON.stringify(payload));
-    this.socket.send(JSON.stringify(payload));
-    return payload;
+    return this.send(payload);
   }
 
   public resume() {
@@ -64,7 +68,7 @@ export class DownloadActivity implements IActivity {
         file: this.file.file_id
       }
     };
-    this.socket.send(payload);
+    return this.send(payload);
   }
 
   public progress(percent: number, rate: number) {
