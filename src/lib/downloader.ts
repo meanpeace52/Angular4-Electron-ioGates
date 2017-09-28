@@ -142,6 +142,7 @@ export class Downloader {
         uploadResponse.success = true;
         uploadResponse.file = file;
         global['logger'].info('completed %s', file.destination);
+        return uploadResponse;
       });
   }
 
