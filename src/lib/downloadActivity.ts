@@ -21,7 +21,7 @@ export class DownloadActivity implements IActivity {
 
   public onceReady() {
     debug('run..');
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const url = 'https://push.iogates.com/pub/' + this.getChannel();
       debug('url: ' + url);
       this.socket = new WebSocket(url);
@@ -31,6 +31,7 @@ export class DownloadActivity implements IActivity {
       });
       this.socket.on('error', (err) => {
         debug(err);
+        return reject(err);
       });
     });
   }
@@ -44,7 +45,7 @@ export class DownloadActivity implements IActivity {
   }
 
   public send(payload) {
-    debug('sending' + JSON.stringify(payload));    
+    debug('sending ' + JSON.stringify(payload));
     this.socket.send(JSON.stringify(payload));
     return payload;
   }
@@ -81,7 +82,7 @@ export class DownloadActivity implements IActivity {
         rate: rate
       }
     };
-    this.socket.send(payload);
+    return this.send(payload);
   }
 
   public completed() {

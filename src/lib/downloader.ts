@@ -124,9 +124,11 @@ export class Downloader {
           .subscribe((i: number) => {
             const p = Math.ceil(i * 1000);
             if (bar.value !== p) {
+              const speed = Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1);
               bar.update(p, {
-                speed: `${Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, i === 1 ? null : 10).toFixed(1)} MB/s`
+                speed: `${speed} MB/s`
               });
+              downloadActivity.progress(p, Number(speed));
             }
 
             // acknowledge progress.

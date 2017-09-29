@@ -80,4 +80,19 @@ describe('download activity', () => {
     expect(data.payload.file).toBe(file.file_id);
     expect(data.payload.reason).toBe('FAKE_MESSAGE');
   });
+
+  it('should have a `progress` method', () => {
+    expect(activity.progress).toBeDefined();
+  });
+
+  it('should send `progress` for the activity', () => {
+    const data = activity.progress(20, 23311);
+    expect(data).toBeInstanceOf(Object);
+    expect(data.type).toBe('download');
+    expect(data.action).toBe('progress');
+    expect(data.payload.file).toBeDefined();
+    expect(data.payload.file).toBe(file.file_id);
+    expect(data.payload.rate).toBe(23311);
+    expect(data.payload.percent).toBe(20);
+  });
 });
