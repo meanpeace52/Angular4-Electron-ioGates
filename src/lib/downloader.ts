@@ -128,11 +128,8 @@ export class Downloader {
               bar.update(p, {
                 speed: `${speed} MB/s`
               });
-              downloadActivity.progress(p, Number(speed));
+              downloadActivity.progress(i * 100, Number(speed));
             }
-
-            // acknowledge progress.
-            downloadActivity.progress(0, 0);
           });
 
         return closeFile;

@@ -93,7 +93,7 @@ export class DownloadActivity implements IActivity {
         file: this.file.file_id
       }
     };
-    this.socket.send(payload);
+    return this.send(payload);
   }
 
   public failed(err?: string) {

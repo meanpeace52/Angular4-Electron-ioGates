@@ -81,6 +81,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       }
     })
     .catch((e: Error) => {
+      console.log(e);
       logger.error(e.message);
     });
 }
