@@ -98,7 +98,7 @@ export class Uploader {
       }
       const stream = <any> Directory.getStream(file.stream_path);
 
-      let clientsSize = file.size / 3;
+      let clientsSize = Math.ceil(file.size / 3);
       let fileSubject: Subject = new Subject<boolean>();
 
 
