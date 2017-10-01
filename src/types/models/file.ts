@@ -79,7 +79,7 @@ export class File extends Model<File> {
   @Column({
     defaultValue: false
   })
-  public uploadStarted: boolean;
+  public upload_started: boolean;
 
   @ForeignKey(() => Share)
   public share_id: number;

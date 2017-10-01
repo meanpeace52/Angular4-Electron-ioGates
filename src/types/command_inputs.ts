@@ -33,3 +33,8 @@ export interface CommandAddInput {
   url: string;
   options: object;
 }
+
+export interface TusProgressEvent {
+  bytesUploaded: number;
+  bytesTotal: number;
+}

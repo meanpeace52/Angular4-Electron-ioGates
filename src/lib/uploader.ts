@@ -7,15 +7,21 @@ import {IOGates} from './iogates';
 import * as _ from 'lodash';
 import {Downloader} from './downloader';
 import {Error} from 'tslint/lib/error';
-import {FileSource, BufferSource, StreamSource, getSource} from "./source";
+import {getSource} from "./source";
+import { Subject } from 'rx';
+import {TusProgressEvent} from "../types/command_inputs";
+import * as http from "http";
 
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';
   public token: string = '';
 
+  constructor(public ioGatesInstance: IOGates) { }
+
   public uploadFiles(files: Type.File[], share: Type.Share): Promise<Type.File[]> {
     this.token = share.token;
     this.baseUrl = IOGates.GET_BASE_URL(share.url);
+
     let self = this;
     const results = [];
     // for (const file of files) {
@@ -57,6 +63,20 @@ export class Uploader {
 
       bar.start(100, 0);
 
+      let barSubject: Subject<TusProgressEvent> = new Subject<TusProgressEvent>();
+
+      barSubject.subscribe((event: TusProgressEvent) => {
+        sentValues.push(event.bytesUploaded);
+        sentTimestamps.push(+ new Date());
+        const progress = event.bytesUploaded / event.bytesTotal;
+        const percentage = (progress * 100).toFixed(2);
+        const rate = Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, progress >= 1 ? null : 10);
+
+        bar.update(percentage, {
+          speed: `${rate.toFixed(1)} MB/s`
+        });
+      });
+
       const uploadOptions: UploadOptionsExtended  = {
         endpoint: `${this.baseUrl}/upload/tus/${this.token}`,
         uploadUrl: null,
@@ -67,52 +87,72 @@ export class Uploader {
         metadata: {
           filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`,
           uuid: file.uuid
-        },
-        onError: (error: Error) => {
-          logger.error(JSON.stringify(error));
-          tusUploader.abort();
-
-          return reject(error);
-        },
-        onProgress: (bytesUploaded: number, bytesTotal: number) => {
-          sentValues.push(bytesUploaded);
-          sentTimestamps.push(+ new Date());
-          const progress = bytesUploaded / bytesTotal;
-          const percentage = (progress * 100).toFixed(2);
-          const rate = Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, progress >= 1 ? null : 10);
-
-          bar.update(percentage, {
-            speed: `${rate.toFixed(1)} MB/s`
-          });
-        },
-        onSuccess: () => {
-          file.uploaded = true;
-          file.save()
-            .then((f: Type.File) => {
-              return resolve(f);
-            });
-          bar.update(100);
         }
       };
 
-      if (file.uploadStarted) {
+      if (file.upload_started) {
         uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.uuid}`;
       }
       const stream = <any> Directory.getStream(file.stream_path);
 
       let clientsSize = file.size / 3;
+      let fileSubject: Subject = new Subject<boolean>();
 
-      let clientGenerator = CreateTusUploadClient(stream, , uploadOptions, file.size);
-      const tusUploader = new Upload(stream, uploadOptions);
-      tusUploader.start();
-      file.uploadStarted = true;
-      file.resume_able = true;
-      file.save();
+
+      let clientGenerator: IterableIterator<Promise<any>> = CreateTusUploadClient(
+        stream, clientsSize, uploadOptions, barSubject, file.size, fileSubject
+      );
+
+      let clientPromises = [
+        clientGenerator.next().value,
+        clientGenerator.next().value,
+        clientGenerator.next().value
+      ];
+
+      Promise.all(clientPromises)
+        .then((uploadedClientFileNames: Array<string>) => {
+          this.ioGatesInstance.getRequest().post({
+            url: '/files',
+            headers: {
+              'Upload-Concat': `final;${uploadedClientFileNames.map(name => `/files/${name}`).join(' ').trim()}`
+            }
+          }, (err: Error, r: http.IncomingMessage, response: any) => {
+            if (r.statusCode !== 200) {
+              return reject(err);
+            }
+
+            file.uploaded = true;
+            file.save()
+              .then((f: Type.File) => {
+                logger.info(`Upload completed successfully for file: ${file.name}`);
+                return resolve(f);
+              });
+          });
+
+        });
+
+
+      let fileSubscriber = fileSubject.subscribe(() => {
+        file.upload_started = true;
+        file.resume_able = true;
+        file.save()
+          .then(() => logger.info(`Resuming state saved for file: ${file.name}`));
+        fileSubscriber.unsubscribe();
+      });
+
     });
   }
 }
 
-function* CreateTusUploadClient(stream: any, chunkSize: number, options: UploadOptionsExtended, size: number) {
+function* CreateTusUploadClient(
+  stream: any,
+  chunkSize: number,
+  options: UploadOptionsExtended,
+  barSubject: Subject,
+  size: number,
+  fileSubject: Subject): IterableIterator<Promise<Array<string>>> {
+
+  let logger = global['logger'];
   let start: number = 0;
   let end: number = start + chunkSize;
   let source = getSource(stream, chunkSize);
@@ -122,6 +162,30 @@ function* CreateTusUploadClient(stream: any, chunkSize: number, options: UploadO
 
   if(start !== size) {
     /*yield*/
-    yield new Upload(slicedSource, options);
+
+    yield new Promise((resolve: Function, reject: Function) => {
+
+      options.onSuccess = () => resolve((<any> options.metadata).filename);
+
+      options.onProgress = (bytesUploaded: number, bytesTotal: number) => {
+        barSubject.onNext(<TusProgressEvent> {
+          bytesTotal: bytesTotal,
+          bytesUploaded: bytesUploaded
+        });
+      };
+
+      options.onError = (error: Error) => {
+        logger.error(JSON.stringify(error));
+        tusUploader.abort();
+
+        return reject(error);
+      };
+
+      let tusUploader = new Upload(slicedSource, options);
+
+      tusUploader.start();
+
+      fileSubject.onNext(true);
+    });
   }
 }
