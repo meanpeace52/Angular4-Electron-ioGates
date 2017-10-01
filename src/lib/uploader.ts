@@ -87,6 +87,9 @@ export class Uploader {
         metadata: {
           filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`,
           uuid: file.uuid
+        },
+        extension: {
+          concatenation: true
         }
       };
 
