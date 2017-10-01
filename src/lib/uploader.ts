@@ -7,6 +7,7 @@ import {IOGates} from './iogates';
 import * as _ from 'lodash';
 import {Downloader} from './downloader';
 import {Error} from 'tslint/lib/error';
+import {FileSource, BufferSource, StreamSource, getSource} from "./source";
 
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';
@@ -98,11 +99,29 @@ export class Uploader {
         uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.uuid}`;
       }
       const stream = <any> Directory.getStream(file.stream_path);
+
+      let clientsSize = file.size / 3;
+
+      let clientGenerator = CreateTusUploadClient(stream, , uploadOptions, file.size);
       const tusUploader = new Upload(stream, uploadOptions);
       tusUploader.start();
       file.uploadStarted = true;
       file.resume_able = true;
       file.save();
     });
+  }
+}
+
+function* CreateTusUploadClient(stream: any, chunkSize: number, options: UploadOptionsExtended, size: number) {
+  let start: number = 0;
+  let end: number = start + chunkSize;
+  let source = getSource(stream, chunkSize);
+  let slicedSource = source.slice(start, end);
+  start = chunkSize;
+  end = start + chunkSize;
+
+  if(start !== size) {
+    /*yield*/
+    yield new Upload(slicedSource, options);
   }
 }
