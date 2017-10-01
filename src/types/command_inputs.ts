@@ -12,6 +12,7 @@ export class CommandUploadOptions {
   public verbose: boolean;
   public watch: boolean;
   public delay: boolean|number;
+  public chunksize: false|number;
 }
 
 export class CommandUploadInput {
