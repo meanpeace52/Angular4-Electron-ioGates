@@ -3,7 +3,7 @@ import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import { listCommand } from './commands/list';
 import { addCommand } from './commands/add';
-import * as Type from './lib/types';
+import * as Type from './types';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
 import { machineIdSync } from 'node-machine-id';
@@ -11,7 +11,7 @@ import * as CONFIG from '../config';
 
 // setup db and copy to global
 const sequelize = new Sequelize(CONFIG.database);
-sequelize.addModels([Type.Share, Type.File]);
+sequelize.addModels([Type.Share, Type.File, Type.Chunk]);
 global['_DB'] = sequelize;
 
 // setup logger and copy to global.
