@@ -29,12 +29,13 @@ export interface CommandListInput {
 }
 
 export interface CommandRemoveInput {
-  options: {
-    dir: string;
-    url: string;
-    id: number;
-    remove: boolean;
-  };
+    options: {
+        dir: string;
+        url: string;
+        id: number;
+        remove: boolean;
+    };
+}
 export interface CommandAddInput {
   direction: string;
   dir: string;
