@@ -2,6 +2,7 @@ import * as vorpal from 'vorpal';
 import { downloadComand } from './commands/download';
 import { uploadCommand } from './commands/upload';
 import { listCommand } from './commands/list';
+import { removeCommand } from './commands/remove';
 import { addCommand } from './commands/add';
 import * as Type from './lib/types';
 import { Sequelize } from 'sequelize-typescript';
@@ -61,6 +62,14 @@ commands
   .option('--delay <delay>', 'Delay between directory scans')
   .option('--chunksize <bytes>', 'Chunk size in bytes')
   .action(uploadCommand);
+
+commands
+  .command('remove', 'List (share|files) on local storage')
+  .option('-d, --dir <dir>', 'Share directory to delete')
+  .option('-u, --url <url>', 'Share url to delete')
+  .option('-id, --id <share_id>', 'Share ID to delete')
+  .option('-r, --remove', 'If remove files from disk too <true|false>')
+  .action(removeCommand);
 
 commands
   .command('add [direction] [dir] [url]', 'Adds a share in registry')
