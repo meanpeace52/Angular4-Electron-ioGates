@@ -43,6 +43,7 @@ const logger = new winston.Logger({
 });
 global['logger'] = logger;
 global['device-id'] = machineIdSync();
+global['config'] = CONFIG;
 
 const commands = vorpal();
 commands
@@ -59,6 +60,7 @@ commands
   .option('-w, --watch', 'Watch for changes and auto-upload')
   .option('--delete', 'Delete file after successful upload')
   .option('--delay <delay>', 'Delay between directory scans')
+  .option('--chunksize <bytes>', 'Chunk size in bytes')
   .action(uploadCommand);
 
 commands
