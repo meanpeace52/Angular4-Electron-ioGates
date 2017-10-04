@@ -56,6 +56,7 @@ commands
   .option('-m, --monitor', 'Shows upload progress')
   .option('-v, --verbose', 'Shows debug logs')
   .option('-w, --watch', 'Watch for changes and auto-upload')
+  .option('--thread', 'Allocate number of threads for uploading')
   .option('--delete', 'Delete file after successful upload')
   .option('--delay <delay>', 'Delay between directory scans')
   .action(uploadCommand);

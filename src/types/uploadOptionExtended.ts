@@ -2,6 +2,15 @@
 import {UploadOptions} from "tus-js-client";
 
 export interface UploadOptionsExtended extends UploadOptions {
-  metadata: object;
-  extension: object;
+  metadata: metadata;
+  extension: extension;
+}
+
+export interface metadata {
+  filename: string;
+  uuid?: string;
+}
+
+export interface extension {
+  concatenation: boolean;
 }

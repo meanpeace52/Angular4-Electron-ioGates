@@ -11,12 +11,13 @@ import {getSource} from "./source";
 import { Subject } from 'rx';
 import {TusProgressEvent} from "../types/command_inputs";
 import * as http from "http";
+import { Chunk } from "../types/models/chunk";
 
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';
   public token: string = '';
 
-  constructor(public ioGatesInstance: IOGates) { }
+  constructor(public ioGatesInstance: IOGates, public threads: number) { }
 
   public uploadFiles(files: Type.File[], share: Type.Share): Promise<Type.File[]> {
     this.token = share.token;
@@ -85,8 +86,7 @@ export class Uploader {
         chunkSize: 16777216,
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
-          filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`,
-          uuid: file.uuid
+          filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`
         },
         extension: {
           concatenation: true
@@ -98,49 +98,57 @@ export class Uploader {
       }
       const stream = <any> Directory.getStream(file.stream_path);
 
-      let clientsSize = Math.ceil(file.size / 3);
-      let fileSubject: Subject = new Subject<boolean>();
+      let clientSubject: Subject = new Subject<boolean>();
 
+      let clientPromises = [];
 
       let clientGenerator: IterableIterator<Promise<any>> = CreateTusUploadClient(
-        stream, clientsSize, uploadOptions, barSubject, file.size, fileSubject
+        stream, uploadOptions, barSubject, file, clientSubject
       );
 
-      let clientPromises = [
-        clientGenerator.next().value,
-        clientGenerator.next().value,
-        clientGenerator.next().value
-      ];
+
+      while(!clientGenerator.next().done) {
+        clientPromises.push(clientGenerator.next().value);
+      }
 
       Promise.all(clientPromises)
-        .then((uploadedClientFileNames: Array<string>) => {
+        .then((chunks: Array<Chunk>) => {
           this.ioGatesInstance.getRequest().post({
             url: '/files',
             headers: {
-              'Upload-Concat': `final;${uploadedClientFileNames.map(name => `/files/${name}`).join(' ').trim()}`
+              'Upload-Concat': `final;${chunks.map(chunk => `${chunk.resume_url}`).join(' ').trim()}`
             }
           }, (err: Error, r: http.IncomingMessage, response: any) => {
             if (r.statusCode !== 200) {
               return reject(err);
             }
 
-            file.uploaded = true;
-            file.save()
+            Chunk.BulkSave(chunks)
+              .then(() => {
+                file.uploaded = true;
+                return file.save();
+              })
               .then((f: Type.File) => {
                 logger.info(`Upload completed successfully for file: ${file.name}`);
                 return resolve(f);
               });
           });
-
         });
 
+      let clientSubscriber = clientSubject.subscribe((response: any) => {
+        let { chunk, counter } = response;
 
-      let fileSubscriber = fileSubject.subscribe(() => {
-        file.upload_started = true;
-        file.resume_able = true;
-        file.save()
-          .then(() => logger.info(`Resuming state saved for file: ${file.name}`));
-        fileSubscriber.unsubscribe();
+        chunk.upload_started = true;
+        chunk.resume_url = `${this.baseUrl}/upload/tus/${this.token}/${chunk.uuid}`;
+        chunk.save();
+
+        if (counter === this.threads) {
+          file.upload_started = true;
+          file.resume_able = true;
+          file.save()
+            .then(() => logger.info(`Resuming state saved for file: ${file.name}`));
+          clientSubscriber.unsubscribe();
+        }
       });
 
     });
@@ -149,27 +157,26 @@ export class Uploader {
 
 function* CreateTusUploadClient(
   stream: any,
-  chunkSize: number,
   options: UploadOptionsExtended,
   barSubject: Subject,
-  size: number,
-  fileSubject: Subject): IterableIterator<Promise<Array<string>>> {
+  file: Type.File,
+  chunkSubject: Subject): IterableIterator<Promise<Array<string>>> {
 
   let logger = global['logger'];
-  let start: number = 0;
-  let end: number = start + chunkSize;
-  let source = getSource(stream, chunkSize);
-  let slicedSource = source.slice(start, end);
-  start = chunkSize;
-  end = start + chunkSize;
+  let counter = 0;
+  let chunk = file.chunks[counter];
+  let source = getSource(stream, file.chunkSize);
+  let slicedSource = source.slice(chunk.starting_point, chunk.ending_point);
 
-  if(start !== size) {
+
+  if(chunk.starting_point < file.size && chunk.ending_point <= file.size && !chunk.uploaded) {
     /*yield*/
 
     yield new Promise((resolve: Function, reject: Function) => {
 
-      options.onSuccess = () => resolve((<any> options.metadata).filename);
-
+      counter += 1;
+      options.metadata.uuid = chunk.uuid;
+      options.onSuccess = () => resolve(chunk);
       options.onProgress = (bytesUploaded: number, bytesTotal: number) => {
         barSubject.onNext(<TusProgressEvent> {
           bytesTotal: bytesTotal,
@@ -180,7 +187,6 @@ function* CreateTusUploadClient(
       options.onError = (error: Error) => {
         logger.error(JSON.stringify(error));
         tusUploader.abort();
-
         return reject(error);
       };
 
@@ -188,7 +194,8 @@ function* CreateTusUploadClient(
 
       tusUploader.start();
 
-      fileSubject.onNext(true);
+      chunkSubject.onNext({ chunk, counter });
+
     });
   }
 }

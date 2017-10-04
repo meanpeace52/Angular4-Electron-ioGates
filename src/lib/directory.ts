@@ -4,6 +4,7 @@ import { File} from "../types";
 import * as uuid from 'uuid/v1';
 import {ReadStream} from "fs";
 import * as mime from 'mime-types';
+import {Chunk} from "../types/models/chunk";
 
 /**
  *  Exports class Directory.
@@ -30,7 +31,7 @@ export class Directory {
     });
   }
 
-  public read(): Promise<Array<File>> {
+  public read(numberOfThreads: number): Promise<Array<File>> {
     return this.create()
       .then(() => {
         try {
@@ -45,6 +46,8 @@ export class Directory {
             file.uuid = uuid();
             file.uploaded = false;
             file.stream_path = filePath;
+            file.chunkSize = Math.ceil(file.size / numberOfThreads);
+            file.chunks = Chunk.CreateBulkChunks(file, numberOfThreads);
             return file;
           });
           blobs.forEach((file: File) => promise.push(File.createMd5(file)));

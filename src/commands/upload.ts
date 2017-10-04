@@ -13,19 +13,19 @@ import * as fs from 'fs';
 export function uploadCommand(args: CommandUploadInput, done: Function) {
   const destination = args.dir;
   const shareUrl = args.url;
+  const threads: number = args.options.thread || 3;
   const ioGate: IOGates = new IOGates();
-  const uploader: Uploader = new Uploader(ioGate);
+  const uploader: Uploader = new Uploader(ioGate, threads);
   const directory: Directory = new Directory(destination);
   const logger = global['logger'];
   const deleteAfterUpload: boolean = args.options.delete;
+
   let readStreamFiles: File[];
   let outerShare: Share;
   logger.info('executing upload');
   global['_DB']
     .sync()
-    .then(() => {
-      return directory.read();
-    })
+    .then(() => directory.read(threads))
     .then((files: File[]) => {
       readStreamFiles = files;
 
@@ -96,7 +96,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
         //   watcher = new UploadWatcher(destination, +args.options.delay);
         // } else {
         // }
-        watcher = new UploadWatcher(destination);
+        watcher = new UploadWatcher(destination, threads);
 
         watcher.watch(outerShare);
         watcher.on('error', (err) => {

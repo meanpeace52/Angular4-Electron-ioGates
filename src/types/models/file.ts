@@ -3,12 +3,13 @@ import {
   Column,
   Model,
   BelongsTo,
-  ForeignKey
+  ForeignKey, HasMany
 } from 'sequelize-typescript';
 // import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
 import { createHash } from 'crypto'
 import * as fs from 'fs';
+import { Chunk } from "./chunk";
 // import * as winston from 'winston';
 
 /**
@@ -68,6 +69,9 @@ export class File extends Model<File> {
   public size: number;
 
   @Column
+  public chunkSize: number;
+
+  @Column
   public stream_path: string;
 
   @Column
@@ -86,6 +90,9 @@ export class File extends Model<File> {
 
   @BelongsTo(() => Share, 'share_id')
   public share: Share;
+
+  @HasMany(() => Chunk)
+  public chunks: Chunk[];
 
   public isDirectory() {
     return this.type === 'dir';
@@ -165,6 +172,7 @@ export class File extends Model<File> {
               md5: file.md5,
               stream_path: file.stream_path
             },
+            include: [Chunk],
             defaults: record,
             transaction: transaction
           })

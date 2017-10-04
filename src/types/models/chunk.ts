@@ -2,13 +2,12 @@ import {
   Table,
   Column,
   Model,
-  BelongsTo,
-  ForeignKey
+  ForeignKey, BelongsTo
 } from 'sequelize-typescript';
 // import { UploadResponse } from '../uploadResponse';
 import { Share } from './share';
-import { createHash } from 'crypto'
-import * as fs from 'fs';
+// import { createHash } from 'crypto'
+// import * as fs from 'fs';
 import { File } from './file';
 import * as uuid from 'uuid/v1';
 
@@ -54,15 +53,28 @@ export class Chunk extends Model<Chunk> {
   @ForeignKey(() => Share)
   public share_id: number;
 
+  @BelongsTo(() => Share, 'share_id')
+  public share: Share;
+
+  @BelongsTo(() => File, 'file_id')
+  public file: File;
+
   @Column
   public starting_point: number;
 
   @Column
   public ending_point: number;
 
-  static CreateBulkChunks(file: File, chunkNumber: number): Promise<Array<Chunk>> {
+  @Column
+  public size: number;
 
-    let logger = global['logger'];
+  @Column
+  public upload_started: number;
+
+
+  static CreateBulkChunks(file: File, chunkNumber: number): Array<Chunk> {
+
+    // let logger = global['logger'];
     return global['_DB'].transaction(function transactionFn(transaction) {
       const bulk = [];
       let clientSize = Math.ceil(file.size / chunkNumber);
@@ -75,12 +87,36 @@ export class Chunk extends Model<Chunk> {
         chunk.starting_point = startingPoint;
         chunk.ending_point = startingPoint + clientSize;
         chunk.uuid = uuid();
+        chunk.size = clientSize;
         startingPoint = clientSize;
-        bulk.push(chunk.save());
+        bulk.push(chunk);
       }
 
-      return Promise.all(bulk);
+      return bulk;
     });
 
+  }
+
+  static BulkSave(chunks: Chunk[]): Promise<Chunk> {
+    return global['_DB'].transaction(function transactionFn(transaction) {
+      const bulk = [];
+      chunks.forEach((chunk: Chunk) => {
+        const record = chunk.get({plain: true});
+        delete record['id'];
+        const fn = Chunk
+          .update(record,{
+            where: {
+              id: chunk.id,
+              uuid: chunk.uuid
+            },
+            transaction: transaction
+          })
+          .spread((savedChunk: Chunk, created) => savedChunk);
+
+        bulk.push(fn);
+
+        return Promise.all(bulk);
+      })
+    });
   }
 }
