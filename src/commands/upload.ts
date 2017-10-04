@@ -22,6 +22,10 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
 
   let readStreamFiles: File[];
   let outerShare: Share;
+  if (args.options.chunksize !== false && Number.isInteger(args.options.chunksize)) {
+    logger.info(`Setting chunk size to ${args.options.chunksize}`);
+    uploader.chunkSize = args.options.chunksize;
+  }
   logger.info('executing upload');
   global['_DB']
     .sync()

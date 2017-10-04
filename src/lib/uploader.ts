@@ -16,6 +16,7 @@ import { Chunk } from "../types/models/chunk";
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';
   public token: string = '';
+  public chunkSize: number = global['config'].upload.chunkSize || 16777216;
 
   constructor(public ioGatesInstance: IOGates, public threads: number) { }
 
@@ -85,7 +86,7 @@ export class Uploader {
         uploadUrl: null,
         uploadSize: file.size,
         resume: true,
-        chunkSize: 16777216,
+        chunkSize: this.chunkSize,
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
           filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`
