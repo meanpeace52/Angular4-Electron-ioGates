@@ -94,7 +94,7 @@ export class UploadWatcher extends Watcher {
   private files: File[];
   private watcher: FSWatcher;
 
-  constructor(destination: string, threads: number) {
+  constructor(destination: string, public threads: number) {
     super();
     this.api = new IOGates();
     this.uploader = new Uploader(this.api, threads);
@@ -125,7 +125,7 @@ export class UploadWatcher extends Watcher {
 
   private initiateUpload(share: Share) {
     this.directory
-      .read()
+      .read(this.threads)
       .then((files: File[]) => {
         this.files = files;
 

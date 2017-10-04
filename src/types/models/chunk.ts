@@ -75,25 +75,23 @@ export class Chunk extends Model<Chunk> {
   static CreateBulkChunks(file: File, chunkNumber: number): Array<Chunk> {
 
     // let logger = global['logger'];
-    return global['_DB'].transaction(function transactionFn(transaction) {
-      const bulk = [];
-      let clientSize = Math.ceil(file.size / chunkNumber);
-      let startingPoint = 0;
+    const bulk = [];
+    let clientSize = Math.ceil(file.size / chunkNumber);
+    let startingPoint = 0;
 
-      for (let i  = 0; i < chunkNumber; i++) {
-        let chunk = new Chunk();
-        chunk.file_id = file.file_id;
-        chunk.upload_filename = file.upload_filename;
-        chunk.starting_point = startingPoint;
-        chunk.ending_point = startingPoint + clientSize;
-        chunk.uuid = uuid();
-        chunk.size = clientSize;
-        startingPoint = clientSize;
-        bulk.push(chunk);
-      }
+    for (let i  = 0; i < chunkNumber; i++) {
+      let chunk = new Chunk();
+      chunk.file_id = file.file_id;
+      chunk.upload_filename = file.upload_filename;
+      chunk.starting_point = startingPoint;
+      chunk.ending_point = startingPoint + clientSize;
+      chunk.uuid = uuid();
+      chunk.size = clientSize;
+      startingPoint = clientSize;
+      bulk.push(chunk);
+    }
 
-      return bulk;
-    });
+    return bulk;
 
   }
 

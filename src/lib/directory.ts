@@ -32,6 +32,7 @@ export class Directory {
   }
 
   public read(numberOfThreads: number): Promise<Array<File>> {
+    let logger = global['logger'];
     return this.create()
       .then(() => {
         try {
@@ -47,7 +48,10 @@ export class Directory {
             file.uploaded = false;
             file.stream_path = filePath;
             file.chunkSize = Math.ceil(file.size / numberOfThreads);
+            logger.info(`Chunk Size: ${file.chunkSize}`);
             file.chunks = Chunk.CreateBulkChunks(file, numberOfThreads);
+            logger.info(`Chunk Length: ${file.chunks.length}`);
+
             return file;
           });
           blobs.forEach((file: File) => promise.push(File.createMd5(file)));

@@ -52,6 +52,8 @@ export class Uploader {
     const sentTimestamps = [];
 
     return new Promise((resolve: Function, reject: Function) => {
+
+      logger.info('Inside UploadFile Promise');
       const extIndex = _.lastIndexOf(file.name, '.');
       const bar = new CliProgress.Bar({
         format: `${file.name} \t [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
@@ -93,6 +95,8 @@ export class Uploader {
         }
       };
 
+      logger.info(`UploadOPtion`);
+
       if (file.upload_started) {
         uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.uuid}`;
       }
@@ -102,14 +106,19 @@ export class Uploader {
 
       let clientPromises = [];
 
-      let clientGenerator: IterableIterator<Promise<any>> = CreateTusUploadClient(
+      let clientGenerator: Function = CreateTusUploadClient(
         stream, uploadOptions, barSubject, file, clientSubject
       );
 
+      let nonUploadedChunks = _.filter(file.chunks, { uploaded: false });
 
-      while(!clientGenerator.next().done) {
-        clientPromises.push(clientGenerator.next().value);
+      logger.info(`non chunks: ${nonUploadedChunks.length}`);
+
+      for (let i = 0; i < nonUploadedChunks.length; i++) {
+        clientPromises.push(clientGenerator());
       }
+
+      logger.info(`Promise: ${clientPromises.length}`);
 
       Promise.all(clientPromises)
         .then((chunks: Array<Chunk>) => {
@@ -155,30 +164,30 @@ export class Uploader {
   }
 }
 
-function* CreateTusUploadClient(
+function CreateTusUploadClient(
   stream: any,
   options: UploadOptionsExtended,
   barSubject: Subject,
   file: Type.File,
-  chunkSubject: Subject): IterableIterator<Promise<Array<string>>> {
+  chunkSubject: Subject): Function {
 
   let logger = global['logger'];
   let counter = 0;
-  let chunk = file.chunks[counter];
-  let source = getSource(stream, file.chunkSize);
-  let slicedSource = source.slice(chunk.starting_point, chunk.ending_point);
+  let chunks = _.filter(file.chunks, { uploaded: false });
 
+  return (): Promise<Chunk> => {
+    counter += 1;
+    let chunk: Chunk = chunks[counter];
+    let source = getSource(stream, file.chunkSize);
+    let slicedSource = source.slice(chunk.starting_point, chunk.ending_point);
 
-  if(chunk.starting_point < file.size && chunk.ending_point <= file.size && !chunk.uploaded) {
-    /*yield*/
+    return new Promise((resolve: Function, reject: Function) => {
 
-    yield new Promise((resolve: Function, reject: Function) => {
-
-      counter += 1;
       options.metadata.uuid = chunk.uuid;
       options.onSuccess = () => resolve(chunk);
       options.onProgress = (bytesUploaded: number, bytesTotal: number) => {
-        barSubject.onNext(<TusProgressEvent> {
+        logger.info(`bytesUploaded: ${bytesUploaded} / bytesTotal: ${bytesTotal}`);
+        barSubject.next(<TusProgressEvent> {
           bytesTotal: bytesTotal,
           bytesUploaded: bytesUploaded
         });
@@ -194,8 +203,10 @@ function* CreateTusUploadClient(
 
       tusUploader.start();
 
-      chunkSubject.onNext({ chunk, counter });
+      chunkSubject.next({ chunk, counter });
 
     });
-  }
+
+  };
+
 }
