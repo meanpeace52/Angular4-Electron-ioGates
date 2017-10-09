@@ -98,26 +98,27 @@ export class Uploader {
 
       logger.info('UploadOption');
 
-      if (file.upload_started) {
+      /*if (file.upload_started) {
         uploadOptions.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.uuid}`;
-      }
+      }*/
       const stream = <any> Directory.getStream(file.stream_path);
 
       const clientSubject: Subject = new Subject<ITusChunkEvent>();
 
       const clientPromises = [];
 
-      const clientGenerator: Function = CreateTusUploadClient(
+      /*const clientGenerator: Function = CreateTusUploadClient(
         stream, uploadOptions, barSubject, file, clientSubject
-      );
+      );*/
 
       const nonUploadedChunks = _.filter(file.chunks, { uploaded: false });
 
-      logger.info(`non chunks: ${nonUploadedChunks.length}`);
+      logger.info(`Incomplete chunks: ${nonUploadedChunks.length}`);
 
       for (const chunk of nonUploadedChunks) {
-        logger.info(`adding client with offset ${chunk.offset}`);
-        clientPromises.push(clientGenerator());
+        logger.info(`Adding client with offset ${chunk.offset}, starting point in local file: ${chunk.starting_point}, chunk id ${chunk.id}`);
+        const client: Promise<Chunk> = this.createUploadClient(stream, chunk, uploadOptions, barSubject, file, clientSubject);
+        clientPromises.push(client);
       }
 
       logger.info(`Promise: ${clientPromises.length}`);
@@ -148,8 +149,11 @@ export class Uploader {
           });
         });
 
+      let counter = 0;
       const clientSubscriber = clientSubject.subscribe((response: any) => {
-        const { chunk, counter } = response;
+        counter += 1;
+        const { chunk } = response;
+        logger.info(`Client created. File offset: ${chunk.starting_point}`);
 
         chunk.upload_started = true;
         chunk.resume_url = `${this.baseUrl}/upload/tus/${this.token}/${chunk.uuid}`;
@@ -162,13 +166,58 @@ export class Uploader {
             .then(() => logger.info(`Resuming state saved for file: ${file.name}`));
           clientSubscriber.unsubscribe();
         }
+      }, (error: Error) => {
+        logger.error(error.message);
+        logger.error(error.stack);
+      }, () => {
+        logger.info('Completed creating clients');
       });
 
     });
   }
+
+  private createUploadClient(
+  stream: any,
+  chunk: Chunk,
+  options: UploadOptionsExtended,
+  barSubject: Subject,
+  file: Type.File,
+  chunkSubject: Subject): Promise<Chunk> {
+
+    const logger = global['logger'];
+    const source = getSource(stream, chunk.size);
+    const slicedSource = source.slice(chunk.starting_point, chunk.ending_point);
+
+    return new Promise((resolve: Function, reject: Function) => {
+      options.metadata.uuid = chunk.uuid;
+      options.uploadSize = chunk.size;
+      options.onSuccess = () => resolve(chunk);
+      options.onProgress = (bytesUploaded: number, bytesTotal: number) => {
+        logger.info(`bytesUploaded: ${bytesUploaded} / bytesTotal: ${bytesTotal}`);
+        barSubject.onNext(<TusProgressEvent> {
+          bytesTotal: bytesTotal,
+          bytesUploaded: bytesUploaded
+        });
+      };
+
+      options.onError = (error: Error) => {
+        logger.error(error.message);
+        logger.error(error.stack);
+        tusUploader.abort();
+
+        return reject(error);
+      };
+
+      const tusUploader = new Upload(slicedSource, options);
+
+      tusUploader.start();
+
+      chunkSubject.onNext(chunk);
+    });
+  }
 }
 
-function CreateTusUploadClient(
+/*function CreateTusUploadClient(
   stream: any,
   options: UploadOptionsExtended,
   barSubject: Subject,
@@ -191,14 +240,15 @@ function CreateTusUploadClient(
       options.onSuccess = () => resolve(chunk);
       options.onProgress = (bytesUploaded: number, bytesTotal: number) => {
         logger.info(`bytesUploaded: ${bytesUploaded} / bytesTotal: ${bytesTotal}`);
-        barSubject.next(<TusProgressEvent> {
+        barSubject.onNext(<TusProgressEvent> {
           bytesTotal: bytesTotal,
           bytesUploaded: bytesUploaded
         });
       };
 
       options.onError = (error: Error) => {
-        logger.error(JSON.stringify(error));
+        logger.error(error.message);
+        logger.error(error.stack);
         tusUploader.abort();
 
         return reject(error);
@@ -208,7 +258,8 @@ function CreateTusUploadClient(
 
       tusUploader.start();
 
-      chunkSubject.next({ chunk, counter });
+      chunkSubject.onNext({ chunk, counter });
     });
   };
 }
+*/

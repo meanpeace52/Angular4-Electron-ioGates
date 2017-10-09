@@ -53,5 +53,4 @@ export interface TusProgressEvent {
 
 export interface ITusChunkEvent {
   chunk: Chunk;
-  counter: number;
 }

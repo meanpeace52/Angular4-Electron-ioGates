@@ -9,9 +9,10 @@ export class BufferSource {
   }
 
   slice(start: number, end: number): Buffer {
-    let buf = this._buffer.slice(start, end);
+    const buf = this._buffer.slice(start, end);
     this.size = buf.length;
-    return buf
+
+    return buf;
   }
 
   close() {}
@@ -32,6 +33,7 @@ export class FileSource {
       autoClose: true
     }));
     stream.size = end - start;
+
     return stream;
   }
 
@@ -47,12 +49,12 @@ export class StreamSource {
   private _buf: Buffer;
   private _bufPos: number;
   private _bufLen: number;
+  private chunkSize: number;
 
-  constructor(stream: any, private chunkSize: number) {
-
+  constructor(stream: any, chunkSize: number) {
     this._stream = stream;
     // Ensure that chunkSize is an integer and not something else or Infinity.
-    this.chunkSize = +this.chunkSize;
+    this.chunkSize = +chunkSize;
     if (!isFinite(this.chunkSize)) {
       throw new Error("cannot create source for stream without a finite value for the `chunkSize` option");
     }
@@ -63,19 +65,20 @@ export class StreamSource {
 
     stream.pause();
 
-    this._buf = new Buffer(chunkSize);
+    this._buf = new Buffer(this.chunkSize);
     this._bufPos = null;
     this._bufLen = 0;
   }
 
-  slice(start: number, end: number) {
+  public slice(start: number, end: number) {
     // Always attempt to drain the buffer first, even if this means that we
     // return less data, then the caller requested.
     if (start >= this._bufPos && start < (this._bufPos + this._bufLen)) {
-      let bufStart = start - this._bufPos;
-      let bufEnd = Math.min(this._bufLen, end - this._bufPos);
-      let buf = (<any> this._buf.slice(bufStart, bufEnd));
+      const bufStart = start - this._bufPos;
+      const bufEnd = Math.min(this._bufLen, end - this._bufPos);
+      const buf = (<any> this._buf.slice(bufStart, bufEnd));
       buf.size = buf.length;
+
       return buf;
     }
 
@@ -88,11 +91,13 @@ export class StreamSource {
     this._bufPos = start;
     this._bufLen = 0;
 
-    let bytesToSkip = start - this._bufPos;
-    let bytesToRead = end - start;
-    let slicingStream = (<any> new SlicingStream(bytesToSkip, bytesToRead, this));
+    //const bytesToSkip = start - this._bufPos;
+    const bytesToSkip = this._bufPos;
+    const bytesToRead = end - start;
+    const slicingStream = (<any> new SlicingStream(bytesToSkip, bytesToRead, this));
     this._stream.pipe(slicingStream);
     slicingStream.size = bytesToRead;
+
     return slicingStream;
   }
 
@@ -161,7 +166,7 @@ export class SlicingStream extends Transform {
   }
 }
 
-export function getSource(input, chunkSize) {
+export function getSource(input: any, chunkSize: number) {
   if (Buffer.isBuffer(input)) {
     return new BufferSource(input);
   }

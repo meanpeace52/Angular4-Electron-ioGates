@@ -75,19 +75,24 @@ export class Chunk extends Model<Chunk> {
 
     // let logger = global['logger'];
     const bulk = [];
-    const clientSize = Math.ceil(file.size / chunkNumber);
+    let clientSize = Math.ceil(file.size / chunkNumber);
     let startingPoint = 0;
 
     for (let i = 0; i < chunkNumber; i += 1) {
+      let endPoint = startingPoint + clientSize;
+      if (endPoint > file.size || (i === chunkNumber - 1 && endPoint < file.size)) {
+        endPoint = file.size;
+        clientSize = endPoint - startingPoint;
+      }
       const chunk = new Chunk();
       //chunk.file_id = file.id;
       //chunk.share_id = file.share_id;
       chunk.upload_filename = file.upload_filename;
       chunk.starting_point = startingPoint;
-      chunk.ending_point = startingPoint + clientSize;
+      chunk.ending_point = endPoint;
       chunk.uuid = uuid();
       chunk.size = clientSize;
-      startingPoint = clientSize;
+      startingPoint = chunk.ending_point + 1;
       bulk.push(chunk);
     }
 
