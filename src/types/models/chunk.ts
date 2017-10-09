@@ -71,17 +71,17 @@ export class Chunk extends Model<Chunk> {
   @Column
   public upload_started: number;
 
-
-  static CreateBulkChunks(file: File, chunkNumber: number): Array<Chunk> {
+  public static CreateBulkChunks(file: File, chunkNumber: number): Chunk[] {
 
     // let logger = global['logger'];
     const bulk = [];
-    let clientSize = Math.ceil(file.size / chunkNumber);
+    const clientSize = Math.ceil(file.size / chunkNumber);
     let startingPoint = 0;
 
-    for (let i  = 0; i < chunkNumber; i++) {
-      let chunk = new Chunk();
-      chunk.file_id = file.file_id;
+    for (let i = 0; i < chunkNumber; i += 1) {
+      const chunk = new Chunk();
+      //chunk.file_id = file.id;
+      //chunk.share_id = file.share_id;
       chunk.upload_filename = file.upload_filename;
       chunk.starting_point = startingPoint;
       chunk.ending_point = startingPoint + clientSize;
@@ -92,17 +92,16 @@ export class Chunk extends Model<Chunk> {
     }
 
     return bulk;
-
   }
 
-  static BulkSave(chunks: Chunk[]): Promise<Chunk> {
-    return global['_DB'].transaction(function transactionFn(transaction) {
+  public static BulkSave(chunks: Chunk[]): Promise<Chunk[]> {
+    return global['_DB'].transaction( (transaction: any) => {
       const bulk = [];
       chunks.forEach((chunk: Chunk) => {
         const record = chunk.get({plain: true});
         delete record['id'];
         const fn = Chunk
-          .update(record,{
+          .update(record, {
             where: {
               id: chunk.id,
               uuid: chunk.uuid
@@ -114,7 +113,7 @@ export class Chunk extends Model<Chunk> {
         bulk.push(fn);
 
         return Promise.all(bulk);
-      })
+      });
     });
   }
 }

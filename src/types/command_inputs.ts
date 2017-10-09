@@ -1,6 +1,8 @@
 /**
  * Exports Input format for Download command
  */
+import {Chunk} from "./models/chunk";
+
 export class CommandDownloadInput {
   public options: object;
   public dir: string;
@@ -47,4 +49,9 @@ export interface CommandAddInput {
 export interface TusProgressEvent {
   bytesUploaded: number;
   bytesTotal: number;
+}
+
+export interface ITusChunkEvent {
+  chunk: Chunk;
+  counter: number;
 }

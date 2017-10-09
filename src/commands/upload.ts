@@ -125,6 +125,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     })
     .catch((err: Error) => {
       // winston.error(err);
-      logger.error(`JSON.stringify(err)`);
+      logger.error(err.message);
+      logger.error(err.stack);
     });
 }

@@ -9,6 +9,10 @@ import { File } from './file';
   tableName: 'shares'
 })
 export class Share extends Model<Share> {
+  public static DIRECTION_UPLOAD: string = 'upload';
+  public static DIRECT_DOWNLOAD: string = 'download';
+  public static DIRECT_BI: string = 'BI';
+
   @Column({
     primaryKey: true,
     unique: true,
@@ -44,9 +48,6 @@ export class Share extends Model<Share> {
   @HasMany(() => File)
   public files: File[];
 
-  static DIRECTION_UPLOAD = 'upload';
-  static DIRECT_DOWNLOAD = 'download';
-
   public static LOOKUP(shareUrl: string, destination: string): Promise<Share> {
     const promise = Share
       .findOrCreate({
@@ -66,11 +67,12 @@ export class Share extends Model<Share> {
     return Promise.resolve(promise);
   }
 
-  static ForTableOutput(shares: Array<Object>) {
+  static ForTableOutput(shares: Object[]) {
     const arr = [];
-    shares.forEach(share => {
+    shares.forEach((share: Object) => {
       arr.push(Object.keys(share).map(key => share[key]));
     });
+
     return arr;
   }
 

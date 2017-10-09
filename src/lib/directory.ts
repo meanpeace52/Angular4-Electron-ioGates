@@ -46,15 +46,16 @@ export class Directory {
   }
 
   public read(numberOfThreads: number): Promise<File[]> {
-    let logger = global['logger'];
+    const logger = global['logger'];
+
     return this.create()
       .then(() => {
         try {
-          let promise = [];
-          let blobs: File[] = this.walkSync(this.path, []).map((filePath): File => {
-            let size = fs.statSync(filePath).size;
-            let fileNameSplit = filePath.split('/');
-            let file = new File();
+          const promise = [];
+          const blobs: File[] = this.walkSync(this.path, []).map((filePath: string): File => {
+            const size = fs.statSync(filePath).size;
+            const fileNameSplit = filePath.split('/');
+            const file = new File();
             file.name = fileNameSplit[fileNameSplit.length - 1];
             file.type = mime.lookup(file.name) || 'Other';
             file.size = size;
@@ -71,8 +72,7 @@ export class Directory {
           blobs.forEach((file: File) => promise.push(File.createMd5(file)));
 
           return Promise.all(promise);
-        }
-        catch (e) {
+        } catch (e) {
           return Promise.reject(e);
         }
       })
