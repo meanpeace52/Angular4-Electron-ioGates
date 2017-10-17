@@ -19,15 +19,15 @@ export class Watcher extends EventEmitter {
 
 export class DownloadWatcher extends Watcher {
 
-  api: IOGates;
-  delay: number;
-  downloader: Downloader;
-  destination: string;
-  constructor(destination: string, delay?: number) {
+  public downloader: Downloader;
+  private api: IOGates;
+  private delay: number;
+  private destination: string;
+  constructor(destination: string, iogates: IOGates, downloader: Downloader, delay?: number) {
     super();
-    this.api = new IOGates();
+    this.api = iogates;
     this.delay = delay || 6000;
-    this.downloader = new Downloader();
+    this.downloader = downloader;
     this.destination = destination;
   }
 
@@ -42,6 +42,7 @@ export class DownloadWatcher extends Watcher {
         .readFiles()
         .then((response: Files) => {
           const files = response.files;
+
           return File.filterForDownload(files);
         })
         .then((files: File[]) => {
@@ -49,6 +50,7 @@ export class DownloadWatcher extends Watcher {
             return end();
           }
           // save them in db.
+
           return File
             .bulkSave(files, share)
             .then((files: File[]) => {
@@ -61,18 +63,19 @@ export class DownloadWatcher extends Watcher {
                   successIds.push(response.file.file_id);
                 }
               });
+
               return File
                 .update({
                   downloaded: true
                 }, {
                   where: {
-                    fileId: successIds
+                    file_id: successIds
                   }
                 });
             })
             .then(() => {
               end();
-            })
+            });
         })
         .catch(e => {
           this.emit('error', e);

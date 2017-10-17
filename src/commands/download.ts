@@ -80,17 +80,18 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then(() => {
       if (args.options['watch']) {
         console.log('[watch] for new files.');
-        const watcher = new DownloadWatcher(destination);
+        const watcher = new DownloadWatcher(destination, ioGate, downloader);
         watcher.watch(outerShare);
         watcher.on('error', (err) => {
-          logger.error(err.message);
+          logger.error('Error in watcher.');
+          logger.error(err);
         });
       } else {
         console.log('[download] is completed.');
         return done(null);
       }
     })
-    .catch((e: Error) => {
-      logger.error(e.message);
+    .catch((e: any) => {
+      logger.error(e);
     });
 }

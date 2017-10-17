@@ -149,7 +149,7 @@ export class File extends Model<File> {
         where: {
           file_id: ids
         },
-        attributes: ['fileId'],
+        attributes: ['file_id'],
         raw: true
       })
       .then((existingFiles: File[]) => {
