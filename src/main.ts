@@ -51,6 +51,7 @@ commands
   .option('-m, --monitor', 'Shows download progress')
   .option('-v, --verbose', 'Shows debug logs')
   .option('-w, --watch', 'Watch for changes and auto-download')
+  .option('--startdate <date>', 'Only download files newer than the start date (ISO 8601)')
   .action(downloadComand);
 
 commands

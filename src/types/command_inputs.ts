@@ -2,7 +2,11 @@
  * Exports Input format for Download command
  */
 export class CommandDownloadInput {
-  public options: object;
+  public options?: {
+    startdate: string,
+    watch: boolean,
+    verbose: boolean
+  };
   public dir: string;
   public url: string;
 }
