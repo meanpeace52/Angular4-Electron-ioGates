@@ -43,6 +43,9 @@ export class File extends Model<File> {
   public parent: number;
 
   @Column
+  public created: Date;
+
+  @Column
   public href: string;
 
   @Column
@@ -205,5 +208,4 @@ export class File extends Model<File> {
     file['file_id'] = Number(file['id']);
     return new File(file);
   }
-
 }

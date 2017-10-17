@@ -8,11 +8,13 @@ import * as CliProgress from 'cli-progress';
 //import * as queue from 'queue';
 import * as fs from 'fs';
 import { Directory } from '../lib/directory';
+import {isUndefined} from "util";
 
 /**
  * Helps download a file from IOGates
  */
 export class Downloader {
+  public startDate: Date | undefined;
   public static CALCULATE_TRANSFER_SPEED(sent: number[], timestamps: number[], buffer: number | null = null) {
       const sentLen = sent.length;
       const timeLen = timestamps.length;
@@ -45,18 +47,25 @@ export class Downloader {
 
     return new Promise(async (resolve, reject) => {
       const results = [];
+      const fileSavePromises = [];
       for (const file of files) {
         try {
-          const r: Type.UploadResponse = await self.downloadFile(file);
-          results.push(r);
-          r.file.downloaded = true;
-          r.file.save();
+          if (isUndefined(this.startDate) || file.created > this.startDate) {
+            const r: Type.UploadResponse = await self.downloadFile(file);
+            results.push(r);
+            r.file.downloaded = true;
+            fileSavePromises.push(r.file.save());
+          } else {
+            global['logger'].info(`Ignoring ${file.name} as it is older than start date`);
+          }
         } catch (err) {
-          return reject(err);
+          global['logger'].error(`Failed downloading: ${file.name}. ${err}`);
         }
       }
 
-      return resolve(results);
+      return Promise.all(fileSavePromises).then(() => {
+        return resolve(results);
+      });
     });
   }
 

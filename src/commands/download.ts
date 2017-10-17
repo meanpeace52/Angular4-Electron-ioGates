@@ -14,12 +14,22 @@ import { DownloadWatcher } from '../lib/watcher';
 // const log = debug('io:command:download');
 
 export function downloadComand(args: CommandDownloadInput, done: Function) {
+  const logger = global['logger'];
   const destination = args.dir;
   const shareUrl = args.url;
   const downloader: Downloader = new Downloader();
+  if (args.options.startdate) {
+    try {
+      const startDate = new Date(Date.parse(args.options.startdate));
+      downloader.startDate = startDate;
+      logger.info(`Using start date: ${startDate.getFullYear()}-${startDate.getMonth().toFixed(2)}-` +
+        `${startDate.getDate().toFixed(2)}`);
+    } catch (e) {
+      logger.error(`Could not parse the date: ${args.options.startdate}`);
+    }
+  }
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
-  const logger = global['logger'];
   let outerShare;
   logger.log('executing download');
   global['_DB']
