@@ -4,7 +4,6 @@ import { File } from "../types";
 import * as uuid from 'uuid/v1';
 import { ReadStream } from "fs";
 import * as mime from 'mime-types';
-import {Chunk} from "../types/models/chunk";
 
 /**
  *  Exports class Directory.
@@ -13,6 +12,26 @@ export class Directory {
   public path: string;
   constructor(path: string) {
     this.path = path;
+  }
+
+  public static getStream(path: string): ReadStream {
+    return fs.createReadStream(path);
+  }
+
+  public static delete(dir: string) {
+    return new Promise((resolve, reject) => {
+      fs.rmdir(dir, (err) => {
+        if (err instanceof Error) {
+          if (/ENOENT/ig.test(err.message)) {
+            return resolve();
+          }
+
+          return reject(err);
+        }
+
+        return resolve();
+      });
+    });
   }
 
   public create(): Promise<null> {
@@ -24,30 +43,16 @@ export class Directory {
 
             return resolve(null);
           }
+
           return reject(err);
         }
+
         return resolve(null);
       });
     });
   }
 
-  public static delete(dir: string) {
-    return new Promise((resolve, reject) => {
-      fs.rmdir(dir, (err) => {
-        if (err instanceof Error) {
-          if (/ENOENT/ig.test(err.message)) {
-            return resolve();
-          }
-          return reject(err);
-        }
-        return resolve();
-      });
-    });
-  }
-
-  public read(numberOfThreads: number): Promise<File[]> {
-    const logger = global['logger'];
-
+  public read(): Promise<File[]> {
     return this.create()
       .then(() => {
         try {
@@ -62,10 +67,6 @@ export class Directory {
             file.uuid = uuid();
             file.uploaded = false;
             file.stream_path = filePath;
-            file.chunkSize = Math.ceil(file.size / numberOfThreads);
-            logger.info(`Chunk Size: ${file.chunkSize}`);
-            file.chunks = Chunk.CreateBulkChunks(file, numberOfThreads);
-            logger.info(`Chunk Length: ${file.chunks.length}`);
 
             return file;
           });
@@ -82,12 +83,8 @@ export class Directory {
     // });
   }
 
-  public static getStream(path: string): ReadStream {
-    return fs.createReadStream(path);
-  }
-
-  public walkSync(dir: string, fileList: Array<string>): Array<string> {
-    let files = fs.readdirSync(dir);
+  public walkSync(dir: string, fileList: string[]): string[] {
+    const files = fs.readdirSync(dir);
     if (!Array.isArray(fileList)) {
       fileList = [];
     }
@@ -95,8 +92,7 @@ export class Directory {
     files.forEach(file => {
       if (fs.statSync(path.join(dir, file)).isDirectory()) {
         fileList = this.walkSync(path.join(dir, file), fileList);
-      }
-      else {
+      } else if (file.substr(0, 1) !== '.') {
         fileList.push(path.join(dir, file));
       }
     });

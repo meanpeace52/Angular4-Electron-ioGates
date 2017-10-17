@@ -5,7 +5,7 @@ import {
 } from '../types';
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
-import * as winston from 'winston';
+//import * as winston from 'winston';
 import { Uploader } from '../lib/uploader';
 import { UploadWatcher } from '../lib/watcher';
 import * as fs from 'fs';
@@ -29,7 +29,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   logger.info('executing upload');
   global['_DB']
     .sync()
-    .then(() => directory.read(threads))
+    .then(() => directory.read())
     .then((files: File[]) => {
       readStreamFiles = files;
 
@@ -103,8 +103,8 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
         watcher = new UploadWatcher(destination, threads);
 
         watcher.watch(outerShare);
-        watcher.on('error', (err) => {
-          winston.error('[watch] error: ', err);
+        watcher.on('error', (err: Error) => {
+          logger.error('[watch] error: ', err);
         });
         watcher.on('success', (file: File) => {
           if (deleteAfterUpload === true) {

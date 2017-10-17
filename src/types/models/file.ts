@@ -178,6 +178,7 @@ export class File extends Model<File> {
               md5: file.md5,
               stream_path: file.stream_path
             },
+            include: [Chunk],
             defaults: record,
             transaction: transaction
           })
@@ -187,25 +188,8 @@ export class File extends Model<File> {
             } else {
               logger.info(`File <${file.name}>`, 'already uploaded, skipping upload...');
             }
-            if (created) {
-              const chunkBulk = [];
-              for (const chunk of file.chunks) {
-                chunk.file_id = savedFile.id;
-                chunk.share_id = savedFile.share_id;
-                chunkBulk.push(chunk.save({
-                  transaction: transaction
-                }));
-              }
-              savedFile.chunks = file.chunks;
 
-              return Promise.all(chunkBulk).then(() => {
-                return savedFile;
-              });
-            } else {
-              // TODO: handle load chunks from database
-              savedFile.chunks = file.chunks;
-              return savedFile;
-            }
+            return savedFile;
           });
         bulk.push(fn);
       });
@@ -239,5 +223,4 @@ export class File extends Model<File> {
 
     return new File(file);
   }
-
 }

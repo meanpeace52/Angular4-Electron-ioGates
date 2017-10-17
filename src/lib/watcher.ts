@@ -125,7 +125,7 @@ export class UploadWatcher extends Watcher {
 
   private initiateUpload(share: Share) {
     this.directory
-      .read(this.threads)
+      .read()
       .then((files: File[]) => {
         this.files = files;
 

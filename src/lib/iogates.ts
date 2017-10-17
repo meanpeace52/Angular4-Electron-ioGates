@@ -76,7 +76,7 @@ export class IOGates {
       const filesToBeCreated = files.map((file: File) => {
         return {
           name: file.name,
-          type: 'Other',
+          type: file.type,
           attributes: [{ name: 'path', value: file.stream_path }]
         };
       });
@@ -89,9 +89,14 @@ export class IOGates {
         if (r.statusCode !== 200) {
           return reject(err);
         }
-
         const createdFiles = files.map((file: File) => {
-          file.upload_filename = _.find(response.files, { name: file.name }).upload_filename;
+          const apiFile = _.find(response.files, { name: file.name });
+          file.upload_filename = apiFile.upload_filename;
+          file.file_id = apiFile.id;
+          file.href = apiFile.href;
+          file.download = apiFile.download;
+          file.parent = apiFile.parent;
+          file.type = apiFile.type;
 
           return file;
         });

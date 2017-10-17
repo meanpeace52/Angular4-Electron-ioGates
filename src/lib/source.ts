@@ -3,30 +3,33 @@ import * as fs from 'fs';
 
 export class BufferSource {
   private size: number;
+  private _buffer: Buffer;
 
-  constructor(private _buffer: Buffer) {
-    this.size = this._buffer.length;
+  constructor(buffer: Buffer) {
+    this._buffer = buffer;
+    this.size = buffer.length;
   }
 
-  slice(start: number, end: number): Buffer {
+  public slice(start: number, end: number): Buffer {
     const buf = this._buffer.slice(start, end);
     this.size = buf.length;
 
     return buf;
   }
 
-  close() {}
+  public close() {}
 }
 
 export class FileSource {
-
+  private _stream: any;
   private _path: string;
 
-  constructor(private _stream: any) {
-    this._path = this._stream.path.toString();
+  constructor(stream: any) {
+    this._stream = stream;
+    this._path = stream.path.toString();
   }
 
-  slice(start: number, end: number) {
+  public slice(start: number, end: number) {
     let stream = (<any> fs.createReadStream(this._path, {
       start: start,
       end: end,
@@ -37,7 +40,7 @@ export class FileSource {
     return stream;
   }
 
-  close() {
+  public close() {
     this._stream.destroy();
   }
 }
@@ -91,8 +94,7 @@ export class StreamSource {
     this._bufPos = start;
     this._bufLen = 0;
 
-    //const bytesToSkip = start - this._bufPos;
-    const bytesToSkip = this._bufPos;
+    const bytesToSkip = start - this._bufPos;
     const bytesToRead = end - start;
     const slicingStream = (<any> new SlicingStream(bytesToSkip, bytesToRead, this));
     this._stream.pipe(slicingStream);
@@ -101,7 +103,7 @@ export class StreamSource {
     return slicingStream;
   }
 
-  close() {
+  public close() {
     //this._stream.
   }
 }
@@ -110,6 +112,7 @@ export class SlicingStream extends Transform {
   private _bytesToSkip: number;
   private _bytesToRead: number;
   private _source: any;
+
   constructor(bytesToSkip, bytesToRead, source) {
     super();
 
