@@ -1,6 +1,8 @@
 /**
  * Exports Input format for Download command
  */
+import {Chunk} from './models/chunk';
+
 export class CommandDownloadInput {
   public options?: {
     startdate: string,
@@ -17,6 +19,7 @@ export class CommandUploadOptions {
   public watch: boolean;
   public delay: boolean | number;
   public chunksize: false | number;
+  public thread: number;
 }
 
 export class CommandUploadInput {
@@ -45,4 +48,14 @@ export interface CommandAddInput {
   dir: string;
   url: string;
   options: object;
+}
+
+export interface ITusProgressEvent {
+  bytesUploaded: number;
+  bytesTotal: number;
+  chunkId: number;
+}
+
+export interface ITusChunkEvent {
+  chunk: Chunk;
 }

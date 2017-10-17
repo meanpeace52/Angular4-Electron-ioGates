@@ -14,20 +14,8 @@ export class Directory {
     this.path = path;
   }
 
-  public create(): Promise<null> {
-    return new Promise((resolve: Function, reject: Function) => {
-      global['logger'].info('creating dir %s', this.path);
-      fs.mkdir(this.path, (err: Object) => {
-        if (err instanceof Error) {
-          if (/EEXIST/ig.test(err.message)) {
-
-            return resolve(null);
-          }
-          return reject(err);
-        }
-        return resolve(null);
-      });
-    });
+  public static getStream(path: string): ReadStream {
+    return fs.createReadStream(path);
   }
 
   public static delete(dir: string) {
@@ -37,35 +25,55 @@ export class Directory {
           if (/ENOENT/ig.test(err.message)) {
             return resolve();
           }
+
           return reject(err);
         }
+
         return resolve();
       });
     });
   }
 
-  public read(): Promise<Array<File>> {
+  public create(): Promise<null> {
+    return new Promise((resolve: Function, reject: Function) => {
+      global['logger'].info('creating dir %s', this.path);
+      fs.mkdir(this.path, (err: Object) => {
+        if (err instanceof Error) {
+          if (/EEXIST/ig.test(err.message)) {
+
+            return resolve(null);
+          }
+
+          return reject(err);
+        }
+
+        return resolve(null);
+      });
+    });
+  }
+
+  public read(): Promise<File[]> {
     return this.create()
       .then(() => {
         try {
-          let promise = [];
-          let blobs: File[] = this.walkSync(this.path, []).map((filePath): File => {
-            let size = fs.statSync(filePath).size;
-            let fileNameSplit = filePath.split('/');
-            let file = new File();
+          const promise = [];
+          const blobs: File[] = this.walkSync(this.path, []).map((filePath: string): File => {
+            const size = fs.statSync(filePath).size;
+            const fileNameSplit = filePath.split('/');
+            const file = new File();
             file.name = fileNameSplit[fileNameSplit.length - 1];
             file.type = mime.lookup(file.name) || 'Other';
             file.size = size;
             file.uuid = uuid();
             file.uploaded = false;
             file.stream_path = filePath;
+
             return file;
           });
           blobs.forEach((file: File) => promise.push(File.createMd5(file)));
 
           return Promise.all(promise);
-        }
-        catch (e) {
+        } catch (e) {
           return Promise.reject(e);
         }
       })
@@ -75,12 +83,8 @@ export class Directory {
     // });
   }
 
-  public static getStream(path: string): ReadStream {
-    return fs.createReadStream(path);
-  }
-
-  public walkSync(dir: string, fileList: Array<string>): Array<string> {
-    let files = fs.readdirSync(dir);
+  public walkSync(dir: string, fileList: string[]): string[] {
+    const files = fs.readdirSync(dir);
     if (!Array.isArray(fileList)) {
       fileList = [];
     }
@@ -88,8 +92,7 @@ export class Directory {
     files.forEach(file => {
       if (fs.statSync(path.join(dir, file)).isDirectory()) {
         fileList = this.walkSync(path.join(dir, file), fileList);
-      }
-      else {
+      } else if (file.substr(0, 1) !== '.') {
         fileList.push(path.join(dir, file));
       }
     });

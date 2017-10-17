@@ -94,10 +94,10 @@ export class UploadWatcher extends Watcher {
   private files: File[];
   private watcher: FSWatcher;
 
-  constructor(destination: string) {
+  constructor(destination: string, public threads: number) {
     super();
     this.api = new IOGates();
-    this.uploader = new Uploader();
+    this.uploader = new Uploader(this.api, threads);
     this.destination = destination;
     this.directory = new Directory(this.destination);
     this.watcher = watch(this.destination, {
