@@ -114,7 +114,8 @@ export class Uploader {
         uuid: file.uuid
       },
       extensions: {
-        concatenation: false
+        concatenation: false,
+        checksum: true
       }
     };
 
@@ -173,7 +174,8 @@ export class Uploader {
         filename: `${file.upload_filename}${file.name.substr(extIndex, file.name.length)}`
       },
       extensions: {
-        concatenation: true
+        concatenation: true,
+        checksum: true
       }
     };
 

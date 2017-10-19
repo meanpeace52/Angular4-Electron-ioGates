@@ -14,4 +14,5 @@ export interface IMetadata {
 
 export interface IExtension {
   concatenation: boolean;
+  checksum: boolean;
 }

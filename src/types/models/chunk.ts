@@ -37,18 +37,18 @@ export class Chunk extends Model<Chunk> {
     }
     let startingPoint = 0;
 
+    const lastByte = file.size - 1;
     for (let i = 0; i < threads; i += 1) {
       let endPoint = startingPoint + clientSize - 1;
-      if (endPoint > file.size || (i === threads - 1 && endPoint < file.size)) {
-        endPoint = file.size;
-        clientSize = endPoint - startingPoint;
+      if (endPoint > lastByte || (i === threads - 1 && endPoint < lastByte)) {
+        endPoint = lastByte;
       }
       const chunk = new Chunk();
       chunk.file_id = file.id;
       chunk.starting_point = startingPoint;
       chunk.ending_point = endPoint;
       chunk.uuid = uuid();
-      chunk.size = clientSize;
+      chunk.size = endPoint - startingPoint + 1;
       startingPoint = chunk.ending_point + 1;
       bulk.push(chunk);
     }
