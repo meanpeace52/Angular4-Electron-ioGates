@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { File } from "../types";
+import { File } from '../types';
 import * as uuid from 'uuid/v1';
-import { ReadStream } from "fs";
+import { ReadStream } from 'fs';
 import * as mime from 'mime-types';
 
 /**
@@ -59,9 +59,8 @@ export class Directory {
           const promise = [];
           const blobs: File[] = this.walkSync(this.path, []).map((filePath: string): File => {
             const size = fs.statSync(filePath).size;
-            const fileNameSplit = filePath.split('/');
             const file = new File();
-            file.name = fileNameSplit[fileNameSplit.length - 1];
+            file.name = path.basename(filePath);
             file.type = mime.lookup(file.name) || 'Other';
             file.size = size;
             file.uuid = uuid();
