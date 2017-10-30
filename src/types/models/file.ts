@@ -10,6 +10,7 @@ import { Share } from './share';
 import { createHash } from 'crypto';
 import * as fs from 'fs';
 import { Chunk } from './chunk';
+import * as Bluebird from 'bluebird';
 // import * as winston from 'winston';
 
 /**
@@ -101,13 +102,13 @@ export class File extends Model<File> {
     return this.type === 'dir';
   }
 
-  public static bulkSave(files: File[], share: Share): Promise<File[]> {
+  public static bulkSave(files: File[], share: Share): Bluebird<File[]> {
     const logger = global['logger'];
 
     return global['_DB'].transaction(function transactionFn(transaction) {
       const bulk = [];
       const toDownload = [];
-      files.forEach(file => {
+      files.forEach((file: File) => {
         const record = file.get({plain: true});
         delete record['id'];
         record.share_id = share.id;
@@ -132,7 +133,7 @@ export class File extends Model<File> {
         bulk.push(fn);
       });
 
-      return Promise
+      return Bluebird
         .all(bulk)
         .then(() => {
           return toDownload;
@@ -140,11 +141,12 @@ export class File extends Model<File> {
     });
   }
 
-  public static filterForDownload(files: File[]): Promise<Array<File>> {
-    const download = [];
+  public static filterForDownload(files: File[]): Bluebird<File[]> {
+    const download: File[] = [];
     const ids = [];
-    files.forEach(file => ids.push(file.id));
-    const promise = File
+    files.forEach((file: File) => ids.push(file.id));
+
+    return File
       .findAll({
         where: {
           file_id: ids
@@ -162,10 +164,9 @@ export class File extends Model<File> {
 
         return download;
       });
-    return Promise.resolve(promise);
   }
 
-  public static saveReadStreamFiles(files: File[], share: Share): Promise<File[]> {
+  public static saveReadStreamFiles(files: File[], share: Share): Bluebird<File[]> {
     const logger = global['logger'];
 
     return global['_DB'].transaction((transaction: any) => {
@@ -197,7 +198,7 @@ export class File extends Model<File> {
         bulk.push(fn);
       });
 
-      return Promise
+      return Bluebird
         .all(bulk)
         .then(() => {
           return toUpload;
@@ -205,11 +206,11 @@ export class File extends Model<File> {
     });
   }
 
-  public static createMd5(file: File): Promise<File> {
+  public static createMd5(file: File): Bluebird<File> {
     const hash = createHash('md5');
     const stream = fs.createReadStream(file.stream_path);
 
-    return new Promise((resolve: Function, reject: Function) => {
+    return new Bluebird((resolve: Function, reject: Function) => {
       stream.on('data', (data) => hash.update(data));
 
       stream.on('end', () => {

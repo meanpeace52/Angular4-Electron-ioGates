@@ -9,6 +9,8 @@ import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
 import { machineIdSync } from 'node-machine-id';
 import * as CONFIG from '../config';
+import * as path from 'path';
+import * as fs from 'fs';
 
 // setup db and copy to global
 const sequelize = new Sequelize(CONFIG.database);
@@ -19,8 +21,14 @@ global['_DB'] = sequelize;
 let transports: any = [
   new (winston.transports.Console)({
     name: 'console'
-  }),
+  })
 ];
+if (!fs.existsSync(path.dirname(CONFIG.logs.info))) {
+  fs.mkdirSync(path.dirname(CONFIG.logs.info));
+}
+if (!fs.existsSync(path.dirname(CONFIG.logs.error))) {
+  fs.mkdirSync(path.dirname(CONFIG.logs.error));
+}
 if (CONFIG.logs.devMode === false) {
   transports = [
     new (winston.transports.File)({
@@ -35,12 +43,13 @@ if (CONFIG.logs.devMode === false) {
       level: 'error',
       json: false
     })
-  ]
+  ];
 }
 const logger = new winston.Logger({
   transports: transports,
   exitOnError: true
 });
+
 global['logger'] = logger;
 global['device-id'] = machineIdSync();
 global['config'] = CONFIG;

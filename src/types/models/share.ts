@@ -1,5 +1,6 @@
 import { Table, Column, Model, HasMany, Sequelize } from 'sequelize-typescript';
 import { File } from './file';
+import * as Bluebird from 'bluebird';
 /**
  * Exports Share class.
  */
@@ -48,7 +49,7 @@ export class Share extends Model<Share> {
   @HasMany(() => File)
   public files: File[];
 
-  public static LOOKUP(shareUrl: string, destination: string): Promise<Share> {
+  public static LOOKUP(shareUrl: string, destination: string): Bluebird<Share> {
     const promise = Share
       .findOrCreate({
         where: {
@@ -64,7 +65,7 @@ export class Share extends Model<Share> {
         return share;
       });
 
-    return Promise.resolve(promise);
+    return Bluebird.resolve(<any>promise);
   }
 
   static ForTableOutput(shares: Object[]) {
@@ -85,9 +86,11 @@ export class Share extends Model<Share> {
       })
       .then(share => {
         if (!share) return null;
+
         return share.destroy({ force: true });
       });
-    return Promise.resolve(runFn);
+
+    return Bluebird.resolve(runFn);
   }
 
   static DeleteById(id: number) {
@@ -101,7 +104,8 @@ export class Share extends Model<Share> {
         if (!share) return null;
         return share.destroy({ force: true });
       });
-    return Promise.resolve(runFn);
+
+    return Bluebird.resolve(runFn);
   }
 
   static DeleteByDir(dir: string) {
@@ -115,6 +119,7 @@ export class Share extends Model<Share> {
         if (!share) return null;
         return share.destroy({ force: true });
       });
-    return Promise.resolve(runFn);
+
+    return Bluebird.resolve(runFn);
   }
 }

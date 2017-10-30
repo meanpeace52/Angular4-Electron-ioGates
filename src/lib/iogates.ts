@@ -3,6 +3,7 @@ import * as request from 'request';
 import { Share, Auth, Files, File } from './types';
 import debug from 'debug';
 import * as _ from 'lodash';
+import * as Bluebird from 'bluebird';
 const log = debug('io:lib:iogates');
 
 /**
@@ -50,10 +51,10 @@ export class IOGates {
     });
   }
 
-  public readFiles(): Promise<Files> {
+  public readFiles(): Bluebird<Files> {
     log('called readFiles');
 
-    return new Promise((resolve: Function, reject: Function) => {
+    return new Bluebird((resolve: Function, reject: Function) => {
       this.getRequest().get({
         url: '/files',
         json: true

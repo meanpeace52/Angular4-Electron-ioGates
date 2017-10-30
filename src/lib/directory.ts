@@ -4,6 +4,7 @@ import { File } from '../types';
 import * as uuid from 'uuid/v1';
 import { ReadStream } from 'fs';
 import * as mime from 'mime-types';
+import * as Bluebird from "bluebird";
 
 /**
  *  Exports class Directory.
@@ -34,8 +35,8 @@ export class Directory {
     });
   }
 
-  public create(): Promise<null> {
-    return new Promise((resolve: Function, reject: Function) => {
+  public create(): Bluebird<null> {
+    return new Bluebird((resolve: Function, reject: Function) => {
       global['logger'].info('creating dir %s', this.path);
       fs.mkdir(this.path, (err: Object) => {
         if (err instanceof Error) {
@@ -52,7 +53,7 @@ export class Directory {
     });
   }
 
-  public read(): Promise<File[]> {
+  public read(): Bluebird<File[]> {
     return this.create()
       .then(() => {
         try {
@@ -71,9 +72,9 @@ export class Directory {
           });
           blobs.forEach((file: File) => promise.push(File.createMd5(file)));
 
-          return Promise.all(promise);
+          return Bluebird.all(promise);
         } catch (e) {
-          return Promise.reject(e);
+          return Bluebird.reject(e);
         }
       })
       .then((file) => Promise.resolve(file));

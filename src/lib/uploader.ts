@@ -14,7 +14,8 @@ import {ITusChunkEvent, ITusProgressEvent} from '../types/command_inputs';
 import * as http from 'http';
 import * as request from 'request';
 import { Chunk } from '../types/models/chunk';
-import {isUndefined} from "util";
+import {isUndefined} from 'util';
+import * as Bluebird from 'bluebird';
 
 export class Uploader {
   public baseUrl: string = 'https://share-web02-transferapp.iogates.com';
@@ -28,7 +29,7 @@ export class Uploader {
     this.threads = threads;
   }
 
-  public uploadFiles(files: Type.File[], share: Type.Share): Promise<Type.File[]> {
+  public uploadFiles(files: Type.File[], share: Type.Share): Bluebird<Type.File[]> {
     this.token = share.token;
     this.baseUrl = IOGates.GET_BASE_URL(share.url);
 
@@ -39,7 +40,7 @@ export class Uploader {
     // return Promise.all(results)
     //   .then(files => files);
 
-    return new Promise(async (resolve: Function, reject: Function) => {
+    return new Bluebird(async (resolve: Function, reject: Function) => {
       for (const file of files) {
         // results.push(this.uploadFile(file));
         try {
@@ -55,7 +56,7 @@ export class Uploader {
     });
   }
 
-  public uploadFile(file: Type.File): Promise<Type.File> {
+  public uploadFile(file: Type.File): Bluebird<Type.File> {
     const sentValues = [];
     const sentTimestamps = [];
     const bytesUploaded = {};
@@ -98,7 +99,7 @@ export class Uploader {
       }
     }
   }
-  private upload(file: Type.File, barSubject: Subject): Promise<Type.File> {
+  private upload(file: Type.File, barSubject: Subject): Bluebird<Type.File> {
     const logger = global['logger'];
     const extIndex = _.lastIndexOf(file.name, '.');
     const options: IUploadOptionsExtended  = {
@@ -123,7 +124,7 @@ export class Uploader {
         options.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${file.uuid}`;
     }
 
-    return new Promise((resolve: Function, reject: Function) => {
+    return new Bluebird((resolve: Function, reject: Function) => {
       options.onSuccess = () => {
         logger.info(`${file.uuid} uploaded`);
         file.uploaded = true;
@@ -159,7 +160,7 @@ export class Uploader {
       });
     });
   }
-  private concatUpload(file: Type.File, barSubject: Subject): Promise<Type.File> {
+  private concatUpload(file: Type.File, barSubject: Subject): Bluebird<Type.File> {
     const logger = global['logger'];
     const extIndex = _.lastIndexOf(file.name, '.');
     const uploadOptions: IUploadOptionsExtended  = {
@@ -179,7 +180,7 @@ export class Uploader {
       }
     };
 
-    return new Promise((resolve: Function, reject: Function) => {
+    return new Bluebird((resolve: Function, reject: Function) => {
 
       const clientSubject: Subject = new Subject<ITusChunkEvent>();
       let counter = 0;
@@ -220,7 +221,7 @@ export class Uploader {
 
       logger.info(`Promise: ${clientPromises.length}`);
 
-      Promise.all(clientPromises)
+      Bluebird.all(clientPromises)
         .then((chunks: Chunk[]) => {
           logger.info('Uploading done');
           chunks.sort((a: Chunk, b: Chunk) => { return (a.starting_point <= b.starting_point ? -1 : 1); });
@@ -272,7 +273,7 @@ export class Uploader {
     chunk: Chunk,
     extOptions: IUploadOptionsExtended,
     barSubject: Subject,
-    chunkSubject: Subject): Promise<Chunk> {
+    chunkSubject: Subject): Bluebird<Chunk> {
 
     const logger = global['logger'];
     const options = Object.assign({}, extOptions);
@@ -281,7 +282,7 @@ export class Uploader {
       options.uploadUrl = `${this.baseUrl}/upload/tus/${this.token}/${chunk.uuid}`;
     }
 
-    return new Promise((resolve: Function, reject: Function) => {
+    return new Bluebird((resolve: Function, reject: Function) => {
       options.metadata.uuid = chunk.uuid;
       options.uploadSize = chunk.size;
       options.fileOffset = chunk.starting_point;

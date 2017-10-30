@@ -6,6 +6,7 @@ import {
 } from 'sequelize-typescript';
 import { File } from './file';
 import * as uuid from 'uuid/v1';
+import * as Bluebird from 'bluebird';
 
 /**
  * Exports File class.
@@ -16,7 +17,7 @@ import * as uuid from 'uuid/v1';
   tableName: 'chunks'
 })
 export class Chunk extends Model<Chunk> {
-  public static STORE_CHUNKS(chunks: Chunk[]): Promise<Chunk[]> {
+  public static STORE_CHUNKS(chunks: Chunk[]): Bluebird<Chunk[]> {
     return global['_DB'].transaction((t: any) => {
       const chunkBulk = [];
       for (const chunk of chunks) {
@@ -25,7 +26,7 @@ export class Chunk extends Model<Chunk> {
         }));
       }
 
-      return Promise.all(chunkBulk);
+      return Bluebird.all(chunkBulk);
     });
   }
   public static CREATE_CHUNKS(file: File, threads: number): Chunk[] {
@@ -56,14 +57,14 @@ export class Chunk extends Model<Chunk> {
     return bulk;
   }
 
-  public static BulkSave(chunks: Chunk[]): Promise<Chunk[]> {
+  public static BulkSave(chunks: Chunk[]): Bluebird<Chunk[]> {
     return global['_DB'].transaction( (transaction: any) => {
       const bulk = [];
       chunks.forEach((chunk: Chunk) => {
         bulk.push(chunk.save());
       });
 
-      return Promise.all(bulk);
+      return Bluebird.all(bulk);
     });
   }
 
