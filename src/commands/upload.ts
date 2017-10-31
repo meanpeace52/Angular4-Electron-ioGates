@@ -14,7 +14,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   const shareUrl = args.url;
   const threads: number = args.options.thread || 3;
   const ioGate: IOGates = new IOGates();
-  const uploader: Uploader = new Uploader(ioGate, threads);
+  const uploader: Uploader = new Uploader(threads);
   const directory: Directory = new Directory(destination);
   const logger = global['logger'];
   const deleteAfterUpload: boolean = args.options.delete;

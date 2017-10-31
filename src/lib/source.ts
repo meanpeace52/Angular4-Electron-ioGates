@@ -2,17 +2,17 @@ import { Readable, Transform } from 'stream';
 import * as fs from 'fs';
 
 export class BufferSource {
-  private size: number;
+  //private size: number;
   private _buffer: Buffer;
 
   constructor(buffer: Buffer) {
     this._buffer = buffer;
-    this.size = buffer.length;
+    //this.size = buffer.length;
   }
 
   public slice(start: number, end: number): Buffer {
     const buf = this._buffer.slice(start, end);
-    this.size = buf.length;
+    //this.size = buf.length;
 
     return buf;
   }
@@ -47,7 +47,7 @@ export class FileSource {
 
 export class StreamSource {
 
-  private size: number;
+  //private size: number;
   private _stream: any;
   private _buf: Buffer;
   private _bufPos: number;
@@ -64,7 +64,7 @@ export class StreamSource {
 
     // for how much data this stream will emit requiring the user to specify
     // it manually (see the `uploadSize` option).
-    this.size = null;
+    //this.size = null;
 
     stream.pause();
 

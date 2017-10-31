@@ -83,7 +83,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then(() => {
       if (args.options['watch']) {
         console.log('[watch] for new files.');
-        const watcher = new DownloadWatcher(destination, ioGate, downloader);
+        const watcher = new DownloadWatcher(ioGate, downloader);
         watcher.watch(outerShare);
         watcher.on('error', (err) => {
           logger.error('Error in watcher.');

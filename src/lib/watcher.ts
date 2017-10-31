@@ -22,13 +22,11 @@ export class DownloadWatcher extends Watcher {
   public downloader: Downloader;
   private api: IOGates;
   private delay: number;
-  private destination: string;
-  constructor(destination: string, iogates: IOGates, downloader: Downloader, delay?: number) {
+  constructor(iogates: IOGates, downloader: Downloader, delay?: number) {
     super();
     this.api = iogates;
     this.delay = delay || 6000;
     this.downloader = downloader;
-    this.destination = destination;
   }
 
   public watch(share: Share) {
@@ -100,7 +98,7 @@ export class UploadWatcher extends Watcher {
   constructor(destination: string, public threads: number) {
     super();
     this.api = new IOGates();
-    this.uploader = new Uploader(this.api, threads);
+    this.uploader = new Uploader(threads);
     this.destination = destination;
     this.directory = new Directory(this.destination);
     this.watcher = watch(this.destination, {

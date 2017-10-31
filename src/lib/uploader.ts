@@ -22,10 +22,8 @@ export class Uploader {
   public token: string = '';
   public chunkSize: number = global['config'].upload.chunkSize || 16777216;
   private threads: number = 1;
-  private ioGatesInstance: IOGates;
 
-  constructor(ioGatesInstance: IOGates, threads: number) {
-    this.ioGatesInstance = ioGatesInstance;
+  constructor(threads: number) {
     this.threads = threads;
   }
 
@@ -76,7 +74,7 @@ export class Uploader {
       sentValues.push(totalUploaded);
       const progress = totalUploaded / file.size;
       const percentage = (progress * 100).toFixed(2);
-      const rate = Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, progress >= 1 ? null : 10);
+      const rate = Downloader.CALCULATE_TRANSFER_SPEED(sentValues, sentTimestamps, progress >= 1 ? null : 50);
 
       bar.update(percentage, {
         speed: `${rate.toFixed(1)} MB/s`
