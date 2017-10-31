@@ -9,13 +9,14 @@ import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
 import { DownloadWatcher } from '../lib/watcher';
+import { realpathSync } from 'fs';
 
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
 export function downloadComand(args: CommandDownloadInput, done: Function) {
   const logger = global['logger'];
-  const destination = args.dir;
+  const destination = realpathSync(args.dir);
   const shareUrl = args.url;
   const downloader: Downloader = new Downloader();
   if (args.options.startdate) {
@@ -43,6 +44,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then((share: Share) => {
       logger.log('share created: ', share.id, '(', share.complete, ')');
       ioGate.setApiUrlFromShareUrl(share.url);
+
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
@@ -51,6 +53,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then((share: Share) => {
       outerShare = share;
       logger.log('going to read files.');
+
       return ioGate.readFiles();
     })
     .then((response: Files) => {

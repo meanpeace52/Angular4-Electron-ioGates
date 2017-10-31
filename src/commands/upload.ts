@@ -5,13 +5,12 @@ import {
 } from '../types';
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
-//import * as winston from 'winston';
 import { Uploader } from '../lib/uploader';
 import { UploadWatcher } from '../lib/watcher';
 import * as fs from 'fs';
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
-  const destination = args.dir;
+  const destination = fs.realpathSync(args.dir);
   const shareUrl = args.url;
   const threads: number = args.options.thread || 3;
   const ioGate: IOGates = new IOGates();
