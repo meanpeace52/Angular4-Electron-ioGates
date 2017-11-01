@@ -8,9 +8,10 @@ import { Directory } from '../lib/directory';
 import { Uploader } from '../lib/uploader';
 import { UploadWatcher } from '../lib/watcher';
 import * as fs from 'fs';
+import * as path from 'path';
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
-  const destination = fs.realpathSync(args.dir);
+  const destination = path.resolve(args.dir);
   const shareUrl = args.url;
   const threads: number = args.options.thread || 3;
   const ioGate: IOGates = new IOGates();

@@ -9,14 +9,14 @@ import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
 import { DownloadWatcher } from '../lib/watcher';
-import { realpathSync } from 'fs';
+import * as path from 'path';
 
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
 export function downloadComand(args: CommandDownloadInput, done: Function) {
   const logger = global['logger'];
-  const destination = realpathSync(args.dir);
+  const destination = path.resolve(args.dir);
   const shareUrl = args.url;
   const downloader: Downloader = new Downloader();
   if (args.options.startdate) {
