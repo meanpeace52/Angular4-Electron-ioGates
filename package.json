@@ -1,6 +1,6 @@
 {
   "name": "iotransfer",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Download and upload files from and to ioGates",
   "engineStrict": true,
   "private": true,
@@ -66,7 +66,7 @@
     "ramda": "^0.24.1",
     "reflect-metadata": "^0.1.10",
     "rx": "^4.1.0",
-    "sequelize": "^4.20.1",
+    "sequelize": "^4.20.3",
     "sequelize-typescript": "^0.5.0",
     "sqlite3": "^3.1.13",
     "tslib": "~1.7.1",
