@@ -1,0 +1,429 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* For removing selectable text eg: on buttons */
+@mixin no-select{
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+  /* Rules below not implemented in browsers yet */
+  -o-user-select: none;
+  user-select: none;
+}
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+.tabs {
+  .mat-tab-label {
+    height: 38px;
+    min-width: 120px;
+    font-size: 9pt;
+    color: #646464;
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+
+  .mat-tab-label-active {
+    color: #24292D;
+  }
+
+  .mat-tab-group.mat-primary .mat-ink-bar {
+    background-color: #1C77C3;
+    height: 1px;
+  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+
+  height: 100%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 13pt;
+  font-weight: 300;
+}
+
+h2 {
+  font-weight: 400;
+  line-height: 1.5em;
+  font-size: 17pt;
+  letter-spacing: 0.03em;
+}
+
+h3 {
+  font-weight: 300;
+  color: #000000;
+  font-size: 11pt;
+  margin: 0.5em 0;
+}
+
+h4 {
+  font-weight: 200;
+  color: #B1B1B1;
+  font-size: 10pt;
+  margin: 0.8em 0;
+}
+
+a {
+  color: #616161;
+
+  :visited {
+    color: #616161;
+  }
+  :active {
+    color: darken(#616161, 10%);
+  }
+}
+
+button {
+  outline: 0;
+  cursor: pointer;
+  border: none;
+}
+
+button.form-go {
+  background-color: #1C77C3;
+  border-radius: 16px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  line-height: 32px;
+  padding: 0 2em;
+  font-size: 13pt;
+  font-family: 'Roboto', sans-serif;
+
+  @include no-select;
+
+  :active {
+    background-color: darken(#1C77C3, 20%);
+  }
+}
+
+button.btn--search {
+  background: #FFFFFF url("assets/search.svg") no-repeat center;
+  border: 1px solid #ECECEC;
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  padding: 16px;
+
+  @include no-select;
+
+  :active {
+    background-color: darken(#FFFFFF, 20%);
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.main {
+  background: #E8E8E8;
+  .sidenav {
+    position: relative;
+    background: #FFFFFF;
+    border-right: 1px solid #B1B1B1;
+
+    div.header {
+      height: 50px;
+      background: url("assets/io_nav.svg") no-repeat center;
+    }
+
+    div.home {
+      text-align: center;
+      border-top: 1px solid #E8E8E8;
+      border-bottom: 1px solid #E8E8E8;
+      cursor: pointer;
+
+      .icon--inbox {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: url("assets/inbox.svg") no-repeat center;
+        padding: 0.8em 0;
+      }
+    }
+
+    div.bread-crumbs {
+      text-align: center;
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0.6em 0;
+
+        li {
+          padding: 0.2em 0;
+          cursor: pointer;
+        }
+      }
+    }
+
+    div.footer {
+      position: absolute;
+      bottom: 0;
+      border-top: 1px solid #E8E8E8;
+
+      div.add-share {
+        padding: 1em;
+        text-align: center;
+      }
+      a.add-share {
+        display: inline-block;
+        padding: 0.2em;
+        background: #FFFFFF;
+        border: 1px solid #E8E8E8;
+        border-radius: 4px;
+        line-height: 0;
+        @include no-select;
+      }
+    }
+  }
+  .main-content {
+    padding: 2em;
+    background: #E8E8E8;
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  /* mockup positioning */ right: 50px;
+  background: #FFFFFF;
+  box-shadow: 0 0 8px 2px rgba(0,0,0,0.10);
+  border-radius: 4px;
+  font-size: 11pt;
+  padding: 0.5em;
+  min-width: 170px;
+
+  .message {
+    color: #1C77C3;
+    border-bottom: 1px solid #E8E8E8;
+    padding: 0.5em;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.5em 0 0 0;
+
+    li {
+      cursor: pointer;
+      padding: .5em .5em;
+      border-radius: 4px;
+    }
+    li:hover {
+      background-color: #E8E8E8;
+    }
+  }
+}
+
+.format--broadcast {
+  background-color: #A5668B;
+  color: #69306D;
+}
+.format--broadcast-hd {
+  background-color: #69306D;
+  color: #A5668B;
+}
+.format--proxy {
+  background-color: #9FD356;
+  color: #648D2C;
+}
+.format--web {
+  background-color: #DF522A;
+  color: darken(#DF522A, 20%);
+}
+.format--audio {
+  background-color: #88A2AA;
+  color: darken(#88A2AA, 20%);
+}
+.format--rate-convertion {
+  background-color: #D72638;
+  color: lighten(#D72638, 20%);
+}
+
+div.global-status {
+  background: #495867;
+  box-shadow: 0 0 8px 2px rgba(0,0,0,0.10);
+  border-radius: 4px;
+
+  position: fixed;
+  bottom: 10px;
+  left: 90px;
+  right: 10px;
+
+  padding: 0.8em;
+
+  color: #FFFFFF;
+  font-weight: 200;
+
+  .icon {
+    text-align: left;
+  }
+  .text {
+    .line:not(:first-child) {
+      font-size: 87.5%;
+    }
+  }
+  .btn-pause {
+    background-color: #F9DC5C;
+    border-radius: 16px;
+    width: 78px;
+    text-align: center;
+    padding: 8px;
+    line-height: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+}
+
+.share-settings {
+  position: absolute;
+  top: 50px;
+  left: 100px;
+  right: 20px;
+  padding: 1.4em;
+  overflow-y: auto;
+  max-height: 350px;
+
+  background: #FFFFFF;
+  box-shadow: 0 0 8px 2px rgba(0,0,0,0.10);
+  border-radius: 4px;
+
+  font-size: 10pt;
+
+  .settings-header {
+    border-bottom: 1px solid #E8E8E8;
+    padding-bottom: 0.5em;
+    color: #646464;
+    font-size: 9pt;
+    text-align: center;
+  }
+  .setting-cell {
+    padding: 0.5em 1em;
+    font-size: 9pt;
+    color: #B1B1B1;
+    line-height: 150%;
+    font-weight: 200;
+  }
+
+  button.form-go {
+    letter-spacing: .05em;
+    font-weight: 200;
+    font-size: 12pt;
+  }
+}
+
+@mixin m-file-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.icon--movie {
+  @include m-file-icon;
+  background: url("assets/video.svg") no-repeat center;
+}
+
+.icon--other {
+  @include m-file-icon;
+  background: url("assets/doc.svg") no-repeat center;
+}
+
+.icon--audio {
+  @include m-file-icon;
+  background: url("assets/doc.svg") no-repeat center;
+}
+
+.icon--image {
+  @include m-file-icon;
+  background: url("assets/doc.svg") no-repeat center;
+}
+
+.icon--dir {
+  @include m-file-icon;
+  background: url("assets/folder.svg") no-repeat center;
+}
+
+.icon--share {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: #8FB8DE url("assets/share-icon.svg") no-repeat center;
+}
+
+.icon--current-folder {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: #CFDADD url("assets/folder.svg") no-repeat center;
+}
+
+.icon--chevron-right {
+  display: inline-block;
+  width: 9px;
+  height: 16px;
+  background: url("assets/chevron_right.svg") no-repeat center;
+}
+
+.icon--chevron-down {
+  display: inline-block;
+  width: 16px;
+  height: 9px;
+  background: url("assets/chvron.svg") no-repeat center;
+}
+
+.icon--vdots {
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: url("assets/icon-vdots.svg") no-repeat center;
+}
+
+.icon--play {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: url("assets/icon-play.svg") no-repeat center;
+}
+
+.icon--pause {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url("assets/pause.svg") no-repeat center;
+}
+
+.icon--download {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  background: url("assets/download.svg") no-repeat center;
+}
+
+.icon--download-white {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  background: url("assets/download-white.svg") no-repeat center;
+}
+
+.icon--skip-back {
+  display: inline-block;
+  width: 16px;
+  height: 9px;
+  background: url("assets/skip-back.svg") no-repeat center;
+}
+
+.icon--skip-forward {
+  display: inline-block;
+  width: 16px;
+  height: 9px;
+  background: url("assets/skip-forward.svg") no-repeat center;
+}

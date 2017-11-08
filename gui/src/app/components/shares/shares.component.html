@@ -1,0 +1,9 @@
+shares works!
+<ul>
+  <li *ngFor="let share of shares">
+    {{share}}
+  </li>
+</ul>
+<input type="text" [(ngModel)]="shareName" />
+<button (click)="addShare()">Add Share</button>
+<button (click)="removeShare()">Remove Share</button>

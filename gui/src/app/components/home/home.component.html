@@ -1,0 +1,50 @@
+<div fxLayout="row" fxFlexFill class="main">
+  <div fxFlex="80px" class="sidenav">
+    <div class="header" style="-webkit-app-region: drag"></div>
+    <div class="home">
+      <div class="icon--inbox"></div>
+    </div>
+    <mat-list>
+      <mat-list-item></mat-list-item>
+    </mat-list>
+    <div class="footer full-width">
+      <div class="add-share">
+        <a class="add-share" [routerLink]="['/login']">
+          <mat-icon>add</mat-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div fxFlex="100%" class="main-content">
+    <div fxLayout="row">
+      <div fxFlex="50%">
+        <mat-form-field>
+          <mat-select placeholder="Newest">
+            <mat-option>Newest</mat-option>
+            <mat-option>Oldest</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxFlex="50%" style="text-align: right;">
+        <button class="btn--search"></button>
+      </div>
+    </div>
+    <app-share *ngFor="let share of shares" [share]="share"></app-share>
+  </div>
+</div>
+<div class="global-status">
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <div fxFlex="32px" class="icon">
+      <div class="icon--download-white"></div>
+    </div>
+    <div fxFlex="auto" class="text">
+      <div class="line">Shared Folder Name</div>
+      <div class="line">15MB of 12GB downloaded @ 256KB/s </div>
+    </div>
+    <div fxFlex="78px" class="action">
+      <div class="btn-pause">
+        <div class="icon--pause"></div>
+      </div>
+    </div>
+  </div>
+</div>

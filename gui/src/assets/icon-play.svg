@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>icon-play</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ioGates-Desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Video-View" transform="translate(-369.000000, -280.000000)" fill-rule="nonzero" fill="#FFFFFF">
+            <g id="Group-2" transform="translate(112.000000, 159.000000)">
+                <path d="M258.73667,121.126615 L280.336941,131.926543 C280.743331,132.129925 281,132.545413 281,132.99988 C281,133.454347 280.743331,133.869835 280.336941,134.073217 L258.73667,144.873385 C258.364651,145.059323 257.922893,145.039391 257.569128,144.820706 C257.215363,144.602021 257.000025,144.215759 257,143.799838 L257,122.199922 C257.000108,121.784043 257.21548,121.397858 257.56923,121.179231 C257.922981,120.960604 258.364689,120.940696 258.73667,121.126615 Z" id="icon-play"></path>
+            </g>
+        </g>
+    </g>
+</svg>

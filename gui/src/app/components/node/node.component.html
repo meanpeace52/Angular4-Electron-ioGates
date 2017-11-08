@@ -1,0 +1,17 @@
+<li class="node" [routerLink]="['/file']">
+  <div fxLayout="row" fxLayoutAlign="start center">
+    <div fxFlex="32px" class="icon-container">
+      <div class="icon icon--{{node.type}}"></div>
+    </div>
+    <div fxFlex="auto" class="node-content">
+      <div class="title">{{node.name}}</div>
+      <div class="meta">Added today at 12:03 by Tobias Steinmann</div>
+    </div>
+    <div fxFlex="nogrow" class="label">
+      <div class="label--info">DOWNLOADING</div>
+    </div>
+    <div fxFlex="16px" class="action-container">
+      <div class="icon--chevron-right"></div>
+    </div>
+  </div>
+</li>

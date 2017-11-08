@@ -1,0 +1,16 @@
+<div fxLayout="row" fxFlexFill>
+  <div fxFlex="50%" class="login-container-left"></div>
+  <div fxFlex="50%" class="login-container-right">
+    <h2>{{title}}</h2>
+    <p>{{description}}</p>
+    <form>
+      <mat-form-field class="full-width">
+        <input matInput id="url" placeholder="Share Url" [(ngModel)]="url" [ngModelOptions]="{standalone: true}" />
+      </mat-form-field>
+      <div style="text-align: center">
+        <button (click)="authenticateViaUrl()" class="form-go">Go
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

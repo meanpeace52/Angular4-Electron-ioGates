@@ -1,0 +1,105 @@
+<div fxLayout="row" fxFlexFill class="main">
+  <div fxFlex="80px" class="sidenav">
+    <div class="header" style="-webkit-app-region: drag"></div>
+    <div class="home" [routerLink]="['']">
+      <div class="icon--inbox"></div>
+    </div>
+    <div class="bread-crumbs">
+      <ul>
+        <li>
+          <div class="icon--share"></div>
+        </li>
+        <li>
+          <div class="icon--{{type}}"></div>
+        </li>
+      </ul>
+    </div>
+    <div class="footer full-width">
+      <div class="add-share">
+        <a class="add-share" [routerLink]="['/login']"><mat-icon>add</mat-icon></a>
+      </div>
+    </div>
+  </div>
+  <div fxFlex="auto" class="file-content">
+    <div fxLayout="row" fxLayoutAlign="start center" class="header">
+      <div fxFlex="48px" class="icon-container">
+        <div class="file-icon icon--{{type}}"></div>
+      </div>
+      <div fxFlex="auto" class="filename-content">
+        <div class="title">{{name}}</div>
+        <div class="meta">Added today at 12:03 by Tobias Steinmann</div>
+      </div>
+      <div fxFlex="78px" class="file-controller">
+        <div fxLayout="row" fxFlexAlign="center center">
+          <div fxFlex="50%" class="skip-back">
+            <div class="icon--skip-back"></div>
+          </div>
+          <div fxFlex="50%" class="skip-forward">
+            <div class="icon--skip-forward"></div>
+          </div>
+        </div>
+        <div fxLayout="row" fxFlexAlign="center center">
+          <div fxFlex="100%" class="edit">
+            EDIT
+            <div class="icon--chevron-down"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="description">
+      <h4>Description</h4>
+      This is where the description of the video woud go.
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center" class="player">
+      <div fxFlex="24px">
+        <div class="icon--play"></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <mat-tab-group>
+        <mat-tab label="Activity">
+          <div class="tab">
+            <div class="event">
+              <h4>Yesterday at 12:35</h4>
+              <div class="icon icon--other"></div> Filename.txt uploaded by Tobias
+            </div>
+            <div class="event">
+              <h4>Tuesday at 08:24</h4>
+              <div class="icon icon--movie"></div> Filename.mp4 uploaded by Tobias
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Formats">
+          <div class="tab">
+            <table class="formats">
+              <tr>
+              <th>TYPE</th>
+              <th>FORMAT</th>
+              <th>CODEC</th>
+              <th>SIZE</th>
+              <th></th>
+              </tr>
+              <tr>
+                <td colspan="4">
+                  <div class="format-title">Preview Terminal Watermark</div>
+                </td>
+                <td rowspan="2"><div class="icon--download"></div></td>
+              </tr>
+              <tr>
+                <td class="cell-format-type">
+                  <div class="format-type format--proxy">PROXY</div>
+                </td>
+                <td>MP4</td>
+                <td>H.264</td>
+                <td>1 GB</td>
+                <td></td>
+              </tr>
+            </table>
+          </div>
+        </mat-tab>
+        <mat-tab label="Comments">Comments</mat-tab>
+        <mat-tab label="Attachments">Attachments</mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

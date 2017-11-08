@@ -1,0 +1,43 @@
+li.node {
+  padding: 0.5em 0;
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+  /* Rules below not implemented in browsers yet */
+  -o-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: 0;
+
+  .icon {
+  }
+  .icon-container {
+    text-align: left;
+  }
+  .node-content {
+    line-height: 1.3em;
+
+    .title {
+
+    }
+    .meta {
+      color: #B1B1B1;
+      font-size: 87.5%;
+    }
+  }
+  .label {
+    .label--info {
+      background: #1C77C3;
+      border-radius: 4px;
+      color: #FFFFFF;
+      padding: 3px;
+      font-size: 68%;
+      display: inline-block;
+      letter-spacing: 0.1em;
+    }
+  }
+  .action-container {
+    text-align: right;
+    height: 16px;
+  }
+}

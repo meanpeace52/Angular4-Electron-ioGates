@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="9px" height="16px" viewBox="0 0 9 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>chevron_right</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ioGates-Desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="File-View-Copy" transform="translate(-639.000000, -214.000000)" fill-rule="nonzero" fill="#646464">
+            <g id="Group-8" transform="translate(96.000000, 72.000000)">
+                <g id="Group-2-Copy" transform="translate(15.000000, 130.000000)">
+                    <g id="chevron_right" transform="translate(533.000000, 19.500000) rotate(-90.000000) translate(-533.000000, -19.500000) translate(525.000000, 15.000000)">
+                        <path d="M8.19502401,8.19935427 C8.02836099,8.36621839 7.80219669,8.4599786 7.56635734,8.4599786 C7.33051799,8.4599786 7.10435369,8.36621839 6.93769067,8.19935427 L0.269024006,1.52726538 C0.0393406088,1.30369386 -0.0522581162,0.97381872 0.0292682889,0.663831411 C0.110794694,0.353844101 0.352830194,0.111714487 0.662785785,0.0300675752 C0.972741376,-0.0515793369 1.3026521,0.0398911362 1.52631289,0.269487598 L7.56631289,6.31250982 L13.6063129,0.269487598 C13.82989,0.0394738273 14.160008,-0.0523178044 14.470228,0.0292699116 C14.7804481,0.110857628 15.0226941,0.35318069 15.1041831,0.663426692 C15.1856722,0.973672693 15.0937755,1.30376147 14.8636907,1.52726538 L8.19502401,8.19935427 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

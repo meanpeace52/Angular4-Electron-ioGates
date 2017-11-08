@@ -1,0 +1,90 @@
+<div class="share-card">
+  <div fxLayout="row" fxLayoutAlign="start center" class="header">
+    <div fxFlex="auto" class="title">
+      <div class="icon--share"></div>{{share.name}}
+      <a [routerLink]="['/shares/10']">View Share</a>
+
+    </div>
+    <div fxFlex="8px" class="share-action" (click)="showShareMenu = !showShareMenu">
+      <div class="icon--vdots"></div>
+      <div class="dropdown-menu" *ngIf="showShareMenu">
+        <div class="message">
+          12 days remaining
+        </div>
+        <ul>
+          <li>Update</li>
+          <li>Download All</li>
+          <li (click)="showShareSettings = !showShareSettings">Share Settings</li>
+          <li>Remove</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="node-container">
+    <ul class="nodes">
+      <li *ngFor="let node of nodes" class="node">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <div fxFlex="32px" class="icon-container">
+            <div class="icon icon--{{node.type}}"></div>
+          </div>
+          <div fxFlex="auto" class="node-content">
+            <div class="title">{{node.name}}</div>
+            <div class="meta">Added today at 12:03 by Tobias Steinmann</div>
+          </div>
+          <div fxFlex="nogrow" class="label">
+            <div class="label--info">DOWNLOADING</div>
+          </div>
+          <div fxFlex="16px" class="action-container">
+            <div class="icon--chevron-right"></div>
+          </div>
+        </div>
+      </li>
+      <!--<app-node *ngFor="let node of nodes" [node]="node"></app-node>-->
+    </ul>
+  </div>
+</div>
+
+<div class="share-settings" *ngIf="showShareSettings">
+  <div fxLayout="row" class="settings-header">
+    <div fxFlex="50%">
+      DOWNLOAD
+    </div>
+    <div fxFlex="50%">
+      UPLOAD
+    </div>
+  </div>
+  <div fxLayout="row">
+    <div fxFlex="50%" class="setting-cell">
+      <h3>Download Location</h3>
+      By default your files are saved to the downloads folder. You can chage it to another location and we will remember it.
+      <p><input type="text" value="Path..." /></p>
+    </div>
+    <div fxFlex="50%" class="setting-cell">
+      <h3>Delete After Upload</h3>
+      Delete the file on disk after successful upload.
+      <p>
+        <mat-slide-toggle>Delete After Upload</mat-slide-toggle>
+      </p>
+    </div>
+  </div>
+  <div fxLayout="row">
+    <div fxFlex="50%" class="setting-cell">
+      <h3>Auto Download</h3>
+      When a file is changed in the shared file, would you like us to download it automatically to the folder selected.
+      <p>
+        <mat-slide-toggle>Auto Download</mat-slide-toggle>
+      </p>
+    </div>
+    <div fxFlex="50%" class="setting-cell">
+
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center center" class="action">
+    <div fxFlex="125px">
+      <button class="form-go" (click)="showShareSettings = !showShareSettings">Cancel</button>
+    </div>
+    <div fxFlex="125px">
+      <button class="form-go">Save</button>
+    </div>
+  </div>
+</div>

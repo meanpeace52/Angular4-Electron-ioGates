@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>pause</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ioGates-Desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="File-View" transform="translate(-603.000000, -413.000000)" fill-rule="nonzero" fill="#000000">
+            <g id="Group-9" transform="translate(87.000000, 389.000000)">
+                <g id="Group-3" transform="translate(484.000000, 16.000000)">
+                    <path d="M36,24 L33.3333333,24 C32.5969537,24 32,23.4030463 32,22.6666667 L32,9.33333333 C32,8.59695367 32.5969537,8 33.3333333,8 L36,8 C36.7363797,8 37.3333333,8.59695367 37.3333333,9.33333333 L37.3333333,22.6666667 C37.3333333,23.4030463 36.7363797,24 36,24 L36,24 Z M42.2222222,24 C41.4858426,24 40.8888889,23.4030463 40.8888889,22.6666667 L40.8888889,9.33333333 C40.8888889,8.59695367 41.4858426,8 42.2222222,8 L44.8888889,8 C45.6252686,8 46.2222222,8.59695367 46.2222222,9.33333333 L46.2222222,22.6666667 C46.2222222,23.4030463 45.6252686,24 44.8888889,24 L42.2222222,24 Z" id="pause"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,23 @@
+<div fxLayout="row" fxFlexFill class="main">
+  <div fxFlex="80px" class="sidenav">
+    <div class="header" style="-webkit-app-region: drag"></div>
+    <div class="home">
+      <a [routerLink]="['/']">
+        <div class="icon--inbox"></div>
+      </a>
+    </div>
+    <mat-list>
+      <mat-list-item></mat-list-item>
+    </mat-list>
+    <div class="footer full-width">
+      <div class="add-share">
+        <a class="add-share" [routerLink]="['/login']">
+          <mat-icon>add</mat-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div fxFlex="100%" class="main-content">
+    <app-share [share]="share"></app-share>
+  </div>
+</div>

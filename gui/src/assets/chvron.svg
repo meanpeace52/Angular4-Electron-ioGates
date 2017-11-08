@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="8px" viewBox="0 0 12 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>chvron</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ioGates-Desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="File-View-Copy" transform="translate(-170.000000, -32.000000)" fill-rule="nonzero" fill="#646464">
+            <g id="Icon-/-Chvron-/-Small-/-Dark" transform="translate(170.000000, 32.000000)">
+                <path d="M6.49823639,6.93511473 C6.36608111,7.07625046 6.18674434,7.155554 5.99973576,7.155554 C5.81272718,7.155554 5.63339041,7.07625046 5.50123513,6.93511473 L0.213322326,1.29177985 C0.0311950978,1.10268031 -0.0414380228,0.823667856 0.0232082615,0.561476776 C0.0878545458,0.299285695 0.279776362,0.094489488 0.525555349,0.0254315251 C0.771334336,-0.0436264379 1.03293673,0.0337404138 1.21028834,0.227935927 L5.99970052,5.33919848 L10.7891127,0.227935927 C10.9663979,0.0333874489 11.2281647,-0.0442510428 11.4741534,0.0247568514 C11.7201421,0.0937647455 11.9122308,0.298724574 11.9768475,0.56113446 C12.0414641,0.823544345 11.9685948,1.10273749 11.7861492,1.29177985 L6.49823639,6.93511473 Z" id="Shape-Copy" transform="translate(6.000000, 3.577777) rotate(-360.000000) translate(-6.000000, -3.577777) "></path>
+            </g>
+        </g>
+    </g>
+</svg>
