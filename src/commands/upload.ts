@@ -5,27 +5,31 @@ import {
 } from '../types';
 import { IOGates } from '../lib/iogates';
 import { Directory } from '../lib/directory';
-import * as winston from 'winston';
 import { Uploader } from '../lib/uploader';
 import { UploadWatcher } from '../lib/watcher';
 import * as fs from 'fs';
+import * as path from 'path';
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
-  const destination = args.dir;
+  const destination = path.resolve(args.dir);
   const shareUrl = args.url;
+  const threads: number = args.options.thread || 3;
   const ioGate: IOGates = new IOGates();
-  const uploader: Uploader = new Uploader();
+  const uploader: Uploader = new Uploader(threads);
   const directory: Directory = new Directory(destination);
   const logger = global['logger'];
   const deleteAfterUpload: boolean = args.options.delete;
+
   let readStreamFiles: File[];
   let outerShare: Share;
+  if (args.options.chunksize !== false && Number.isInteger(args.options.chunksize)) {
+    logger.info(`Setting chunk size to ${args.options.chunksize}`);
+    uploader.chunkSize = args.options.chunksize;
+  }
   logger.info('executing upload');
   global['_DB']
     .sync()
-    .then(() => {
-      return directory.read();
-    })
+    .then(() => directory.read())
     .then((files: File[]) => {
       readStreamFiles = files;
 
@@ -96,11 +100,11 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
         //   watcher = new UploadWatcher(destination, +args.options.delay);
         // } else {
         // }
-        watcher = new UploadWatcher(destination);
+        watcher = new UploadWatcher(destination, threads);
 
         watcher.watch(outerShare);
-        watcher.on('error', (err) => {
-          winston.error('[watch] error: ', err);
+        watcher.on('error', (err: Error) => {
+          logger.error('[watch] error: ', err);
         });
         watcher.on('success', (file: File) => {
           if (deleteAfterUpload === true) {
@@ -121,6 +125,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
     })
     .catch((err: Error) => {
       // winston.error(err);
-      logger.error(`JSON.stringify(err)`);
+      logger.error(err.message);
+      logger.error(err.stack);
     });
 }

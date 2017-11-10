@@ -9,17 +9,28 @@ import { IOGates } from '../lib/iogates';
 import { Downloader } from '../lib/downloader';
 import { Directory } from '../lib/directory';
 import { DownloadWatcher } from '../lib/watcher';
+import * as path from 'path';
 
 // import debug from 'debug';
 // const log = debug('io:command:download');
 
 export function downloadComand(args: CommandDownloadInput, done: Function) {
-  const destination = args.dir;
+  const logger = global['logger'];
+  const destination = path.resolve(args.dir);
   const shareUrl = args.url;
   const downloader: Downloader = new Downloader();
+  if (args.options.startdate) {
+    try {
+      const startDate = new Date(Date.parse(args.options.startdate));
+      downloader.startDate = startDate;
+      logger.info(`Using start date: ${startDate.getFullYear()}-${startDate.getMonth().toFixed(2)}-` +
+        `${startDate.getDate().toFixed(2)}`);
+    } catch (e) {
+      logger.error(`Could not parse the date: ${args.options.startdate}`);
+    }
+  }
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
-  const logger = global['logger'];
   let outerShare;
   logger.log('executing download');
   global['_DB']
@@ -33,6 +44,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then((share: Share) => {
       logger.log('share created: ', share.id, '(', share.complete, ')');
       ioGate.setApiUrlFromShareUrl(share.url);
+
       return ioGate.authenticateFromUrl(share);
     })
     .then((share: Share) => {
@@ -41,6 +53,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then((share: Share) => {
       outerShare = share;
       logger.log('going to read files.');
+
       return ioGate.readFiles();
     })
     .then((response: Files) => {
@@ -70,18 +83,18 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     .then(() => {
       if (args.options['watch']) {
         console.log('[watch] for new files.');
-        const watcher = new DownloadWatcher(destination);
+        const watcher = new DownloadWatcher(ioGate, downloader);
         watcher.watch(outerShare);
         watcher.on('error', (err) => {
-          logger.error(err.message);
+          logger.error('Error in watcher.');
+          logger.error(err);
         });
       } else {
         console.log('[download] is completed.');
         return done(null);
       }
     })
-    .catch((e: Error) => {
-      console.log(e);
-      logger.error(e.message);
+    .catch((e: any) => {
+      logger.error(e);
     });
 }

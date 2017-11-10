@@ -1,5 +1,6 @@
 import { Table, Column, Model, HasMany, Sequelize } from 'sequelize-typescript';
 import { File } from './file';
+import * as Bluebird from 'bluebird';
 /**
  * Exports Share class.
  */
@@ -9,6 +10,10 @@ import { File } from './file';
   tableName: 'shares'
 })
 export class Share extends Model<Share> {
+  public static DIRECTION_UPLOAD: string = 'upload';
+  public static DIRECT_DOWNLOAD: string = 'download';
+  public static DIRECT_BI: string = 'BI';
+
   @Column({
     primaryKey: true,
     unique: true,
@@ -44,10 +49,7 @@ export class Share extends Model<Share> {
   @HasMany(() => File)
   public files: File[];
 
-  static DIRECTION_UPLOAD = 'upload';
-  static DIRECT_DOWNLOAD = 'download';
-
-  public static LOOKUP(shareUrl: string, destination: string): Promise<Share> {
+  public static LOOKUP(shareUrl: string, destination: string): Bluebird<Share> {
     const promise = Share
       .findOrCreate({
         where: {
@@ -63,14 +65,61 @@ export class Share extends Model<Share> {
         return share;
       });
 
-    return Promise.resolve(promise);
+    return Bluebird.resolve(<any>promise);
   }
 
-  static ForTableOutput(shares: Array<Object>) {
+  static ForTableOutput(shares: Object[]) {
     const arr = [];
-    shares.forEach(share => {
+    shares.forEach((share: Object) => {
       arr.push(Object.keys(share).map(key => share[key]));
     });
+
     return arr;
+  }
+
+  static DeleteByUrl(shareUrl: string) {
+    const runFn = Share
+      .findOne({
+        where: {
+          url: shareUrl
+        }
+      })
+      .then(share => {
+        if (!share) return null;
+
+        return share.destroy({ force: true });
+      });
+
+    return Bluebird.resolve(runFn);
+  }
+
+  static DeleteById(id: number) {
+    const runFn = Share
+      .findOne({
+        where: {
+          id: id
+        }
+      })
+      .then(share => {
+        if (!share) return null;
+        return share.destroy({ force: true });
+      });
+
+    return Bluebird.resolve(runFn);
+  }
+
+  static DeleteByDir(dir: string) {
+    const runFn = Share
+      .findOne({
+        where: {
+          dir: dir
+        }
+      })
+      .then(share => {
+        if (!share) return null;
+        return share.destroy({ force: true });
+      });
+
+    return Bluebird.resolve(runFn);
   }
 }
