@@ -1,7 +1,7 @@
 export interface IActivity {
+  type: string;
   // notify();
   getType();
-  type: string;
   send(payload: object);
   // channel: string;
   // setChannel(channel: string);

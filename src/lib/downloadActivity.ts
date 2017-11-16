@@ -1,14 +1,15 @@
 import { IActivity } from './iactivity';
+//import * as WebSocket from 'reconnecting-websocket';
 import * as WebSocket from 'ws';
 import { File } from '../types';
 import * as Debug from 'debug';
 const debug = Debug('activity:download');
 
 export class DownloadActivity implements IActivity {
-  type: string;
-  channel: string;
-  socket: WebSocket;
-  file: File;
+  public type: string;
+  private channel: string;
+  private socket: WebSocket;
+  private file: File;
 
   constructor() {
     this.type = 'download';
@@ -16,21 +17,25 @@ export class DownloadActivity implements IActivity {
 
   public attachFile(file: File) {
     this.file = file;
+
     return this;
   }
 
   public onceReady() {
     debug('run..');
-    return new Promise((resolve, reject) => {
-      const url = 'https://push.iogates.com/pub/' + this.getChannel();
-      debug('url: ' + url);
+
+    return new Promise((resolve: Function, reject: Function) => {
+      const url = `https://push.iogates.com/pub/${this.getChannel()}`;
+      debug(`url: ${url}`);
       this.socket = new WebSocket(url);
       this.socket.on('open', () => {
         debug('ready');
+
         return resolve();
       });
-      this.socket.on('error', (err) => {
+      this.socket.on('error', (err: Error) => {
         debug(err);
+
         return reject(err);
       });
     });
@@ -44,55 +49,73 @@ export class DownloadActivity implements IActivity {
     return this.file;
   }
 
-  public send(payload) {
-    debug('sending ' + JSON.stringify(payload));
-    this.socket.send(JSON.stringify(payload));
-    return payload;
+  public send(payload: any) {
+    if (this.socket.readyState === WebSocket.OPEN) {
+      debug(`sending ${JSON.stringify(payload)}`);
+
+      return this.socket.send(JSON.stringify(payload), (err: Error) => {
+        if (err) {
+          debug(`Error sending ${JSON.stringify(payload)}. ${Error}`);
+
+          return false;
+        }
+
+        return true;
+      });
+    } else {
+      debug('Socket not open');
+
+      return false;
+    }
   }
 
   public start() {
     const payload = {
       type: this.type,
-      action: "start",
+      action: 'start',
       payload: {
         file: this.file.file_id
       }
     };
+
     return this.send(payload);
   }
 
   public resume() {
     const payload = {
       type: this.type,
-      action: "resume",
+      action: 'resume',
       payload: {
         file: this.file.file_id
       }
     };
+
     return this.send(payload);
   }
 
   public progress(percent: number, rate: number) {
     const payload = {
       type: this.type,
-      action: "progress",
+      action: 'progress',
       payload: {
         file: this.file.file_id,
         percent: percent,
         rate: rate
       }
     };
+
     return this.send(payload);
   }
 
   public completed() {
     const payload = {
       type: this.type,
-      action: "complete",
+      action: 'complete',
       payload: {
         file: this.file.file_id
       }
     };
+
     return this.send(payload);
   }
 
@@ -105,6 +128,7 @@ export class DownloadActivity implements IActivity {
         reason: err
       }
     };
+
     return this.send(payload);
   }
 

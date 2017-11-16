@@ -14,6 +14,7 @@ import {isUndefined} from 'util';
  */
 export class Downloader {
   public startDate: Date | undefined;
+
   public static CALCULATE_TRANSFER_SPEED(sent: number[], timestamps: number[], buffer: number | null = null) {
     const sentLen = sent.length;
     const timeLen = timestamps.length;
@@ -67,6 +68,10 @@ export class Downloader {
   }
 
   public downloadFile(file: Type.File): Promise<Type.UploadResponse> {
+    if (file.destination === null || file.destination === '') {
+      throw new Error('Destination is empty');
+    }
+
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
     uploadResponse.dest = file.destination;
     uploadResponse.success = false;
@@ -102,14 +107,14 @@ export class Downloader {
             /**
              * MTD file exists, resume
              */
-            global['logger'].info('resume %s', file.destination);
+            global['logger'].info(`resume ${file.destination}`);
             downloadActivity.resume();
             downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
           } else {
             /**
              * Create new download
              */
-            global['logger'].info('download %s', file.destination);
+            global['logger'].info(`download ${file.destination}`);
             const createMTDFile$ = this.createDownload(options);
 
             downloadActivity.start();
@@ -119,7 +124,6 @@ export class Downloader {
               .flatMap(MultiDownloader.DownloadFromMTDFile).share();
           }
           const [{fdR$, meta$}] = demux(downloadFromMTDFile$, 'fdR$', 'meta$');
-
           /**
            * Finalize Downloaded FILE
            */
@@ -130,15 +134,20 @@ export class Downloader {
             }))
             .flatMap(MultiDownloader.FinalizeDownload)
             .share()
-            .last();
-
+            .last()
+            .catch((err: any) => {
+              global['logger'].error(`downloadFromMTDFile$ error: ${err}`);
+            });
           /**
            * Close File Descriptors
            */
           const fd$ = finalizeDownload$
             .withLatestFrom(fdR$)
             .map(R.tail)
-            .flatMap(R.map(R.of));
+            .flatMap(R.map(R.of))
+            .catch((err: any) => {
+              global['logger'].error(`finalizeDownload$ error: ${err}`);
+            });
           const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
 
           this.downloaded(meta$).subscribe((d: number) => {
@@ -146,23 +155,22 @@ export class Downloader {
             sentTimestamps.push(+new Date());
           });
 
-          MultiDownloader
-            .Completion(meta$)
-            .subscribe((i: number) => {
-              const p = Math.ceil(i * 1000);
-              if (bar.value !== p) {
-                const speed = Downloader.CALCULATE_TRANSFER_SPEED(
-                  sentValues, sentTimestamps, i === 1 ? null : 50
-                ).toFixed(1);
-                bar.update(p, {
-                  speed: `${speed} MB/s`
-                });
-                downloadActivity.progress(i * 100, Number(speed));
-              }
-            });
+          MultiDownloader.Completion(meta$).subscribe((i: number) => {
+            const p = Math.ceil(i * 1000);
+            if (bar.value !== p) {
+              const speed = Downloader.CALCULATE_TRANSFER_SPEED(
+                sentValues, sentTimestamps, i === 1 ? null : 50
+              ).toFixed(1);
+              bar.update(p, {
+                speed: `${speed} MB/s`
+              });
+              downloadActivity.progress(i * 100, Number(speed));
+            }
+          });
 
           return closeFile;
         } catch (err) {
+          global['logger'].error(`Catched error: ${err}`);
           if (!isUndefined(bar)) {
             bar.stop();
           }
@@ -173,11 +181,11 @@ export class Downloader {
       .then(() => {
         downloadActivity.completed();
         uploadResponse.success = true;
-        global['logger'].info('completed %s', file.destination);
+        global['logger'].info(`Completed: ${file.destination}`);
 
         return uploadResponse;
       }, (reason: any) => {
-        global['logger'].error('Error downloading %s', file.destination);
+        global['logger'].error(`Error downloading ${file.destination}`);
         global['logger'].error(reason);
         downloadActivity.failed(reason);
         uploadResponse.success = false;
