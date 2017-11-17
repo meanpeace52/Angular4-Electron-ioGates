@@ -1,7 +1,8 @@
 {
   "name": "iotransfer-core",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Core functionality for iotransfer",
+  "private": true,
   "engineStrict": true,
   "engines": {
     "node": ">= 6.9.0"
@@ -26,16 +27,16 @@
     "test-only": "jest --coverage",
     "test:watch": "jest --watch"
   },
-  "author": "Jakub Synowiec <github@jakubsynowiec.info>",
+  "author": "Tobias Steinmann <tps@iogates.com>",
   "license": "APLv2",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jsynowiec/node-typescript-boilerplate.git"
+    "url": "https://gitlab.iogates.com"
   },
   "bugs": {
-    "url": "https://github.com/jsynowiec/node-typescript-boilerplate/issues"
+    "url": "https://gitlab.iogates.com"
   },
-  "homepage": "https://github.com/jsynowiec/node-typescript-boilerplate#readme",
+  "homepage": "https://iogates.com/home",
   "dependencies": {
     "async-polling": "^0.2.1",
     "bluebird": "^3.5.1",
