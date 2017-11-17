@@ -1,10 +1,10 @@
 {
-  "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
+  "name": "iotransfer-core",
+  "version": "1.0",
+  "description": "Core functionality for iotransfer",
   "engineStrict": true,
   "engines": {
-    "node": ">= 8.9.0"
+    "node": ">= 6.9.0"
   },
   "devDependencies": {
     "@types/jest": "~21.1.5",

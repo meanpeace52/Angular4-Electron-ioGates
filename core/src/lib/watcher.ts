@@ -44,6 +44,9 @@ export class DownloadWatcher extends Watcher {
           return File.filterForDownload(files);
         })
         .then((files: File[]) => {
+          return this.downloader.setupHierarchy(files, share.dir);
+        })
+        .then((files: File[]) => {
           if (files.length === 0) {
             return end();
           }
