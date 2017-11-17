@@ -3,16 +3,18 @@ import { IActivity } from './iactivity';
 import * as WebSocket from 'ws';
 import { File } from '../types';
 import * as Debug from 'debug';
+import {isUndefined} from "util";
 const debug = Debug('activity:download');
 
 export class DownloadActivity implements IActivity {
   public type: string;
-  private channel: string;
+  private channel: string | undefined;
   private socket: WebSocket;
   private file: File;
 
-  constructor() {
+  constructor(channel: string | undefined) {
     this.type = 'download';
+    this.channel = channel;
   }
 
   public attachFile(file: File) {
@@ -25,6 +27,10 @@ export class DownloadActivity implements IActivity {
     debug('run..');
 
     return new Promise((resolve: Function, reject: Function) => {
+      debug('no channel, not connecting');
+      if (isUndefined(this.channel)) {
+        return resolve();
+      }
       const url = `https://push.iogates.com/pub/${this.getChannel()}`;
       debug(`url: ${url}`);
       this.socket = new WebSocket(url);
@@ -42,7 +48,7 @@ export class DownloadActivity implements IActivity {
   }
 
   public getChannel() {
-    return this.channel = 'updates';
+    return this.channel;
   }
 
   public getFile() {
@@ -50,6 +56,10 @@ export class DownloadActivity implements IActivity {
   }
 
   public send(payload: any) {
+    if (isUndefined(this.channel)) {
+      return false;
+    }
+
     if (this.socket.readyState === WebSocket.OPEN) {
       debug(`sending ${JSON.stringify(payload)}`);
 

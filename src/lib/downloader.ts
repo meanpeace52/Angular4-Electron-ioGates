@@ -14,6 +14,7 @@ import {isUndefined} from 'util';
  */
 export class Downloader {
   public startDate: Date | undefined;
+  public activityChannel: string | undefined;
 
   public static CALCULATE_TRANSFER_SPEED(sent: number[], timestamps: number[], buffer: number | null = null) {
     const sentLen = sent.length;
@@ -68,7 +69,7 @@ export class Downloader {
   }
 
   public downloadFile(file: Type.File): Promise<Type.UploadResponse> {
-    if (file.destination === null || file.destination === '') {
+    if (!file.download || !file.destination) {
       throw new Error('Destination is empty');
     }
 
@@ -76,7 +77,7 @@ export class Downloader {
     uploadResponse.dest = file.destination;
     uploadResponse.success = false;
     uploadResponse.file = file;
-    const downloadActivity = new DownloadActivity();
+    const downloadActivity = new DownloadActivity(this.activityChannel);
 
     return downloadActivity
       .attachFile(file)
@@ -92,14 +93,7 @@ export class Downloader {
 
           const sentValues = [];
           const sentTimestamps = [];
-          bar = new CliProgress.Bar({
-            format: `${this.makeFileName(file)} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
-            stopOnComplete: true,
-            clearOnComplete: false,
-            etaBuffer: 20,
-            fps: 5,
-            payload: {speed: 'N/A'}
-          }, CliProgress.Presets.shades_classic);
+          bar = this.setupProgressBar(file);
           bar.start(1000, 0);
 
           let downloadFromMTDFile$;
@@ -238,6 +232,17 @@ export class Downloader {
     }
 
     return path;
+  }
+
+  private setupProgressBar(file: Type.File) {
+    return new CliProgress.Bar({
+      format: `${this.makeFileName(file)} [{bar}] {percentage}% | ETA: {eta}s | Speed: {speed}`,
+      stopOnComplete: true,
+      clearOnComplete: false,
+      etaBuffer: 20,
+      fps: 5,
+      payload: {speed: 'N/A'}
+    }, CliProgress.Presets.shades_classic);
   }
 
   private createDownload(options: object) {
