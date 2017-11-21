@@ -11,7 +11,7 @@ import { createHash } from 'crypto';
 import * as fs from 'fs';
 import { Chunk } from './chunk';
 import * as Bluebird from 'bluebird';
-import {IFile} from 'iotransfer-core';
+import {IFile} from '../../lib/ifile';
 // import * as winston from 'winston';
 
 /**

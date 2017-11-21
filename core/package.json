@@ -7,7 +7,7 @@
   "engines": {
     "node": ">=6.9.0"
   },
-  "main": "./build/src/index.js",
+  "main": "./build/index.js",
   "devDependencies": {
     "@types/jest": "^21.1.7",
     "@types/lodash": "^4.14.85",

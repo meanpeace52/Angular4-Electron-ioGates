@@ -22,7 +22,10 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*",
-    "__tests__/**/*"
+    "lib/**/*",
+    "types/**/*",
+    "interfaces/**/*",
+    "__tests__/**/*",
+    "index.ts"
   ]
 }
