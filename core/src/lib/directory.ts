@@ -1,27 +1,27 @@
+import * as Bluebird from 'bluebird';
 import * as fs from 'fs';
-import * as path from 'path';
-import { File } from '../types';
-import * as uuid from 'uuid/v1';
 import { ReadStream } from 'fs';
 import * as mime from 'mime-types';
-import * as Bluebird from "bluebird";
+import * as path from 'path';
+import * as uuid from 'uuid/v1';
+import {File as IOFile} from '../types/file';
 
 /**
  *  Exports class Directory.
  */
 export class Directory {
   public path: string;
-  constructor(path: string) {
-    this.path = path;
+  constructor(dirPath: string) {
+    this.path = dirPath;
   }
 
-  public static getStream(path: string): ReadStream {
-    return fs.createReadStream(path);
+  public static GET_STREAM(dirPath: string): ReadStream {
+    return fs.createReadStream(dirPath);
   }
 
-  public static delete(dir: string) {
-    return new Promise((resolve, reject) => {
-      fs.rmdir(dir, (err) => {
+  public static DELETE(dir: string) {
+    return new Promise((resolve: Function, reject: Function) => {
+      fs.rmdir(dir, (err: any) => {
         if (err instanceof Error) {
           if (/ENOENT/ig.test(err.message)) {
             return resolve();
@@ -37,7 +37,7 @@ export class Directory {
 
   public create(): Bluebird<null> {
     return new Bluebird((resolve: Function, reject: Function) => {
-      global['logger'].info('creating dir %s', this.path);
+      //global['logger'].info('creating dir %s', this.path);
       fs.mkdir(this.path, (err: Object) => {
         if (err instanceof Error) {
           if (/EEXIST/ig.test(err.message)) {
@@ -53,14 +53,14 @@ export class Directory {
     });
   }
 
-  public read(): Bluebird<File[]> {
+  public read(): Bluebird<IOFile[]> {
     return this.create()
       .then(() => {
         try {
           const promise = [];
-          const blobs: File[] = this.walkSync(this.path, []).map((filePath: string): File => {
+          const blobs: IOFile[] = this.walkSync(this.path, []).map((filePath: string): IOFile => {
             const size = fs.statSync(filePath).size;
-            const file = new File();
+            const file = new IOFile();
             file.name = path.basename(filePath);
             file.type = mime.lookup(file.name) || 'Other';
             file.size = size;
@@ -70,17 +70,14 @@ export class Directory {
 
             return file;
           });
-          blobs.forEach((file: File) => promise.push(File.createMd5(file)));
+          blobs.forEach((file: IOFile) => promise.push(IOFile.CREATE_MD5(file)));
 
           return Bluebird.all(promise);
         } catch (e) {
           return Bluebird.reject(e);
         }
       })
-      .then((file) => Promise.resolve(file));
-    // return new Promise((resolve: Function, reject: Function) => {
-    //
-    // });
+      .then((files: IOFile[]) => Promise.resolve(files));
   }
 
   public walkSync(dir: string, fileList: string[]): string[] {
@@ -89,7 +86,7 @@ export class Directory {
       fileList = [];
     }
 
-    files.forEach(file => {
+    files.forEach((file: string) => {
       if (fs.statSync(path.join(dir, file)).isDirectory()) {
         fileList = this.walkSync(path.join(dir, file), fileList);
       } else if (file.substr(0, 1) !== '.') {

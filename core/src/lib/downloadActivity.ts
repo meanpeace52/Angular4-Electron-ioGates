@@ -1,23 +1,22 @@
-import { IActivity } from './iactivity';
-//import * as WebSocket from 'reconnecting-websocket';
-import * as WebSocket from 'ws';
-import { File } from '../types';
 import * as Debug from 'debug';
-import {isUndefined} from "util";
+import { IActivity } from './iactivity';
+import {IFile} from './ifile';
+import {isUndefined} from 'util';
+import * as WebSocket from 'ws';
 const debug = Debug('activity:download');
 
 export class DownloadActivity implements IActivity {
-  public type: string;
+  public action: string;
   private channel: string | undefined;
   private socket: WebSocket;
-  private file: File;
+  private file: IFile;
 
   constructor(channel: string | undefined) {
-    this.type = 'download';
+    this.action = 'download';
     this.channel = channel;
   }
 
-  public attachFile(file: File) {
+  public attachFile(file: IFile) {
     this.file = file;
 
     return this;
@@ -81,11 +80,11 @@ export class DownloadActivity implements IActivity {
 
   public start() {
     const payload = {
-      type: this.type,
+      type: this.action,
       action: 'start',
       payload: {
-        file: this.file.file_id
-      }
+        file: this.file.file_id,
+      },
     };
 
     return this.send(payload);
@@ -93,11 +92,11 @@ export class DownloadActivity implements IActivity {
 
   public resume() {
     const payload = {
-      type: this.type,
+      type: this.action,
       action: 'resume',
       payload: {
-        file: this.file.file_id
-      }
+        file: this.file.file_id,
+      },
     };
 
     return this.send(payload);
@@ -105,13 +104,13 @@ export class DownloadActivity implements IActivity {
 
   public progress(percent: number, rate: number) {
     const payload = {
-      type: this.type,
+      type: this.action,
       action: 'progress',
       payload: {
         file: this.file.file_id,
         percent: percent,
-        rate: rate
-      }
+        rate: rate,
+      },
     };
 
     return this.send(payload);
@@ -119,11 +118,11 @@ export class DownloadActivity implements IActivity {
 
   public completed() {
     const payload = {
-      type: this.type,
+      type: this.action,
       action: 'complete',
       payload: {
-        file: this.file.file_id
-      }
+        file: this.file.file_id,
+      },
     };
 
     return this.send(payload);
@@ -131,18 +130,18 @@ export class DownloadActivity implements IActivity {
 
   public failed(err?: string) {
     const payload = {
-      type: this.type,
+      type: this.action,
       action: 'failed',
       payload: {
         file: this.file.file_id,
-        reason: err
-      }
+        reason: err,
+      },
     };
 
     return this.send(payload);
   }
 
   public getType() {
-    return this.type;
+    return this.action;
   }
 }

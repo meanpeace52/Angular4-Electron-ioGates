@@ -11,6 +11,7 @@ import { createHash } from 'crypto';
 import * as fs from 'fs';
 import { Chunk } from './chunk';
 import * as Bluebird from 'bluebird';
+import {IFile} from 'iotransfer-core';
 // import * as winston from 'winston';
 
 /**
@@ -21,7 +22,7 @@ import * as Bluebird from 'bluebird';
   underscored: true,
   tableName: 'files'
 })
-export class File extends Model<File> {
+export class File extends Model<File> implements IFile {
   @Column({
     primaryKey: true,
     unique: true,

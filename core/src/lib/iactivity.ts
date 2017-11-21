@@ -1,5 +1,5 @@
 export interface IActivity {
-  type: string;
+  action: string;
   // notify();
   getType();
   send(payload: object);

@@ -1,24 +1,29 @@
-import { demux } from 'muxer';
-import { Directory } from './directory';
-import { DownloadActivity } from './downloadActivity';
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
-import { isUndefined } from 'util';
 import * as MultiDownloader from 'mt-downloader';
-import { Observable as O } from 'rx';
+import { demux } from 'muxer';
 import * as R from 'ramda';
+import { Observable as O } from 'rx';
+import { isUndefined } from 'util';
+import { Directory } from './directory';
+import { DownloadActivity } from './downloadActivity';
+import { IFile } from './ifile';
+import { ILogger } from './ilogger';
 import * as Type from './types';
 
 /**
  * Helps download a file from IOGates
  */
 export class Downloader extends EventEmitter {
+  public static EVENT_START: string = 'start';
   public static EVENT_PROGRESS: string = 'progress';
   public static EVENT_COMPLETE: string = 'complete';
   public static EVENT_FAILURE: string = 'failure';
 
   public startDate: Date | undefined;
   public activityChannel: string | undefined;
+
+  public logger: ILogger;
 
   public static CALCULATE_TRANSFER_SPEED(sent: number[], timestamps: number[], buffer: number | null = null) {
     const sentLen = sent.length;
@@ -47,8 +52,8 @@ export class Downloader extends EventEmitter {
     return (bytes / 1048576) / (ms / 1000);
   }
 
-  public downloadFiles(files: Type.File[]): Promise<Type.UploadResponse[]> {
-    return new Promise(async (resolve, reject) => {
+  public downloadFiles(files: IFile[]): Promise<Type.UploadResponse[]> {
+    return new Promise(async (resolve: Function) => {
       const results = [];
       const fileSavePromises = [];
       for (const file of files) {
@@ -59,10 +64,10 @@ export class Downloader extends EventEmitter {
             r.file.downloaded = true;
             fileSavePromises.push(r.file.save());
           } else {
-            global['logger'].info(`Ignoring ${file.name} as it is older than start date`);
+            this.info(`Ignoring ${file.name} as it is older than start date`);
           }
         } catch (err) {
-          global['logger'].error(`Failed downloading: ${file.name}. ${err}`);
+          this.error(`Failed downloading: ${file.name}. ${err}`);
         }
       }
 
@@ -72,9 +77,13 @@ export class Downloader extends EventEmitter {
     });
   }
 
-  public downloadFile(file: Type.File): Promise<Type.UploadResponse> {
-    if (!file.download || !file.destination) {
+  public downloadFile(file: IFile): Promise<Type.UploadResponse> {
+    this.emit(Downloader.EVENT_START, file);
+    if (!file.destination) {
       throw new Error('Destination is empty');
+    }
+    if (!file.download) {
+      throw new Error('Download url is empty');
     }
 
     const uploadResponse: Type.UploadResponse = new Type.UploadResponse();
@@ -102,14 +111,14 @@ export class Downloader extends EventEmitter {
             /**
              * MTD file exists, resume
              */
-            global['logger'].info(`resume ${file.destination}`);
+            this.info(`resume ${file.destination}`);
             downloadActivity.resume();
             downloadFromMTDFile$ = MultiDownloader.DownloadFromMTDFile(mtdPath).share();
           } else {
             /**
              * Create new download
              */
-            global['logger'].info(`download ${file.destination}`);
+            this.info(`download ${file.destination}`);
             const createMTDFile$ = this.createDownload(options);
 
             downloadActivity.start();
@@ -131,7 +140,7 @@ export class Downloader extends EventEmitter {
             .share()
             .last()
             .catch((err: any) => {
-              global['logger'].error(`downloadFromMTDFile$ error: ${err}`);
+              this.error(`downloadFromMTDFile$ error: ${err}`);
             });
           /**
            * Close File Descriptors
@@ -141,7 +150,7 @@ export class Downloader extends EventEmitter {
             .map(R.tail)
             .flatMap(R.map(R.of))
             .catch((err: any) => {
-              global['logger'].error(`finalizeDownload$ error: ${err}`);
+              this.error(`finalizeDownload$ error: ${err}`);
             });
           const closeFile = MultiDownloader.FILE.close(fd$).last().toPromise();
 
@@ -152,30 +161,29 @@ export class Downloader extends EventEmitter {
 
           MultiDownloader.Completion(meta$).subscribe((i: number) => {
             const speed = Downloader.CALCULATE_TRANSFER_SPEED(
-              sentValues, sentTimestamps, i === 1 ? null : 50
-            ).toFixed(1);
+              sentValues, sentTimestamps, i === 1 ? null : 50).toFixed(1);
             const percent = i * 100;
-            this.emit(Downloader.EVENT_PROGRESS, i, Number(speed));
+            this.emit(Downloader.EVENT_PROGRESS, file, i, Number(speed));
             downloadActivity.progress(percent, Number(speed));
           });
 
           return closeFile;
         } catch (err) {
-          global['logger'].error(`Catched error: ${err}`);
+          this.error(`${err}`);
           throw err;
         }
       })
       .then(() => {
-        this.emit(Downloader.EVENT_COMPLETE);
+        this.emit(Downloader.EVENT_COMPLETE, file);
         downloadActivity.completed();
         uploadResponse.success = true;
-        global['logger'].info(`Completed: ${file.destination}`);
+        this.info(`Completed: ${file.destination}`);
 
         return uploadResponse;
       }, (reason: any) => {
-        this.emit(Downloader.EVENT_FAILURE);
-        global['logger'].error(`Error downloading ${file.destination}`);
-        global['logger'].error(reason);
+        this.emit(Downloader.EVENT_FAILURE, file);
+        this.error(`Error downloading ${file.destination}`);
+        this.error(reason);
         downloadActivity.failed(reason);
         uploadResponse.success = false;
 
@@ -184,12 +192,12 @@ export class Downloader extends EventEmitter {
   }
 
   public downloaded: O = (m: O) => {
-    return m.map((meta) => {
+    return m.map((meta: MultiDownloader.meta$) => {
       return R.sum(meta.offsets) - R.sum(R.map(R.nth(0), meta.threads)) + R.length(meta.threads) - 1;
     });
   }
 
-  public setupHierarchy(entries: Type.File[], destination: string) {
+  public setupHierarchy(entries: IFile[], destination: string) {
     const tree = new Map();
     const files = [];
     const dirs = [];
@@ -211,11 +219,11 @@ export class Downloader extends EventEmitter {
       });
   }
 
-  private location(file: Type.File, destination: string, tree: Map<number, object>) {
+  private location(file: IFile, destination: string, tree: Map<number, object>) {
     if (!file.parent) {
       return [destination, file.name].join('/');
     }
-    const parent = <Type.File>tree.get(+file.parent);
+    const parent = <IFile>tree.get(+file.parent);
     let path = this.location(parent, destination, tree);
     if (parent.type === 'dir') {
       path = [path, file.name].join('/');
@@ -231,5 +239,16 @@ export class Downloader extends EventEmitter {
 
   private createDownload(options: object) {
     return MultiDownloader.CreateMTDFile(options).share();
+  }
+
+  private info(message: string) {
+    if (this.logger) {
+      this.logger.info(message);
+    }
+  }
+  private error(message: string) {
+    if (this.logger) {
+      this.logger.error(message);
+    }
   }
 }

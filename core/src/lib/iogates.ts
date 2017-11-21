@@ -1,9 +1,12 @@
-import * as http from 'http';
-import * as request from 'request';
-import { Share, Auth, Files, File } from './types';
-import debug from 'debug';
-import * as _ from 'lodash';
 import * as Bluebird from 'bluebird';
+import debug from 'debug';
+import * as http from 'http';
+import * as _ from 'lodash';
+import * as request from 'request';
+import {IAuth} from './iauth';
+import {IFile} from './ifile';
+import {IFiles} from './ifiles';
+import {IShare} from './ishare';
 const log = debug('io:lib:iogates');
 
 /**
@@ -27,18 +30,19 @@ export class IOGates {
     }
   }
 
-  public authenticateFromUrl(share: Share): Promise<Auth> {
+  public authenticateFromUrl(share: IShare): Promise<IAuth> {
     log('called authenticateFromUrl');
 
     return new Promise((resolve: Function, reject: Function) => {
-      this.getRequest().post({
+      this.getRequest().post(
+        {
           url: '/authtoken',
           json: {
             url: share.url,
-            deviceId: global['device-id']
-          }
+            deviceId: global['device-id'],
+          },
         },
-        (err: Error, r: http.IncomingMessage, data: Auth) => {
+        (err: Error, r: http.IncomingMessage, data: IAuth) => {
           if (r.statusCode !== 200) {
             return reject(err);
           }
@@ -51,58 +55,62 @@ export class IOGates {
     });
   }
 
-  public readFiles(): Bluebird<Files> {
+  public readFiles(): Bluebird<IFiles> {
     log('called readFiles');
 
     return new Bluebird((resolve: Function, reject: Function) => {
-      this.getRequest().get({
-        url: '/files',
-        json: true
-      }, (err: Error, r: http.IncomingMessage, response: Files) => {
+      this.getRequest().get(
+        {
+          url: '/files',
+          json: true,
+        },
+        (err: Error, r: http.IncomingMessage, response: IFiles) => {
         if (r.statusCode !== 200) {
           return reject(err);
         }
 
-        response.files = response.files.map((file: File) => {
-          return File.fromPlain(file);
-        });
+        /*response.files = response.files.map((file: IFile) => {
+          return file.fromPlain(file);
+        });*/
 
         return resolve(response);
       });
     });
   }
 
-  public createFiles(files: File[]): Promise<File[]> {
+  public createFiles(files: IFile[]): Promise<IFile[]> {
     return new Promise((resolve: Function, reject: Function) => {
-      const filesToBeCreated = files.map((file: File) => {
+      const filesToBeCreated = files.map((file: IFile) => {
         return {
           name: file.name,
           type: file.type,
-          attributes: [{ name: 'path', value: file.stream_path }]
+          attributes: [{ name: 'path', value: file.stream_path }],
         };
       });
 
-      this.getRequest().post({
-        url: '/files',
-        json: true,
-        body: { files: filesToBeCreated }
-      }, (err: Error, r: http.IncomingMessage, response: Files) => {
-        if (r.statusCode !== 200) {
-          return reject(err);
-        }
-        const createdFiles = files.map((file: File) => {
-          const apiFile = _.find(response.files, { name: file.name });
-          file.upload_filename = apiFile.upload_filename;
-          file.file_id = apiFile.id;
-          file.href = apiFile.href;
-          file.download = apiFile.download;
-          file.parent = apiFile.parent;
-          file.type = apiFile.type;
+      this.getRequest().post(
+        {
+          url: '/files',
+          json: true,
+          body: { files: filesToBeCreated },
+        },
+        (err: Error, r: http.IncomingMessage, response: IFiles) => {
+          if (r.statusCode !== 200) {
+            return reject(err);
+          }
+          const createdFiles = files.map((file: IFile) => {
+            const apiFile = _.find(response.files, { name: file.name });
+            file.upload_filename = apiFile.upload_filename;
+            file.file_id = apiFile.id;
+            file.href = apiFile.href;
+            file.download = apiFile.download;
+            file.parent = apiFile.parent;
+            file.type = apiFile.type;
 
-          return file;
-        });
+            return file;
+          });
 
-        return resolve(createdFiles);
+          return resolve(createdFiles);
       });
     });
   }
@@ -123,8 +131,8 @@ export class IOGates {
     const options = {
       baseUrl: this.baseUrl,
       headers: {
-        token: ''
-      }
+        token: '',
+      },
     };
     if (this.token.length > 0) {
       options.headers.token = this.token;

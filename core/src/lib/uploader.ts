@@ -8,7 +8,6 @@ import {IOGates} from './iogates';
 import * as _ from 'lodash';
 import {Downloader} from './downloader';
 import {Error} from 'tslint/lib/error';
-//import {getSource} from './source';
 import { Subject } from 'rx';
 import {ITusChunkEvent, ITusProgressEvent} from '../types/command_inputs';
 import * as http from 'http';
@@ -38,7 +37,7 @@ export class Uploader {
     // return Promise.all(results)
     //   .then(files => files);
 
-    return new Bluebird(async (resolve: Function, reject: Function) => {
+    return new Bluebird(async (resolve: Function) => {
       for (const file of files) {
         // results.push(this.uploadFile(file));
         try {
@@ -147,7 +146,7 @@ export class Uploader {
         return reject(error);
       };
 
-      const stream = <any> Directory.getStream(file.stream_path);
+      const stream = <any> Directory.GET_STREAM(file.stream_path);
       const tusUploader = new Upload(stream, options);
 
       logger.info(`Starting ${file.uuid}`);
@@ -208,7 +207,7 @@ export class Uploader {
       const nonUploadedChunks = _.filter(file.chunks, { uploaded: false });
       logger.info(`Incomplete chunks: ${nonUploadedChunks.length}`);
 
-      const stream = <ReadStream> Directory.getStream(file.stream_path);
+      const stream = <ReadStream> Directory.GET_STREAM(file.stream_path);
       for (const chunk of nonUploadedChunks) {
         logger.info(
           `Adding client with offset ${chunk.offset}, ` +
@@ -225,15 +224,15 @@ export class Uploader {
           chunks.sort((a: Chunk, b: Chunk) => { return (a.starting_point <= b.starting_point ? -1 : 1); });
           const fileUrls = chunks.map((chunk: Chunk) => `${chunk.resume_url}`).join(' ').trim();
           const req = request.defaults({
-            baseUrl: this.baseUrl
+            baseUrl: this.baseUrl,
           });
           req.post({
             url: `/upload/tus/${this.token}`,
             headers: {
               'Tus-Resumable': '1.0.0',
-              'Upload-Concat': `final;${fileUrls}`
-            }
-          }, (err, r: http.IncomingMessage, response: any) => {
+              'Upload-Concat': `final;${fileUrls}`,
+            },
+          }, (err: any, r: http.IncomingMessage) => {
             if (r.statusCode !== 201) {
               logger.error(`Failed finalizing file. Error: ${err}. File urls: ${fileUrls}`);
 

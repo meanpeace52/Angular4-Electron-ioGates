@@ -1,6 +1,7 @@
+import * as Bluebird from 'bluebird';
+import {IShare} from 'iotransfer-core';
 import { Table, Column, Model, HasMany, Sequelize } from 'sequelize-typescript';
 import { File } from './file';
-import * as Bluebird from 'bluebird';
 /**
  * Exports Share class.
  */
@@ -9,7 +10,7 @@ import * as Bluebird from 'bluebird';
   underscored: true,
   tableName: 'shares'
 })
-export class Share extends Model<Share> {
+export class Share extends Model<Share> implements IShare {
   public static DIRECTION_UPLOAD: string = 'upload';
   public static DIRECT_DOWNLOAD: string = 'download';
   public static DIRECT_BI: string = 'BI';

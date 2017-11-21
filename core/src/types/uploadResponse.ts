@@ -1,21 +1,21 @@
-import { File } from './models/file';
-
 /**
  * Exports UploadResponse class
  */
+
+import {IFile} from '../lib/ifile';
+
 export class UploadResponse {
   public dest: string;
-  public file: File;
+  public file: IFile;
   public success: boolean;
   public timeTaken: number;
 
-  public fromPromise(promise: Promise<undefined>, file: File) : Promise<UploadResponse> {
+  public fromPromise(promise: Promise<undefined>, file: IFile) : Promise<UploadResponse> {
     return promise
       .then(() => {
         this.dest = file.destination;
         this.file = file;
         this.success = true;
-        global['logger'].info('completed %s', file.destination);
 
         return this;
       });
