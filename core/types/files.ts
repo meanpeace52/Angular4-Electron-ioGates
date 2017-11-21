@@ -1,9 +1,10 @@
+import {IFiles} from '../lib/ifiles';
 import { File } from './models/file';
 
 /**
  * Exports Files class.
  */
-export class Files {
+export class Files implements IFiles {
   public map: Map<string, string>;
   public files: File[];
 }

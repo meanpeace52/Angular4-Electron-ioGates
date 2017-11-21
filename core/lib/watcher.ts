@@ -1,8 +1,8 @@
-/*import * as AsyncPolling from 'async-polling';
+import * as AsyncPolling from 'async-polling';
 import { Downloader } from './downloader';
 import { Share } from '../types/models/share';
 import { File } from '../types/models/file';
-import {Files, Files} from '../types/files';
+import {Files} from '../types/files';
 import { UploadResponse } from '../types/uploadResponse';
 import { IOGates } from './iogates';
 import { EventEmitter } from 'events';
@@ -10,7 +10,6 @@ import { Uploader } from './uploader';
 import {Directory} from './directory';
 import { FSWatcher, watch } from 'chokidar';
 import {IFile} from './ifile';
-import {IFiles} from './ifiles';
 
 export class Watcher extends EventEmitter {
 
@@ -40,7 +39,7 @@ export class DownloadWatcher extends Watcher {
       // console.log('<checking...>');
       this.api
         .readFiles()
-        .then((response: IFiles) => {
+        .then((response: Files) => {
           const files = response.files;
 
           return File.filterForDownload(files);
@@ -175,4 +174,4 @@ export class UploadWatcher extends Watcher {
         this.emit('error', e);
       });
   }
-}*/
+}
