@@ -4,7 +4,7 @@ import { uploadCommand } from './commands/upload';
 import { listCommand } from './commands/list';
 import { removeCommand } from './commands/remove';
 import { addCommand } from './commands/add';
-import * as Type from './types';
+import * as Type from 'iotransfer-core/types';
 import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
 import { machineIdSync } from 'node-machine-id';
