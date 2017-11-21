@@ -1,9 +1,0 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Exports Auth class.
- */
-class Auth {
-}
-exports.Auth = Auth;
-//# sourceMappingURL=types.js.map

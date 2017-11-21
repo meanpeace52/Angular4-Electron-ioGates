@@ -1,9 +1,0 @@
-"use strict"; /* istanbul ignore next */var cov_2o49pjfvjm = function () {var path = "/code/cilantro/iogates-transfer/src/types/download_command_input.ts",hash = "b5282b1e018ecde4efe05fc97e0f98840ddac6ec",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/types/download_command_input.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 8, column: 0 }, end: { line: 8, column: 52 } } }, fnMap: {}, branchMap: {}, s: { "0": 0, "1": 0 }, f: {}, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_2o49pjfvjm.s[0];
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
-                                                                * Exports Input format for Download command
-                                                                */
-class CommandDownloadInput {} /* istanbul ignore next */++cov_2o49pjfvjm.s[1];
-
-exports.CommandDownloadInput = CommandDownloadInput;
-//# sourceMappingURL=download_command_input.js.map

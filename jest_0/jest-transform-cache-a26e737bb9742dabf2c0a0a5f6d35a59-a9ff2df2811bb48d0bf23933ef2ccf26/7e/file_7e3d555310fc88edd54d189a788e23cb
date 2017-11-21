@@ -1,9 +1,0 @@
-"use strict"; /* istanbul ignore next */var cov_15ckh52z67 = function () {var path = "/code/cilantro/iogates-transfer/src/types/file.ts",hash = "8ffbfce5721b1a8a054c3223d2f97dd9b0e5035b",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/types/file.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 8, column: 0 }, end: { line: 8, column: 20 } } }, fnMap: {}, branchMap: {}, s: { "0": 0, "1": 0 }, f: {}, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_15ckh52z67.s[0];
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
-                                                                * Exports File class.
-                                                                */
-class File {} /* istanbul ignore next */++cov_15ckh52z67.s[1];
-
-exports.File = File;
-//# sourceMappingURL=file.js.map

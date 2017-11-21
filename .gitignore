@@ -1,0 +1,11 @@
+node_modules/
+jest_*
+coverage/
+build/
+*.sqlite
+.idea
+dist
+logs/*.log
+core/node_modules
+cli/node_modules
+gui/node_modules
