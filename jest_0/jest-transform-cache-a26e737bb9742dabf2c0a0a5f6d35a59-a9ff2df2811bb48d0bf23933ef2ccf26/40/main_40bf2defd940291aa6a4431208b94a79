@@ -1,0 +1,26 @@
+"use strict"; /* istanbul ignore next */var cov_2cqn5mmo0p = function () {var path = "/code/cilantro/iogates-transfer/src/main.ts",hash = "5647840fc4d3923327751c36cf012b92dce23213",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/main.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 15 }, end: { line: 3, column: 32 } }, "2": { start: { line: 4, column: 19 }, end: { line: 4, column: 49 } }, "3": { start: { line: 5, column: 31 }, end: { line: 5, column: 62 } }, "4": { start: { line: 6, column: 18 }, end: { line: 13, column: 2 } }, "5": { start: { line: 14, column: 0 }, end: { line: 14, column: 23 } }, "6": { start: { line: 15, column: 17 }, end: { line: 15, column: 25 } }, "7": { start: { line: 16, column: 0 }, end: { line: 19, column: 39 } }, "8": { start: { line: 20, column: 0 }, end: { line: 23, column: 25 } }, "9": { start: { line: 24, column: 0 }, end: { line: 24, column: 38 } }, "10": { start: { line: 25, column: 0 }, end: { line: 25, column: 26 } } }, fnMap: {}, branchMap: {}, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0 }, f: {}, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_2cqn5mmo0p.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const vorpal = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[1], require("vorpal"));
+const download_1 = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[2], require("./commands/download"));
+const sequelize_typescript_1 = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[3], require("sequelize-typescript"));
+const sequelize = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[4], new sequelize_typescript_1.Sequelize({
+    name: 'iogates',
+    dialect: 'sqlite',
+    username: 'root',
+    password: '',
+    storage: `${__dirname}/iogates.sqlite`,
+    modelPaths: [`${__dirname}/types/models`] })); /* istanbul ignore next */++cov_2cqn5mmo0p.s[5];
+
+console.log(sequelize);
+const commands = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[6], vorpal()); /* istanbul ignore next */++cov_2cqn5mmo0p.s[7];
+commands.
+command('download [dir] [url]', 'Download folder from Share URL').
+option('-m', '--monitor', 'Shows download progress').
+action(download_1.downloadComand); /* istanbul ignore next */++cov_2cqn5mmo0p.s[8];
+commands.
+delimiter('iogates>').
+show().
+parse(process.argv); /* istanbul ignore next */++cov_2cqn5mmo0p.s[9];
+commands.commands = commands.commands; /* istanbul ignore next */++cov_2cqn5mmo0p.s[10];
+module.exports = commands;
+//# sourceMappingURL=main.js.map

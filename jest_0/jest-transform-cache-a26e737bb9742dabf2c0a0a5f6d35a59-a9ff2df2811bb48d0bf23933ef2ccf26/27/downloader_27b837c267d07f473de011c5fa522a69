@@ -1,0 +1,21 @@
+"use strict"; /* istanbul ignore next */var cov_29h5wbidje = function () {var path = "/code/cilantro/iogates-transfer/src/lib/downloader.ts",hash = "ca6ac7f865a6f323a52ab62d99240870d4874792",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/lib/downloader.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 24 }, end: { line: 3, column: 48 } }, "2": { start: { line: 10, column: 24 }, end: { line: 13, column: 9 } }, "3": { start: { line: 14, column: 8 }, end: { line: 14, column: 44 } }, "4": { start: { line: 17, column: 8 }, end: { line: 17, column: 54 } }, "5": { start: { line: 20, column: 0 }, end: { line: 20, column: 32 } } }, fnMap: { "0": { name: "(anonymous_0)", decl: { start: { line: 8, column: 4 }, end: { line: 8, column: 5 } }, loc: { start: { line: 8, column: 28 }, end: { line: 15, column: 5 } }, line: 8 }, "1": { name: "(anonymous_1)", decl: { start: { line: 16, column: 4 }, end: { line: 16, column: 5 } }, loc: { start: { line: 16, column: 28 }, end: { line: 18, column: 5 } }, line: 16 } }, branchMap: {}, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, f: { "0": 0, "1": 0 }, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_29h5wbidje.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const MultiDownloader = /* istanbul ignore next */(++cov_29h5wbidje.s[1], require("mt-downloader"));
+/**
+                                                                                                      * Helps download a file from IOGates
+                                                                                                      */
+class Downloader {
+    downloadFile(url, dest) {/* istanbul ignore next */++cov_29h5wbidje.f[0];
+        // do something.
+        const options = /* istanbul ignore next */(++cov_29h5wbidje.s[2], {
+            url: url,
+            path: dest }); /* istanbul ignore next */++cov_29h5wbidje.s[3];
+
+        return this.createDownload(options);
+    }
+    createDownload(options) {/* istanbul ignore next */++cov_29h5wbidje.f[1];++cov_29h5wbidje.s[4];
+        return MultiDownloader.CreateMTDFile(options);
+    }} /* istanbul ignore next */++cov_29h5wbidje.s[5];
+
+exports.Downloader = Downloader;
+//# sourceMappingURL=downloader.js.map

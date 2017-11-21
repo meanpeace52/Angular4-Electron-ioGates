@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const downloader_1 = require("../../src/lib/downloader");
+describe('Downloader class', () => {
+    let downloader;
+    // Act before assertions
+    beforeAll(() => {
+        downloader = new downloader_1.Downloader();
+    });
+    // Assert if setTimeout was called properly
+    it('should have a download method', () => {
+        expect(downloader.downloadFile).toBeDefined();
+    });
+});
+//# sourceMappingURL=downloader.spec.js.map

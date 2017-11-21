@@ -1,0 +1,55 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const downloader_1 = require("../../src/lib/downloader");
+const types_1 = require("../../src/lib/types");
+const fs = require("fs");
+const crypto = require("crypto");
+describe('Downloader class', () => {
+    let downloader;
+    beforeAll(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+        downloader = new downloader_1.Downloader();
+    });
+    it('should have a download method', () => {
+        expect(downloader.downloadFile).toBeDefined();
+    });
+    it('should be able to download the file', () => {
+        /*
+         * {
+                "name": "IMG_0752.JPG",
+                "type": "image",
+                "attributes": [],
+                "id": 375,
+                "parent": 373,
+                "href": "https://web02-transferapp.iogates.com/api/file/375",
+                "download": "https://web02-transferapp.iogates.com/download-file/375/0/0/1/0/8kknXFVqqHASkAk4hpIG8zbpJeWCsHZJ",
+                "md5": "812abd8d7ceda3b738ca3ac79d4a0c5c"
+            }
+         */
+        const url = 'https://web02-transferapp.iogates.com/download-file/375/0/0/1/0/8kknXFVqqHASkAk4hpIG8zbpJeWCsHZJ';
+        const file = new types_1.File();
+        file.name = 'IMG_0752.JPG';
+        file.type = 'image';
+        file.id = 375;
+        file.parent = 373;
+        file.md5 = '812abd8d7ceda3b738ca3ac79d4a0c5c';
+        file.download = url;
+        const dest = '/tmp/test-file.jpg';
+        const promise = downloader.downloadFile(file, dest);
+        promise
+            .then((response) => {
+            const content = fs.readFileSync(dest);
+            console.log(content);
+            const checkSum = crypto
+                .createHash('md5')
+                .update(content)
+                .digest('hex');
+            expect(file.md5).toEqual(checkSum);
+        });
+        return promise;
+    });
+    afterAll(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+    });
+});
+//# sourceMappingURL=downloader.spec.js.map

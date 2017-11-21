@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const vorpal = require("vorpal");
+const download_1 = require("./commands/download");
+console.log(vorpal);
+vorpal
+    .command('download [url...]', 'Download folder from Share URL')
+    .option('-o')
+    .option('--monitor')
+    .action(download_1.downloadComand);
+vorpal
+    .delimiter('iogates:')
+    .show()
+    .parse(process.argv);
+//# sourceMappingURL=main.js.map

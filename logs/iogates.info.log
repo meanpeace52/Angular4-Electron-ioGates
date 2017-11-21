@@ -1,0 +1,107 @@
+2017-09-14T21:42:19.690Z - info: creating dir /tmp/_another
+2017-09-14T21:42:21.750Z - info: creating dir /tmp/_another/Picutres
+2017-09-14T21:42:21.751Z - info: creating dir /tmp/_another/Picutres/originals
+2017-09-14T21:42:21.751Z - info: creating dir /tmp/_another/Picutres/originals/folder
+2017-09-14T21:42:22.146Z - info: resume /tmp/_another/Picutres/IMG_0767 (Large icon).jpg
+2017-09-14T21:42:28.626Z - info: creating dir /tmp/_another
+2017-09-14T21:42:30.240Z - info: creating dir /tmp/_another/Picutres
+2017-09-14T21:42:30.241Z - info: creating dir /tmp/_another/Picutres/originals
+2017-09-14T21:42:30.241Z - info: creating dir /tmp/_another/Picutres/originals/folder
+2017-09-14T21:42:30.324Z - info: resume /tmp/_another/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_.mov
+2017-09-14T21:42:49.400Z - info: completed /tmp/_another/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_.mov
+2017-09-14T21:42:49.400Z - info: download /tmp/_another/Picutres/IMG_0767 (Small icon).jpg
+2017-09-14T21:42:50.943Z - info: completed /tmp/_another/Picutres/IMG_0767 (Small icon).jpg
+2017-09-14T21:42:50.943Z - info: download /tmp/_another/Picutres/IMG_0767 (Large preview).jpg
+2017-09-14T21:42:59.795Z - info: completed /tmp/_another/Picutres/IMG_0767 (Large preview).jpg
+2017-09-14T21:42:59.796Z - info: download /tmp/_another/Picutres/IMG_0769.JPG
+2017-09-14T21:43:06.382Z - info: completed /tmp/_another/Picutres/IMG_0769.JPG
+2017-09-14T21:43:06.382Z - info: resume /tmp/_another/Picutres/IMG_0772.JPG
+2017-09-14T21:43:10.616Z - info: completed /tmp/_another/Picutres/IMG_0772.JPG
+2017-09-14T21:43:10.617Z - info: download /tmp/_another/Picutres/originals/IMG_0767.JPG
+2017-09-14T21:43:18.397Z - info: completed /tmp/_another/Picutres/originals/IMG_0767.JPG
+2017-09-14T21:43:18.397Z - info: download /tmp/_another/Picutres/originals/IMG_0767 (Small icon).jpg
+2017-09-14T21:43:21.938Z - info: completed /tmp/_another/Picutres/originals/IMG_0767 (Small icon).jpg
+2017-09-14T21:43:21.938Z - info: resume /tmp/_another/Picutres/originals/IMG_0767 (Large icon).jpg
+2017-09-15T20:57:50.574Z - info: creating dir /tmp/2n
+2017-09-15T21:00:29.504Z - info: creating dir /tmp/2n
+2017-09-15T21:01:10.371Z - info: creating dir /tmphttps://share-web02-transferapp.iogates.com/show/27/59aa857db93bd/e8a018f35c5426b0b626849a61dbc624/dir/415/415/0/0/0
+2017-09-15T21:01:23.054Z - info: creating dir /tmp
+2017-09-15T21:01:23.726Z - info: add share 3
+2017-09-15T21:01:45.604Z - info: creating dir /tmp
+2017-09-15T21:01:47.292Z - info: add share 4
+2017-09-15T21:02:36.114Z - info: creating dir /tmp
+2017-09-15T21:02:36.707Z - info: add share 5
+2017-09-29T20:44:31.537Z - info: creating dir /tmp
+2017-09-29T20:44:32.199Z - info: add share 1
+2017-09-29T20:45:06.443Z - info: creating dir /tmp/2n
+2017-09-29T20:45:06.680Z - error: Unknown Share URL scheme
+2017-09-29T20:45:35.917Z - info: creating dir /tmp/2n
+2017-09-29T20:45:36.147Z - error: Unknown Share URL scheme
+2017-09-29T20:45:47.079Z - info: creating dir /tmp/2n
+2017-09-29T20:45:47.100Z - error: Unknown Share URL scheme
+2017-09-29T20:46:26.530Z - info: creating dir /tmp/NEW_FOLDER
+2017-09-29T20:46:27.363Z - info: creating dir /tmp/NEW_FOLDER/Picutres
+2017-09-29T20:46:27.364Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals
+2017-09-29T20:46:27.365Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals/folder
+2017-09-29T20:46:27.960Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767.JPG
+2017-09-29T20:46:32.745Z - error: First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.
+2017-09-29T20:49:11.402Z - info: creating dir /tmp/NEW_FOLDER
+2017-09-29T20:49:12.139Z - info: creating dir /tmp/NEW_FOLDER/Picutres
+2017-09-29T20:49:12.141Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals
+2017-09-29T20:49:12.142Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals/folder
+2017-09-29T20:49:12.473Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Small preview).jpg
+2017-09-29T20:49:14.064Z - error: First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.
+2017-09-29T20:49:36.915Z - info: creating dir /tmp/NEW_FOLDER
+2017-09-29T20:49:37.475Z - info: creating dir /tmp/NEW_FOLDER/Picutres
+2017-09-29T20:49:37.476Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals
+2017-09-29T20:49:37.476Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals/folder
+2017-09-29T20:49:37.772Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Small icon).jpg
+2017-09-29T20:49:41.293Z - error: First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.
+2017-09-29T20:51:04.749Z - info: creating dir /tmp/NEW_FOLDER
+2017-09-29T20:51:05.304Z - info: creating dir /tmp/NEW_FOLDER/Picutres
+2017-09-29T20:51:05.305Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals
+2017-09-29T20:51:05.306Z - info: creating dir /tmp/NEW_FOLDER/Picutres/originals/folder
+2017-09-29T20:51:05.614Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767.JPG
+2017-09-29T20:51:10.131Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0767.JPG
+2017-09-29T20:51:10.285Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Small preview).jpg
+2017-09-29T20:51:16.783Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0767 (Small preview).jpg
+2017-09-29T20:51:16.936Z - info: download /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_ (Publish).mp4
+2017-09-29T20:51:31.466Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_ (Publish).mp4
+2017-09-29T20:51:31.661Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0767.JPG
+2017-09-29T20:51:36.700Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0767.JPG
+2017-09-29T20:51:37.019Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Small icon).jpg
+2017-09-29T20:51:40.555Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Small icon).jpg
+2017-09-29T20:51:40.765Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Large icon).jpg
+2017-09-29T20:51:42.261Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Large icon).jpg
+2017-09-29T20:51:42.403Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Display size).jpg
+2017-09-29T20:51:48.900Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Display size).jpg
+2017-09-29T20:51:49.101Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Small preview).jpg
+2017-09-29T20:51:52.743Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Small preview).jpg
+2017-09-29T20:51:52.928Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Large preview).jpg
+2017-09-29T20:51:56.866Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0767 (Large preview).jpg
+2017-09-29T20:51:57.359Z - info: download /tmp/NEW_FOLDER/Picutres/originals/IMG_0769.JPG
+2017-09-29T20:52:05.981Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/IMG_0769.JPG
+2017-09-29T20:52:06.163Z - info: download /tmp/NEW_FOLDER/Picutres/originals/folder/185 v1.mp4
+2017-09-29T20:52:38.813Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/folder/185 v1.mp4
+2017-09-29T20:52:39.039Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Large icon).jpg
+2017-09-29T20:52:40.640Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0767 (Large icon).jpg
+2017-09-29T20:52:40.832Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Display size).jpg
+2017-09-29T20:52:42.511Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0767 (Display size).jpg
+2017-09-29T20:52:42.714Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Small icon).jpg
+2017-09-29T20:52:47.202Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0767 (Small icon).jpg
+2017-09-29T20:52:47.363Z - info: download /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_.mov
+2017-09-29T20:53:10.778Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_.mov
+2017-09-29T20:53:11.018Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0769.JPG
+2017-09-29T20:53:17.374Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0769.JPG
+2017-09-29T20:53:17.559Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0772.JPG
+2017-09-29T20:53:22.761Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0772.JPG
+2017-09-29T20:53:22.949Z - info: download /tmp/NEW_FOLDER/Picutres/IMG_0767 (Large preview).jpg
+2017-09-29T20:53:27.699Z - info: completed /tmp/NEW_FOLDER/Picutres/IMG_0767 (Large preview).jpg
+2017-09-29T20:53:27.859Z - info: download /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_ (Preview).mp4
+2017-09-29T20:53:36.525Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_ (Preview).mp4
+2017-09-29T20:53:36.703Z - info: download /tmp/NEW_FOLDER/Picutres/originals/folder/185 v1 (Preview poster).jpg
+2017-09-29T20:53:37.507Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/folder/185 v1 (Preview poster).jpg
+2017-09-29T20:53:37.703Z - info: download /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_ (Preview poster).jpg
+2017-09-29T20:53:41.355Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/1_Enkelt_Master_20_HD_prores_422__QuickTime_1920x1280i50___1_ (Preview poster).jpg
+2017-09-29T20:53:41.529Z - info: download /tmp/NEW_FOLDER/Picutres/originals/folder/185 v1 (Preview).mp4
+2017-09-29T20:54:13.025Z - info: completed /tmp/NEW_FOLDER/Picutres/originals/folder/185 v1 (Preview).mp4

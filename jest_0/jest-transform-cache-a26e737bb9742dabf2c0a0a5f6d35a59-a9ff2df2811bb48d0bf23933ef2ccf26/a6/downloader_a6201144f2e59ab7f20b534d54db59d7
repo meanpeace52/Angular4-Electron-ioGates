@@ -1,0 +1,74 @@
+"use strict"; /* istanbul ignore next */var cov_29h5wbidje = function () {var path = "/code/cilantro/iogates-transfer/src/lib/downloader.ts",hash = "3f6e59f1b0b08e26cd5feda1f4f3981dbe378bde",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/lib/downloader.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 16 }, end: { line: 3, column: 32 } }, "2": { start: { line: 4, column: 24 }, end: { line: 4, column: 48 } }, "3": { start: { line: 5, column: 13 }, end: { line: 5, column: 26 } }, "4": { start: { line: 6, column: 10 }, end: { line: 6, column: 26 } }, "5": { start: { line: 7, column: 13 }, end: { line: 7, column: 31 } }, "6": { start: { line: 14, column: 21 }, end: { line: 14, column: 23 } }, "7": { start: { line: 15, column: 8 }, end: { line: 17, column: 9 } }, "8": { start: { line: 16, column: 12 }, end: { line: 16, column: 53 } }, "9": { start: { line: 18, column: 8 }, end: { line: 18, column: 33 } }, "10": { start: { line: 21, column: 8 }, end: { line: 21, column: 47 } }, "11": { start: { line: 22, column: 24 }, end: { line: 25, column: 9 } }, "12": { start: { line: 26, column: 31 }, end: { line: 26, column: 77 } }, "13": { start: { line: 27, column: 27 }, end: { line: 27, column: 64 } }, "14": { start: { line: 31, column: 37 }, end: { line: 34, column: 65 } }, "15": { start: { line: 35, column: 34 }, end: { line: 35, column: 86 } }, "16": { start: { line: 39, column: 34 }, end: { line: 46, column: 19 } }, "17": { start: { line: 40, column: 59 }, end: { line: 43, column: 9 } }, "18": { start: { line: 47, column: 8 }, end: { line: 47, column: 49 } }, "19": { start: { line: 58, column: 20 }, end: { line: 61, column: 33 } }, "20": { start: { line: 62, column: 26 }, end: { line: 62, column: 69 } }, "21": { start: { line: 63, column: 31 }, end: { line: 63, column: 56 } }, "22": { start: { line: 64, column: 8 }, end: { line: 64, column: 65 } }, "23": { start: { line: 67, column: 8 }, end: { line: 69, column: 9 } }, "24": { start: { line: 68, column: 12 }, end: { line: 68, column: 43 } }, "25": { start: { line: 70, column: 8 }, end: { line: 70, column: 27 } }, "26": { start: { line: 73, column: 0 }, end: { line: 73, column: 32 } } }, fnMap: { "0": { name: "(anonymous_0)", decl: { start: { line: 13, column: 4 }, end: { line: 13, column: 5 } }, loc: { start: { line: 13, column: 31 }, end: { line: 19, column: 5 } }, line: 13 }, "1": { name: "(anonymous_1)", decl: { start: { line: 20, column: 4 }, end: { line: 20, column: 5 } }, loc: { start: { line: 20, column: 29 }, end: { line: 65, column: 5 } }, line: 20 }, "2": { name: "(anonymous_2)", decl: { start: { line: 40, column: 41 }, end: { line: 40, column: 42 } }, loc: { start: { line: 40, column: 59 }, end: { line: 43, column: 9 } }, line: 40 }, "3": { name: "(anonymous_3)", decl: { start: { line: 66, column: 4 }, end: { line: 66, column: 5 } }, loc: { start: { line: 66, column: 38 }, end: { line: 71, column: 5 } }, line: 66 } }, branchMap: { "0": { loc: { start: { line: 67, column: 8 }, end: { line: 69, column: 9 } }, type: "if", locations: [{ start: { line: 67, column: 8 }, end: { line: 69, column: 9 } }, { start: { line: 67, column: 8 }, end: { line: 69, column: 9 } }], line: 67 } }, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": 0, "20": 0, "21": 0, "22": 0, "23": 0, "24": 0, "25": 0, "26": 0 }, f: { "0": 0, "1": 0, "2": 0, "3": 0 }, b: { "0": [0, 0] }, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_29h5wbidje.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const muxer_1 = /* istanbul ignore next */(++cov_29h5wbidje.s[1], require("muxer"));
+const mt_downloader_1 = /* istanbul ignore next */(++cov_29h5wbidje.s[2], require("mt-downloader"));
+const rx_1 = /* istanbul ignore next */(++cov_29h5wbidje.s[3], require("rx"));
+const R = /* istanbul ignore next */(++cov_29h5wbidje.s[4], require("ramda"));
+const Type = /* istanbul ignore next */(++cov_29h5wbidje.s[5], require("./types"));
+// import Progress from 'progress';
+/**
+ * Helps download a file from IOGates
+ */
+class Downloader {
+    downloadFiles(files, dest) {/* istanbul ignore next */++cov_29h5wbidje.f[0];
+        const exec = /* istanbul ignore next */(++cov_29h5wbidje.s[6], []); /* istanbul ignore next */++cov_29h5wbidje.s[7];
+        for (const file of files) {/* istanbul ignore next */++cov_29h5wbidje.s[8];
+            exec.push(this.downloadFile(file, dest));
+        } /* istanbul ignore next */++cov_29h5wbidje.s[9];
+        return Promise.all(exec);
+    }
+    downloadFile(file, dest) {/* istanbul ignore next */++cov_29h5wbidje.f[1];++cov_29h5wbidje.s[10];
+        dest = this.getDestination(file, dest);
+        const options = /* istanbul ignore next */(++cov_29h5wbidje.s[11], {
+            url: file.download,
+            path: dest });
+
+        const createMTDFile$ = /* istanbul ignore next */(++cov_29h5wbidje.s[12], mt_downloader_1.CreateMTDFile(options).share());
+        const [{ fdW$ }] = /* istanbul ignore next */(++cov_29h5wbidje.s[13], muxer_1.demux(createMTDFile$, 'fdW$'));
+        /**
+                                                                                                                       * Download From MTD File
+                                                                                                                       */
+        const downloadFromMTDFile$ = /* istanbul ignore next */(++cov_29h5wbidje.s[14], createMTDFile$.
+        last().
+        map(mt_downloader_1.MTDPath(options.path)).
+        flatMap(mt_downloader_1.DownloadFromMTDFile).share());
+        const [{ fdR$, meta$ }] = /* istanbul ignore next */(++cov_29h5wbidje.s[15], muxer_1.demux(downloadFromMTDFile$, 'meta$', 'fdR$'));
+        /**
+                                                                                                                                             * Finalize Downloaded FILE
+                                                                                                                                             */
+        const finalizeDownload$ = /* istanbul ignore next */(++cov_29h5wbidje.s[16], downloadFromMTDFile$.last().
+        withLatestFrom(fdR$, meta$, (_, fd, meta) => {/* istanbul ignore next */++cov_29h5wbidje.f[2];++cov_29h5wbidje.s[17];return {
+                fd$: rx_1.Observable.just(fd),
+                meta$: rx_1.Observable.just(meta) };
+        }).
+        flatMap(mt_downloader_1.FinalizeDownload).
+        share().
+        last()); /* istanbul ignore next */++cov_29h5wbidje.s[18];
+        finalizeDownload$.subscribe('COMPLETED');
+        // Update progressbar
+        // const bar = new Progress(':percent :bar', {
+        //   total: 1000,
+        //   complete: '█',
+        //   incomplete: '░'
+        // })
+        // Completion(meta$).subscribe((i) => bar.update(i))
+        /**
+         * Close File Descriptors
+         */
+        const fd$ = /* istanbul ignore next */(++cov_29h5wbidje.s[19], finalizeDownload$.
+        withLatestFrom(fdW$, fdR$).
+        map(R.tail).
+        flatMap(R.map(R.of)));
+        const closeFile = /* istanbul ignore next */(++cov_29h5wbidje.s[20], mt_downloader_1.FILE.close(fd$).toPromise());
+        const uploadResponse = /* istanbul ignore next */(++cov_29h5wbidje.s[21], new Type.UploadResponse()); /* istanbul ignore next */++cov_29h5wbidje.s[22];
+        return uploadResponse.fromPromise(closeFile, file, dest);
+    }
+    getDestination(file, destination) {/* istanbul ignore next */++cov_29h5wbidje.f[3];++cov_29h5wbidje.s[23];
+        if (destination.indexOf('.') === -1) {/* istanbul ignore next */++cov_29h5wbidje.b[0][0];++cov_29h5wbidje.s[24];
+            destination += `/${file.name}`;
+        } else /* istanbul ignore next */{++cov_29h5wbidje.b[0][1];}++cov_29h5wbidje.s[25];
+        return destination;
+    }} /* istanbul ignore next */++cov_29h5wbidje.s[26];
+
+exports.Downloader = Downloader;
+//# sourceMappingURL=downloader.js.map

@@ -1,0 +1,17 @@
+"use strict"; /* istanbul ignore next */var cov_2cqn5mmo0p = function () {var path = "/code/cilantro/iogates-transfer/src/main.ts",hash = "897d86737e403f5d4841bce4b0ef2c908fbf65c9",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/main.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 15 }, end: { line: 3, column: 32 } }, "2": { start: { line: 4, column: 19 }, end: { line: 4, column: 49 } }, "3": { start: { line: 5, column: 17 }, end: { line: 5, column: 25 } }, "4": { start: { line: 6, column: 0 }, end: { line: 6, column: 30 } }, "5": { start: { line: 7, column: 0 }, end: { line: 11, column: 39 } }, "6": { start: { line: 12, column: 0 }, end: { line: 15, column: 25 } }, "7": { start: { line: 16, column: 0 }, end: { line: 16, column: 24 } } }, fnMap: {}, branchMap: {}, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0 }, f: {}, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_2cqn5mmo0p.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const vorpal = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[1], require("vorpal"));
+const download_1 = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[2], require("./commands/download"));
+const commands = /* istanbul ignore next */(++cov_2cqn5mmo0p.s[3], vorpal()); /* istanbul ignore next */++cov_2cqn5mmo0p.s[4];
+console.log('--->', commands); /* istanbul ignore next */++cov_2cqn5mmo0p.s[5];
+commands.
+command('download [url...]', 'Download folder from Share URL').
+option('-o').
+option('--monitor').
+action(download_1.downloadComand); /* istanbul ignore next */++cov_2cqn5mmo0p.s[6];
+commands.
+delimiter('iogates:').
+show().
+parse(process.argv); /* istanbul ignore next */++cov_2cqn5mmo0p.s[7];
+module.exports = vorpal;
+//# sourceMappingURL=main.js.map

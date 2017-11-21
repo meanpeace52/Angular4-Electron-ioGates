@@ -1,0 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Exports Files class.
+ */
+class Files {
+}
+exports.Files = Files;
+//# sourceMappingURL=files.js.map

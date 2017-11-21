@@ -1,0 +1,48 @@
+"use strict"; /* istanbul ignore next */var cov_uchpoc8zw = function () {var path = "/code/cilantro/iogates-transfer/src/types/models/share.ts",hash = "bb490e6d82b25ac30d95798f5fb6c1677d098f4f",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/types/models/share.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 16 }, end: { line: 3, column: 32 } }, "2": { start: { line: 4, column: 31 }, end: { line: 4, column: 62 } }, "3": { start: { line: 5, column: 15 }, end: { line: 5, column: 32 } }, "4": { start: { line: 9, column: 12 }, end: { line: 10, column: 1 } }, "5": { start: { line: 11, column: 0 }, end: { line: 19, column: 34 } }, "6": { start: { line: 20, column: 0 }, end: { line: 25, column: 35 } }, "7": { start: { line: 26, column: 0 }, end: { line: 31, column: 37 } }, "8": { start: { line: 32, column: 0 }, end: { line: 35, column: 40 } }, "9": { start: { line: 36, column: 0 }, end: { line: 39, column: 37 } }, "10": { start: { line: 37, column: 41 }, end: { line: 37, column: 52 } }, "11": { start: { line: 40, column: 0 }, end: { line: 46, column: 10 } }, "12": { start: { line: 47, column: 0 }, end: { line: 47, column: 22 } } }, fnMap: { "0": { name: "(anonymous_0)", decl: { start: { line: 37, column: 35 }, end: { line: 37, column: 36 } }, loc: { start: { line: 37, column: 41 }, end: { line: 37, column: 52 } }, line: 37 } }, branchMap: {}, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0 }, f: { "0": 0 }, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_uchpoc8zw.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = /* istanbul ignore next */(++cov_uchpoc8zw.s[1], require("tslib"));
+const sequelize_typescript_1 = /* istanbul ignore next */(++cov_uchpoc8zw.s[2], require("sequelize-typescript"));
+const file_1 = /* istanbul ignore next */(++cov_uchpoc8zw.s[3], require("./file"));
+/**
+                                                                                     * Exports File class.
+                                                                                     */ /* istanbul ignore next */++cov_uchpoc8zw.s[4];
+let Share = class Share extends sequelize_typescript_1.Model {}; /* istanbul ignore next */++cov_uchpoc8zw.s[5];
+
+tslib_1.__decorate([
+sequelize_typescript_1.Column({
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    allowNull: false }),
+
+tslib_1.__metadata("design:type", Number)],
+Share.prototype, "id", void 0); /* istanbul ignore next */++cov_uchpoc8zw.s[6];
+tslib_1.__decorate([
+sequelize_typescript_1.Column({
+    allowNull: false }),
+
+tslib_1.__metadata("design:type", String)],
+Share.prototype, "url", void 0); /* istanbul ignore next */++cov_uchpoc8zw.s[7];
+tslib_1.__decorate([
+sequelize_typescript_1.Column({
+    allowNull: false }),
+
+tslib_1.__metadata("design:type", String)],
+Share.prototype, "token", void 0); /* istanbul ignore next */++cov_uchpoc8zw.s[8];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", Boolean)],
+Share.prototype, "complete", void 0); /* istanbul ignore next */++cov_uchpoc8zw.s[9];
+tslib_1.__decorate([
+sequelize_typescript_1.HasMany(() => {/* istanbul ignore next */++cov_uchpoc8zw.f[0];++cov_uchpoc8zw.s[10];return file_1.File;}),
+tslib_1.__metadata("design:type", Array)],
+Share.prototype, "files", void 0); /* istanbul ignore next */++cov_uchpoc8zw.s[11];
+Share = tslib_1.__decorate([
+sequelize_typescript_1.Table({
+    timestamps: true,
+    underscored: true,
+    tableName: 'shares' })],
+
+Share); /* istanbul ignore next */++cov_uchpoc8zw.s[12];
+exports.Share = Share;
+//# sourceMappingURL=share.js.map

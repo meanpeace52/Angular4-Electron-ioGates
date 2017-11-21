@@ -4,13 +4,11 @@ import {
   UploadResponse,
   Share,
   File
-} from '../lib/types';
-import { Downloader, IOGates } from 'iotransfer-core';
-import { Directory } from '../lib/directory';
-import { DownloadWatcher } from '../lib/watcher';
+} from '../../../core/types';
+import { Downloader, IOGates, Directory, DownloadWatcher } from 'iotransfer-core';
 import * as CliProgress from 'cli-progress';
 import * as path from 'path';
-import * as Utils from '../lib/utils';
+import * as Utils from '../../../core/lib/utils';
 
 // import debug from 'debug';
 // const log = debug('io:command:download');
@@ -40,7 +38,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
     bar.start(1000, 0);
   });
   downloader.on(Downloader.EVENT_PROGRESS, (file: File, i: number, speed: number) => {
-    bar.update(i * 1000, {speed: `${speed} MB/s`});
+    bar.update(i * 1000, { speed: `${speed} MB/s` });
   });
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);

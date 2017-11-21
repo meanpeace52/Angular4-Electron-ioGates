@@ -1,0 +1,48 @@
+"use strict"; /* istanbul ignore next */var cov_2aw4t0cfbd = function () {var path = "/code/cilantro/iogates-transfer/src/types/models/file.ts",hash = "59c6939b7938560ed5023b0ec28845773b658fb2",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/types/models/file.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 16 }, end: { line: 3, column: 32 } }, "2": { start: { line: 4, column: 31 }, end: { line: 4, column: 62 } }, "3": { start: { line: 8, column: 11 }, end: { line: 9, column: 1 } }, "4": { start: { line: 10, column: 0 }, end: { line: 15, column: 33 } }, "5": { start: { line: 16, column: 0 }, end: { line: 19, column: 35 } }, "6": { start: { line: 20, column: 0 }, end: { line: 23, column: 35 } }, "7": { start: { line: 24, column: 0 }, end: { line: 27, column: 37 } }, "8": { start: { line: 28, column: 0 }, end: { line: 31, column: 35 } }, "9": { start: { line: 32, column: 0 }, end: { line: 35, column: 39 } }, "10": { start: { line: 36, column: 0 }, end: { line: 39, column: 34 } }, "11": { start: { line: 40, column: 0 }, end: { line: 46, column: 9 } }, "12": { start: { line: 47, column: 0 }, end: { line: 47, column: 20 } } }, fnMap: {}, branchMap: {}, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0 }, f: {}, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_2aw4t0cfbd.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[1], require("tslib"));
+const sequelize_typescript_1 = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[2], require("sequelize-typescript"));
+/**
+                                                                                                                    * Exports File class.
+                                                                                                                    */ /* istanbul ignore next */++cov_2aw4t0cfbd.s[3];
+let File = class File extends sequelize_typescript_1.Model {}; /* istanbul ignore next */++cov_2aw4t0cfbd.s[4];
+
+tslib_1.__decorate([
+sequelize_typescript_1.Column({
+    primaryKey: true }),
+
+tslib_1.__metadata("design:type", Number)],
+File.prototype, "id", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[5];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "name", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[6];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "type", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[7];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", Number)],
+File.prototype, "parent", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[8];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "href", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[9];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "download", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[10];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "md5", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[11];
+File = tslib_1.__decorate([
+sequelize_typescript_1.Table({
+    timestamps: true,
+    underscored: true,
+    tableName: 'files' })],
+
+File); /* istanbul ignore next */++cov_2aw4t0cfbd.s[12];
+exports.File = File;
+//# sourceMappingURL=file.js.map

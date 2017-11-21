@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// const main = require('../src/main');
+const vorpal = require("../src/main");
+describe('boot', () => {
+    const commands = vorpal;
+    it('should export vorpal', () => {
+        expect(commands).toBeDefined();
+    });
+    it('should run download command', () => {
+        commands.execSync('download -m -o /tmp download-path-....');
+    });
+});
+//# sourceMappingURL=main.spec.js.map

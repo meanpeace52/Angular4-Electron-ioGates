@@ -1,0 +1,27 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// const main = require('../src/main');
+const vorpal = require("../src/main");
+describe('boot', () => {
+    beforeAll(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
+    });
+    const commands = vorpal;
+    it('should export vorpal', () => {
+        expect(commands).toBeDefined();
+    });
+    it('should run download command', () => {
+        const tmpPath = '/tmp';
+        const shareUrl = 'https://share-web02-transferapp.iogates.com/show/16/5989522a1b0a6/d5239e67c69a3ef76a807ae25ebf750b/dir/272/272/0/0/0';
+        return commands
+            .exec(`download -m ${tmpPath} ${shareUrl}`)
+            .then((response) => {
+            console.log(response);
+            expect(true).toBe(true);
+        });
+    });
+    afterAll(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+    });
+});
+//# sourceMappingURL=main.spec.js.map

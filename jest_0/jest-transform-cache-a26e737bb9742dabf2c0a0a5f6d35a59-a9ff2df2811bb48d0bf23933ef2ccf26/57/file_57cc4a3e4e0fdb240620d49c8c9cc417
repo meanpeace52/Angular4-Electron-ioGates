@@ -1,0 +1,74 @@
+"use strict"; /* istanbul ignore next */var cov_2aw4t0cfbd = function () {var path = "/code/cilantro/iogates-transfer/src/types/models/file.ts",hash = "acc6ce10385adeba09ccf749dd05159f7547a5c6",global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/code/cilantro/iogates-transfer/src/types/models/file.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 16 }, end: { line: 3, column: 32 } }, "2": { start: { line: 4, column: 31 }, end: { line: 4, column: 62 } }, "3": { start: { line: 5, column: 16 }, end: { line: 5, column: 34 } }, "4": { start: { line: 9, column: 11 }, end: { line: 25, column: 1 } }, "5": { start: { line: 11, column: 24 }, end: { line: 11, column: 26 } }, "6": { start: { line: 12, column: 8 }, end: { line: 22, column: 11 } }, "7": { start: { line: 13, column: 25 }, end: { line: 13, column: 37 } }, "8": { start: { line: 14, column: 12 }, end: { line: 14, column: 41 } }, "9": { start: { line: 15, column: 12 }, end: { line: 15, column: 41 } }, "10": { start: { line: 16, column: 12 }, end: { line: 16, column: 45 } }, "11": { start: { line: 17, column: 12 }, end: { line: 17, column: 41 } }, "12": { start: { line: 18, column: 12 }, end: { line: 18, column: 49 } }, "13": { start: { line: 19, column: 12 }, end: { line: 19, column: 39 } }, "14": { start: { line: 20, column: 12 }, end: { line: 20, column: 36 } }, "15": { start: { line: 21, column: 12 }, end: { line: 21, column: 38 } }, "16": { start: { line: 23, column: 8 }, end: { line: 23, column: 36 } }, "17": { start: { line: 26, column: 0 }, end: { line: 32, column: 33 } }, "18": { start: { line: 33, column: 0 }, end: { line: 36, column: 35 } }, "19": { start: { line: 37, column: 0 }, end: { line: 40, column: 35 } }, "20": { start: { line: 41, column: 0 }, end: { line: 44, column: 37 } }, "21": { start: { line: 45, column: 0 }, end: { line: 48, column: 35 } }, "22": { start: { line: 49, column: 0 }, end: { line: 52, column: 39 } }, "23": { start: { line: 53, column: 0 }, end: { line: 56, column: 34 } }, "24": { start: { line: 57, column: 0 }, end: { line: 60, column: 38 } }, "25": { start: { line: 58, column: 44 }, end: { line: 58, column: 57 } }, "26": { start: { line: 61, column: 0 }, end: { line: 64, column: 36 } }, "27": { start: { line: 62, column: 43 }, end: { line: 62, column: 56 } }, "28": { start: { line: 65, column: 0 }, end: { line: 71, column: 9 } }, "29": { start: { line: 72, column: 0 }, end: { line: 72, column: 20 } } }, fnMap: { "0": { name: "(anonymous_0)", decl: { start: { line: 10, column: 4 }, end: { line: 10, column: 5 } }, loc: { start: { line: 10, column: 40 }, end: { line: 24, column: 5 } }, line: 10 }, "1": { name: "(anonymous_1)", decl: { start: { line: 12, column: 25 }, end: { line: 12, column: 26 } }, loc: { start: { line: 12, column: 37 }, end: { line: 22, column: 9 } }, line: 12 }, "2": { name: "(anonymous_2)", decl: { start: { line: 58, column: 38 }, end: { line: 58, column: 39 } }, loc: { start: { line: 58, column: 44 }, end: { line: 58, column: 57 } }, line: 58 }, "3": { name: "(anonymous_3)", decl: { start: { line: 62, column: 37 }, end: { line: 62, column: 38 } }, loc: { start: { line: 62, column: 43 }, end: { line: 62, column: 56 } }, line: 62 } }, branchMap: { "0": { loc: { start: { line: 63, column: 38 }, end: { line: 63, column: 136 } }, type: "binary-expr", locations: [{ start: { line: 63, column: 38 }, end: { line: 63, column: 120 } }, { start: { line: 63, column: 124 }, end: { line: 63, column: 126 } }, { start: { line: 63, column: 130 }, end: { line: 63, column: 136 } }], line: 63 }, "1": { loc: { start: { line: 63, column: 51 }, end: { line: 63, column: 104 } }, type: "binary-expr", locations: [{ start: { line: 63, column: 51 }, end: { line: 63, column: 87 } }, { start: { line: 63, column: 91 }, end: { line: 63, column: 104 } }], line: 63 } }, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": 0, "20": 0, "21": 0, "22": 0, "23": 0, "24": 0, "25": 0, "26": 0, "27": 0, "28": 0, "29": 0 }, f: { "0": 0, "1": 0, "2": 0, "3": 0 }, b: { "0": [0, 0, 0], "1": [0, 0] }, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();++cov_2aw4t0cfbd.s[0];
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[1], require("tslib"));
+const sequelize_typescript_1 = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[2], require("sequelize-typescript"));
+const share_1 = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[3], require("./share"));
+/**
+                                                                                        * Exports File class.
+                                                                                        */
+let File = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[4], File_1 = class File extends sequelize_typescript_1.Model {
+    static STORE_FILES(response, share) {/* istanbul ignore next */++cov_2aw4t0cfbd.f[0];
+        const promise = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[5], []); /* istanbul ignore next */++cov_2aw4t0cfbd.s[6];
+        response.forEach(upload => {/* istanbul ignore next */++cov_2aw4t0cfbd.f[1];
+            const file = /* istanbul ignore next */(++cov_2aw4t0cfbd.s[7], new File_1()); /* istanbul ignore next */++cov_2aw4t0cfbd.s[8];
+            file.name = upload.file.name; /* istanbul ignore next */++cov_2aw4t0cfbd.s[9];
+            file.type = upload.file.type; /* istanbul ignore next */++cov_2aw4t0cfbd.s[10];
+            file.parent = upload.file.parent; /* istanbul ignore next */++cov_2aw4t0cfbd.s[11];
+            file.href = upload.file.href; /* istanbul ignore next */++cov_2aw4t0cfbd.s[12];
+            file.download = upload.file.download; /* istanbul ignore next */++cov_2aw4t0cfbd.s[13];
+            file.md5 = upload.file.md5; /* istanbul ignore next */++cov_2aw4t0cfbd.s[14];
+            file.shareId = share.id; /* istanbul ignore next */++cov_2aw4t0cfbd.s[15];
+            promise.push(file.save());
+        }); /* istanbul ignore next */++cov_2aw4t0cfbd.s[16];
+        return Promise.all(promise);
+    }}); /* istanbul ignore next */++cov_2aw4t0cfbd.s[17];
+
+tslib_1.__decorate([
+sequelize_typescript_1.Column({
+    primaryKey: true,
+    unique: true }),
+
+tslib_1.__metadata("design:type", Number)],
+File.prototype, "id", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[18];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "name", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[19];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "type", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[20];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", Number)],
+File.prototype, "parent", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[21];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "href", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[22];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "download", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[23];
+tslib_1.__decorate([
+sequelize_typescript_1.Column,
+tslib_1.__metadata("design:type", String)],
+File.prototype, "md5", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[24];
+tslib_1.__decorate([
+sequelize_typescript_1.ForeignKey(() => {/* istanbul ignore next */++cov_2aw4t0cfbd.f[2];++cov_2aw4t0cfbd.s[25];return share_1.Share;}),
+tslib_1.__metadata("design:type", Number)],
+File.prototype, "shareId", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[26];
+tslib_1.__decorate([
+sequelize_typescript_1.BelongsTo(() => {/* istanbul ignore next */++cov_2aw4t0cfbd.f[3];++cov_2aw4t0cfbd.s[27];return share_1.Share;}, 'shareId'),
+tslib_1.__metadata("design:type", /* istanbul ignore next */(++cov_2aw4t0cfbd.b[0][0], typeof (_a = /* istanbul ignore next */(++cov_2aw4t0cfbd.b[1][0], typeof share_1.Share !== "undefined") && /* istanbul ignore next */(++cov_2aw4t0cfbd.b[1][1], share_1.Share)) === "function") && /* istanbul ignore next */(++cov_2aw4t0cfbd.b[0][1], _a) || /* istanbul ignore next */(++cov_2aw4t0cfbd.b[0][2], Object))],
+File.prototype, "share", void 0); /* istanbul ignore next */++cov_2aw4t0cfbd.s[28];
+File = File_1 = tslib_1.__decorate([
+sequelize_typescript_1.Table({
+    timestamps: true,
+    underscored: true,
+    tableName: 'files' })],
+
+File); /* istanbul ignore next */++cov_2aw4t0cfbd.s[29];
+exports.File = File;
+var File_1, _a;
+//# sourceMappingURL=file.js.map
