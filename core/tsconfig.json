@@ -25,7 +25,6 @@
     "lib/**/*",
     "types/**/*",
     "interfaces/**/*",
-    "__tests__/**/*",
     "index.ts"
   ]
 }

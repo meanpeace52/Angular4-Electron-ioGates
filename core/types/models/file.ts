@@ -1,17 +1,19 @@
-import {
-  Table,
-  Column,
-  Model,
-  BelongsTo,
-  ForeignKey, HasMany
-} from 'sequelize-typescript';
-// import { UploadResponse } from '../uploadResponse';
-import { Share } from './share';
+import * as Bluebird from 'bluebird';
 import { createHash } from 'crypto';
 import * as fs from 'fs';
-import { Chunk } from './chunk';
-import * as Bluebird from 'bluebird';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+// import { UploadResponse } from '../uploadResponse';
 import {IFile} from '../../lib/ifile';
+import { Chunk } from './chunk';
+import { Share } from './share';
 // import * as winston from 'winston';
 
 /**
@@ -20,13 +22,13 @@ import {IFile} from '../../lib/ifile';
 @Table({
   timestamps: true,
   underscored: true,
-  tableName: 'files'
+  tableName: 'files',
 })
 export class File extends Model<File> implements IFile {
   @Column({
     primaryKey: true,
     unique: true,
-    autoIncrement: true
+    autoIncrement: true,
   })
   public id: number;
 
@@ -45,7 +47,7 @@ export class File extends Model<File> implements IFile {
   @Column
   public parent: number;
 
-  @Column
+  @Column({type: DataType.DATE})
   public created: Date;
 
   @Column
@@ -55,12 +57,12 @@ export class File extends Model<File> implements IFile {
   public download: string;
 
   @Column({
-    defaultValue: false
+    defaultValue: false,
   })
   public downloaded: boolean;
 
   @Column({
-    defaultValue: false
+    defaultValue: false,
   })
   public uploaded: boolean;
 

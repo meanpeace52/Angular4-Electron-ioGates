@@ -1,14 +1,14 @@
-import { Downloader } from '../../src/lib/downloader';
-import { File, UploadResponse } from '../../src/lib/types';
-import * as fs from 'fs';
 import * as crypto from 'crypto';
+import * as fs from 'fs';
+import { Downloader } from '../../lib/downloader';
+import { File, UploadResponse } from '../../lib/types';
 
 describe.skip('Downloader', () => {
   const resourceUrl = 'https://web02-transferapp.iogates.com/download-file/375/0/0/1/0/VBUbVTLJGPIAYsb3e0hy075JaGFkhhwK';
   let downloader: Downloader;
 
   beforeAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+    //jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
     downloader = new Downloader();
   });
 
@@ -24,10 +24,10 @@ describe.skip('Downloader', () => {
     file.parent = 373;
     file.md5 = '812abd8d7ceda3b738ca3ac79d4a0c5c';
     file.download = resourceUrl;
-    const destination = '/tmp';
+    //const destination = '/tmp';
 
     return downloader
-      .downloadFile(file, destination)
+      .downloadFile(file)
       .then((response: UploadResponse) => {
         const content = fs.readFileSync(response.dest);
         const checksum = crypto
@@ -77,6 +77,6 @@ describe.skip('Downloader', () => {
   });
 
   afterAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+    //jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
   });
 });

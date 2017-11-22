@@ -1,5 +1,5 @@
 import * as Bluebird from 'bluebird';
-import { Table, Column, Model, HasMany, Sequelize } from 'sequelize-typescript';
+import { Column, HasMany, Model, Sequelize, Table } from 'sequelize-typescript';
 import {IShare} from '../../lib/ishare';
 import { File } from './file';
 /**
@@ -8,7 +8,7 @@ import { File } from './file';
 @Table({
   timestamps: true,
   underscored: true,
-  tableName: 'shares'
+  tableName: 'shares',
 })
 export class Share extends Model<Share> implements IShare {
   public static DIRECTION_UPLOAD: string = 'upload';
@@ -19,25 +19,25 @@ export class Share extends Model<Share> implements IShare {
     primaryKey: true,
     unique: true,
     autoIncrement: true,
-    allowNull: false
+    allowNull: false,
   })
   public id: number;
 
   @Column({
-    allowNull: false
+    allowNull: false,
   })
   public url: string;
 
   @Column({
-    allowNull: false
+    allowNull: false,
   })
   public token: string;
 
   @Column({
     type: Sequelize.ENUM({
-      values: ['UPLOAD', 'DOWNLOAD', 'BI']
+      values: ['UPLOAD', 'DOWNLOAD', 'BI'],
     }),
-    defaultValue: 'DOWNLOAD'
+    defaultValue: 'DOWNLOAD',
   })
   public direction: string;
 
@@ -55,12 +55,12 @@ export class Share extends Model<Share> implements IShare {
       .findOrCreate({
         where: {
           url: shareUrl,
-          dir: destination
+          dir: destination,
         },
         defaults: {
           token: '',
-          complete: false
-        }
+          complete: false,
+        },
       })
       .spread((share: Share) => {
         return share;
@@ -82,11 +82,11 @@ export class Share extends Model<Share> implements IShare {
     const runFn = Share
       .findOne({
         where: {
-          url: shareUrl
-        }
+          url: shareUrl,
+        },
       })
       .then(share => {
-        if (!share) return null;
+        if (!share) {return null;}
 
         return share.destroy({ force: true });
       });
@@ -98,11 +98,12 @@ export class Share extends Model<Share> implements IShare {
     const runFn = Share
       .findOne({
         where: {
-          id: id
-        }
+          id: id,
+        },
       })
       .then(share => {
-        if (!share) return null;
+        if (!share) {return null;}
+
         return share.destroy({ force: true });
       });
 
@@ -113,11 +114,11 @@ export class Share extends Model<Share> implements IShare {
     const runFn = Share
       .findOne({
         where: {
-          dir: dir
-        }
+          dir: dir,
+        },
       })
       .then(share => {
-        if (!share) return null;
+        if (!share) {return null;}
         return share.destroy({ force: true });
       });
 
