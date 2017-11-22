@@ -1,5 +1,4 @@
-import { CommandAddInput, Share } from '../../../core/types';
-import { Directory, IOGates} from 'iotransfer-core';
+import { CommandAddInput, Share, Directory, IOGates } from 'iotransfer-core';
 
 export function addCommand(args: CommandAddInput, done: Function) {
   const destination = args.dir;

@@ -1,14 +1,15 @@
-import {
-  CommandDownloadInput,
+import { CommandDownloadInput,
   Files,
   UploadResponse,
   Share,
-  File
-} from '../../../core/types';
-import { Downloader, IOGates, Directory, DownloadWatcher } from 'iotransfer-core';
+  File,
+  Downloader,
+  IOGates,
+  Directory,
+  DownloadWatcher } from 'iotransfer-core';
 import * as CliProgress from 'cli-progress';
 import * as path from 'path';
-import * as Utils from '../../../core/lib/utils';
+import * as Utils from '../lib/utils';
 
 // import debug from 'debug';
 // const log = debug('io:command:download');

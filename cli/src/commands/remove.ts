@@ -12,11 +12,13 @@ export function removeCommand(args: CommandRemoveInput, done: Function) {
   if (args.options.url) {
     executor = Share.DeleteByUrl(args.options.url);
   }
+
   return executor
     .then(() => {
       if (!!removeFromDir && args.options.dir) {
-        return Directory.delete(args.options.dir);
+        return Directory.DELETE(args.options.dir);
       }
+
       return null;
     })
     .then(() => {
