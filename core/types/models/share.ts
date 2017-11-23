@@ -11,8 +11,8 @@ import { File } from './file';
   tableName: 'shares',
 })
 export class Share extends Model<Share> implements IShare {
-  public static DIRECTION_UPLOAD: string = 'upload';
-  public static DIRECT_DOWNLOAD: string = 'download';
+  public static DIRECTION_UPLOAD: string = 'UPLOAD';
+  public static DIRECT_DOWNLOAD: string = 'DOWNLOAD';
   public static DIRECT_BI: string = 'BI';
 
   @Column({
@@ -72,7 +72,7 @@ export class Share extends Model<Share> implements IShare {
   static ForTableOutput(shares: Object[]) {
     const arr = [];
     shares.forEach((share: Object) => {
-      arr.push(Object.keys(share).map(key => share[key]));
+      arr.push(Object.keys(share).map((key: string) => share[key]));
     });
 
     return arr;
@@ -85,8 +85,8 @@ export class Share extends Model<Share> implements IShare {
           url: shareUrl,
         },
       })
-      .then(share => {
-        if (!share) {return null;}
+      .then((share: Share) => {
+        if (!share) { return null; }
 
         return share.destroy({ force: true });
       });
@@ -101,8 +101,8 @@ export class Share extends Model<Share> implements IShare {
           id: id,
         },
       })
-      .then(share => {
-        if (!share) {return null;}
+      .then((share: Share) => {
+        if (!share) { return null; }
 
         return share.destroy({ force: true });
       });
@@ -117,8 +117,9 @@ export class Share extends Model<Share> implements IShare {
           dir: dir,
         },
       })
-      .then(share => {
-        if (!share) {return null;}
+      .then((share: Share) => {
+        if (!share) { return null; }
+
         return share.destroy({ force: true });
       });
 
