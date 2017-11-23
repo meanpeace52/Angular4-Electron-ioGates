@@ -1,4 +1,4 @@
-import {IFile} from '../lib/ifile';
+import {IFile} from './ifile';
 
 export interface IChunk {
   uploaded: boolean;

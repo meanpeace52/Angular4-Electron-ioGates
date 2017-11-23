@@ -3,10 +3,10 @@ import debug from 'debug';
 import * as http from 'http';
 import * as _ from 'lodash';
 import * as request from 'request';
-import {IAuth} from './iauth';
-import {IFile} from './ifile';
-import {IFiles} from './ifiles';
-import {IShare} from './ishare';
+import {IAuth} from '../interfaces/iauth';
+import {IFile} from '../interfaces/ifile';
+import {IFiles} from '../interfaces/ifiles';
+import {IShare} from '../interfaces/ishare';
 const log = debug('io:lib:iogates');
 
 /**

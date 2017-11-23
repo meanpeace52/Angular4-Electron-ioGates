@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird';
 import { createHash } from 'crypto';
 import * as fs from 'fs';
-import {IFile} from '../lib/ifile';
+import {IFile} from '../interfaces/ifile';
 
 export class File implements IFile {
   public created: Date;

@@ -1,9 +1,9 @@
-import {Sequelize} from 'sequelize-typescript';
-import {Chunk, File, Share} from '../../../types';
+import {Database} from '../../../lib/database';
+import {Share} from '../../../types';
 
 describe('Share', () => {
-  const db = new Sequelize({
-    name: 'sharetest',
+  const database = new Database({
+    name: 'test',
     dialect: 'sqlite',
     username: 'root',
     password: '',
@@ -14,8 +14,7 @@ describe('Share', () => {
     },
     operatorsAliases: false,
   });
-
-  db.addModels([File, Share, Chunk]);
+  const db = database.getDatabase();
 
   const testData = {
     dir: './foo/bar',

@@ -9,7 +9,7 @@ import { EventEmitter } from 'events';
 import { Uploader } from './uploader';
 import {Directory} from './directory';
 import { FSWatcher, watch } from 'chokidar';
-import {IFile} from './ifile';
+import {IFile} from '../interfaces/ifile';
 
 export class Watcher extends EventEmitter {
 

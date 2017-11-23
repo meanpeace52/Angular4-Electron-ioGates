@@ -1,9 +1,12 @@
 import {
   CommandUploadInput,
   Share,
-  File
-} from 'iotransfer-core/types';
-import { IOGates, Directory, Uploader, UploadWatcher } from 'iotransfer-core';
+  File,
+  IOGates,
+  Directory,
+  Uploader,
+  UploadWatcher,
+} from 'iotransfer-core';
 import * as fs from 'fs';
 import * as path from 'path';
 

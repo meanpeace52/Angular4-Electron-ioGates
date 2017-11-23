@@ -1,5 +1,4 @@
-import { CommandRemoveInput, Share } from 'iotransfer-core/types';
-import { Directory } from 'iotransfer-core';
+import { CommandRemoveInput, Directory, Share } from 'iotransfer-core';
 export function removeCommand(args: CommandRemoveInput, done: Function) {
   const removeFromDir = args.options.remove;
   let executor;

@@ -7,8 +7,8 @@ import { Observable as O } from 'rx';
 import { isUndefined } from 'util';
 import { Directory } from './directory';
 import { DownloadActivity } from './downloadActivity';
-import { IFile } from './ifile';
-import { ILogger } from './ilogger';
+import { IFile } from '../interfaces/ifile';
+import { ILogger } from '../interfaces/ilogger';
 import * as Type from './types';
 
 /**

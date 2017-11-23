@@ -2,7 +2,7 @@
  * Exports UploadResponse class
  */
 
-import {IFile} from '../lib/ifile';
+import {IFile} from '../interfaces/ifile';
 
 export class UploadResponse {
   public dest: string;

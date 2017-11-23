@@ -11,7 +11,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 // import { UploadResponse } from '../uploadResponse';
-import {IFile} from '../../lib/ifile';
+import {IFile} from '../../interfaces/ifile';
 import { Chunk } from './chunk';
 import { Share } from './share';
 // import * as winston from 'winston';

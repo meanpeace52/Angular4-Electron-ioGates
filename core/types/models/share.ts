@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird';
 import { Column, HasMany, Model, Sequelize, Table } from 'sequelize-typescript';
-import {IShare} from '../../lib/ishare';
+import {IShare} from '../../interfaces/ishare';
 import { File } from './file';
 /**
  * Exports Share class.

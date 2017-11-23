@@ -1,4 +1,4 @@
-import {IFiles} from '../lib/ifiles';
+import {IFiles} from '../interfaces/ifiles';
 import { File } from './models/file';
 
 /**

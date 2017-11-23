@@ -1,6 +1,6 @@
 import * as Debug from 'debug';
-import { IActivity } from './iactivity';
-import {IFile} from './ifile';
+import { IActivity } from '../interfaces/iactivity';
+import {IFile} from '../interfaces/ifile';
 import {isUndefined} from 'util';
 import * as WebSocket from 'ws';
 const debug = Debug('activity:download');

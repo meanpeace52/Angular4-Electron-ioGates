@@ -1,10 +1,11 @@
 export * from './lib/downloader';
 export * from './lib/uploader';
-export * from './lib/ifile';
-export * from './lib/ishare';
+export * from './interfaces/ifile';
+export * from './interfaces/ishare';
 export * from './lib/iogates';
 export * from './lib/directory';
 export * from './lib/watcher';
+export * from './lib/database';
 
 export * from './types/uploadResponse';
 export * from './types/command_inputs';

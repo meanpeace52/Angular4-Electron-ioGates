@@ -1,4 +1,4 @@
-import { CommandListInput, Share } from 'iotransfer-core/types';
+import { CommandListInput, Share } from 'iotransfer-core';
 import * as Table from 'cli-table';
 export function listCommand(args: CommandListInput, done: Function) {
   const entity = args.entity || args.options.entity;

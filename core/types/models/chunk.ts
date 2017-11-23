@@ -1,12 +1,13 @@
-import {
-  Table,
-  Column,
-  Model,
-  ForeignKey, BelongsTo
-} from 'sequelize-typescript';
-import { File } from './file';
-import * as uuid from 'uuid/v1';
 import * as Bluebird from 'bluebird';
+import {
+  BelongsTo,
+  Column,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+import * as uuid from 'uuid/v1';
+import { File } from './file';
 
 /**
  * Exports File class.
@@ -14,9 +15,50 @@ import * as Bluebird from 'bluebird';
 @Table({
   timestamps: true,
   underscored: true,
-  tableName: 'chunks'
+  tableName: 'chunks',
 })
 export class Chunk extends Model<Chunk> {
+  @Column({
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  })
+  public id: number;
+
+  @Column({
+    defaultValue: false,
+  })
+  public uploaded: boolean;
+
+  @Column({
+    defaultValue: 0,
+  })
+  public offset: number;
+
+  @Column
+  public resume_url: string;
+
+  @Column
+  public uuid: string;
+
+  @ForeignKey(() => File)
+  public file_id: number;
+
+  @BelongsTo(() => File, 'file_id')
+  public file: File;
+
+  @Column
+  public starting_point: number;
+
+  @Column
+  public ending_point: number;
+
+  @Column
+  public size: number;
+
+  @Column
+  public upload_started: number;
+
   public static STORE_CHUNKS(chunks: Chunk[]): Bluebird<Chunk[]> {
     return global['_DB'].transaction((t: any) => {
       const chunkBulk = [];
@@ -67,45 +109,4 @@ export class Chunk extends Model<Chunk> {
       return Bluebird.all(bulk);
     });
   }
-
-  @Column({
-    primaryKey: true,
-    unique: true,
-    autoIncrement: true
-  })
-  public id: number;
-
-  @Column({
-    defaultValue: false
-  })
-  public uploaded: boolean;
-
-  @Column({
-    defaultValue: 0
-  })
-  public offset: number;
-
-  @Column
-  public resume_url: string;
-
-  @Column
-  public uuid: string;
-
-  @ForeignKey(() => File)
-  public file_id: number;
-
-  @BelongsTo(() => File, 'file_id')
-  public file: File;
-
-  @Column
-  public starting_point: number;
-
-  @Column
-  public ending_point: number;
-
-  @Column
-  public size: number;
-
-  @Column
-  public upload_started: number;
 }
