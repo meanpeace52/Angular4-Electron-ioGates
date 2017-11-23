@@ -40,7 +40,9 @@ export class DownloadWatcher extends Watcher {
       this.api
         .readFiles()
         .then((response: Files) => {
-          const files = response.files;
+          const files = response.files.map((file: File) => {
+            return File.fromPlain(file);
+          });
 
           return File.filterForDownload(files);
         })

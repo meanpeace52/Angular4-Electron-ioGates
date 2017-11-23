@@ -4,7 +4,7 @@ import { ReadStream } from 'fs';
 import * as mime from 'mime-types';
 import * as path from 'path';
 import * as uuid from 'uuid/v1';
-import {File as IOFile} from '../types/file';
+import {File} from '../types/models/file';
 
 /**
  *  Exports class Directory.
@@ -53,14 +53,14 @@ export class Directory {
     });
   }
 
-  public read(): Bluebird<IOFile[]> {
+  public read(): Bluebird<File[]> {
     return this.create()
       .then(() => {
         try {
           const promise = [];
-          const blobs: IOFile[] = this.walkSync(this.path, []).map((filePath: string): IOFile => {
+          const blobs: File[] = this.walkSync(this.path, []).map((filePath: string): File => {
             const size = fs.statSync(filePath).size;
-            const file = new IOFile();
+            const file = new File();
             file.name = path.basename(filePath);
             file.type = mime.lookup(file.name) || 'Other';
             file.size = size;
@@ -70,14 +70,14 @@ export class Directory {
 
             return file;
           });
-          blobs.forEach((file: IOFile) => promise.push(IOFile.CREATE_MD5(file)));
+          blobs.forEach((file: File) => promise.push(File.CREATE_MD5(file)));
 
           return Bluebird.all(promise);
         } catch (e) {
           return Bluebird.reject(e);
         }
       })
-      .then((files: IOFile[]) => Promise.resolve(files));
+      .then((files: File[]) => Promise.resolve(files));
   }
 
   public walkSync(dir: string, fileList: string[]): string[] {

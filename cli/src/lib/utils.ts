@@ -2,12 +2,14 @@ import { File } from 'iotransfer-core';
 import * as CliProgress from 'cli-progress';
 
 export const makeFileName = (file: File) => {
+  const columns = process.stdout.columns;
+  const maxFileNameLength = columns - 80;
   let fileName = file.name;
-  if (fileName.length > 50) {
-    fileName = `${fileName.substr(0, 47)}...`;
+  if (fileName.length > maxFileNameLength) {
+    fileName = `${fileName.substr(0, maxFileNameLength - 3)}...`;
   } else {
     let len = fileName.length;
-    while (len < 50) {
+    while (len < maxFileNameLength) {
       fileName += ' ';
       len += 1;
     }

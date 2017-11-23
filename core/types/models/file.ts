@@ -209,7 +209,7 @@ export class File extends Model<File> implements IFile {
     });
   }
 
-  public static createMd5(file: File): Bluebird<File> {
+  public static CREATE_MD5(file: File): Bluebird<File> {
     const hash = createHash('md5');
     const stream = fs.createReadStream(file.stream_path);
 
