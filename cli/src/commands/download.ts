@@ -1,15 +1,15 @@
-import {
-  CommandDownloadInput,
+import { CommandDownloadInput,
   Files,
   UploadResponse,
   Share,
-  File
-} from '../lib/types';
-import { IOGates } from '../lib/iogates';
-import { Downloader } from '../lib/downloader';
-import { Directory } from '../lib/directory';
-import { DownloadWatcher } from '../lib/watcher';
+  File,
+  Downloader,
+  IOGates,
+  Directory,
+  DownloadWatcher } from 'iotransfer-core';
+import * as CliProgress from 'cli-progress';
 import * as path from 'path';
+import * as Utils from '../lib/utils';
 
 // import debug from 'debug';
 // const log = debug('io:command:download');
@@ -19,6 +19,7 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
   const destination = path.resolve(args.dir);
   const shareUrl = args.url;
   const downloader: Downloader = new Downloader();
+  downloader.logger = global['logger'];
   if (args.options.startdate) {
     try {
       const startDate = new Date(Date.parse(args.options.startdate));
@@ -29,6 +30,17 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       logger.error(`Could not parse the date: ${args.options.startdate}`);
     }
   }
+  let bar: CliProgress;
+  downloader.on(Downloader.EVENT_START, (file: File) => {
+    if (bar) {
+      bar.stop();
+    }
+    bar = Utils.setupProgressBar(file);
+    bar.start(1000, 0);
+  });
+  downloader.on(Downloader.EVENT_PROGRESS, (file: File, i: number, speed: number) => {
+    bar.update(i * 1000, { speed: `${speed} MB/s` });
+  });
   const ioGate: IOGates = new IOGates();
   const directory: Directory = new Directory(destination);
   let outerShare;
@@ -57,7 +69,11 @@ export function downloadComand(args: CommandDownloadInput, done: Function) {
       return ioGate.readFiles();
     })
     .then((response: Files) => {
-      return downloader.setupHierarchy(response.files, destination);
+      const files = response.files.map((file: File) => {
+        return File.fromPlain(file);
+      });
+
+      return downloader.setupHierarchy(files, destination);
     })
     .then((files: File[]) => {
       return File.bulkSave(files, outerShare);

@@ -4,18 +4,16 @@ import { uploadCommand } from './commands/upload';
 import { listCommand } from './commands/list';
 import { removeCommand } from './commands/remove';
 import { addCommand } from './commands/add';
-import * as Type from './types';
-import { Sequelize } from 'sequelize-typescript';
 import * as winston from 'winston';
 import { machineIdSync } from 'node-machine-id';
 import * as CONFIG from '../config';
 import * as path from 'path';
 import * as fs from 'fs';
+import {Database} from 'iotransfer-core';
 
 // setup db and copy to global
-const sequelize = new Sequelize(CONFIG.database);
-sequelize.addModels([Type.Share, Type.File, Type.Chunk]);
-global['_DB'] = sequelize;
+const db = new Database(CONFIG.database);
+global['_DB'] = db.getDatabase();
 
 // setup logger and copy to global.
 let transports: any = [
@@ -34,7 +32,7 @@ if (CONFIG.logs.devMode === false) {
     new (winston.transports.File)({
       name: 'info-file',
       filename: CONFIG.logs.info,
-      level: 'info',
+      level: 'debug',
       json: false
     }),
     new (winston.transports.File)({

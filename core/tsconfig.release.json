@@ -8,6 +8,9 @@
     "jsx": "react"
   },
   "include": [
-    "src/**/*"
+    "lib/**/*",
+    "types/**/*",
+    "interfaces/**/*",
+    "index.ts"
   ]
 }

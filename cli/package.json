@@ -12,6 +12,14 @@
     "@types/jest": "~20.0.4",
     "@types/node": "^6.0.91",
     "@types/request": "^2.0.8",
+    "@types/blob-util": "^1.3.3",
+    "@types/chokidar": "^1.7.3",
+    "@types/lodash": "^4.14.85",
+    "@types/mime-types": "^2.1.0",
+    "@types/tus-js-client": "^1.4.1",
+    "@types/uuid": "^3.4.3",
+    "@types/winston": "^2.3.7",
+    "@types/ws": "^3.2.0",
     "jest": "~20.0.0",
     "pkg": "^4.2.6",
     "rimraf": "^2.6.2",
@@ -45,19 +53,12 @@
     "url": "https://gitlab.iogates.com/iogates/transferapp.git"
   },
   "dependencies": {
-    "@types/blob-util": "^1.3.3",
-    "@types/chokidar": "^1.7.3",
-    "@types/lodash": "^4.14.85",
-    "@types/mime-types": "^2.1.0",
-    "@types/tus-js-client": "^1.4.1",
-    "@types/uuid": "^3.4.3",
-    "@types/winston": "^2.3.7",
-    "@types/ws": "^3.2.0",
     "async-polling": "^0.2.1",
     "blob-util": "^1.3.0",
     "chokidar": "^1.7.0",
     "cli-progress": "git+https://github.com/tobiasps/Node.CLI-Progress.git",
     "cli-table": "^0.3.1",
+    "iotransfer-core": "file:../core",
     "lodash": "^4.17.4",
     "mime-types": "^2.1.17",
     "mt-downloader": "^2.2.2",
@@ -75,7 +76,7 @@
     "uuid": "^3.1.0",
     "vorpal": "^1.12.0",
     "winston": "^2.4.0",
-    "ws": "^3.3.1"
+    "ws": "^3.3.2"
   },
   "pkg": {
     "scripts": [

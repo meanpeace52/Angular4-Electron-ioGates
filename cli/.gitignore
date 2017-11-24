@@ -1,8 +1,0 @@
-node_modules/
-jest_*
-coverage/
-build/
-*.sqlite
-.idea
-dist
-logs/*.log

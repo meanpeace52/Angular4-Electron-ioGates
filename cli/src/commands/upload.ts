@@ -1,14 +1,16 @@
 import {
   CommandUploadInput,
   Share,
-  File
-} from '../types';
-import { IOGates } from '../lib/iogates';
-import { Directory } from '../lib/directory';
-import { Uploader } from '../lib/uploader';
-import { UploadWatcher } from '../lib/watcher';
+  File,
+  IOGates,
+  Directory,
+  Uploader,
+  UploadWatcher,
+} from 'iotransfer-core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as Utils from '../lib/utils';
+import * as CliProgress from 'cli-progress';
 
 export function uploadCommand(args: CommandUploadInput, done: Function) {
   const destination = path.resolve(args.dir);
@@ -16,6 +18,7 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   const threads: number = args.options.thread || 3;
   const ioGate: IOGates = new IOGates();
   const uploader: Uploader = new Uploader(threads);
+  uploader.logger = global['logger'];
   const directory: Directory = new Directory(destination);
   const logger = global['logger'];
   const deleteAfterUpload: boolean = args.options.delete;
@@ -25,7 +28,20 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
   if (args.options.chunksize !== false && Number.isInteger(args.options.chunksize)) {
     logger.info(`Setting chunk size to ${args.options.chunksize}`);
     uploader.chunkSize = args.options.chunksize;
+  } else if (global['config'].upload.chunkSize) {
+    uploader.chunkSize = global['config'].upload.chunkSize;
   }
+  let bar: CliProgress;
+  uploader.on(Uploader.EVENT_START, (file: File) => {
+    if (bar) {
+      bar.stop();
+    }
+    bar = Utils.setupProgressBar(file);
+    bar.start(1000, 0);
+  });
+  uploader.on(Uploader.EVENT_PROGRESS, (file: File, i: number, speed: number) => {
+    bar.update(i * 1000, { speed: `${speed} MB/s` });
+  });
   logger.info('executing upload');
   global['_DB']
     .sync()
@@ -92,15 +108,11 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
       return Promise.resolve(null);
     })
     .then(() => {
-      logger.info('done saving.');
       if (args.options.watch) {
+        console.log('[watch] for new files.');
         logger.info('[watch] for new files.');
-        let watcher: UploadWatcher;
-        // if (args.options.delay) {
-        //   watcher = new UploadWatcher(destination, +args.options.delay);
-        // } else {
-        // }
-        watcher = new UploadWatcher(destination, threads);
+        const watcher = new UploadWatcher(ioGate, uploader, directory, threads);
+        watcher.logger = logger;
 
         watcher.watch(outerShare);
         watcher.on('error', (err: Error) => {
@@ -123,9 +135,10 @@ export function uploadCommand(args: CommandUploadInput, done: Function) {
         return done(null);
       }
     })
-    .catch((err: Error) => {
-      // winston.error(err);
-      logger.error(err.message);
-      logger.error(err.stack);
+    .catch((err: Error|null) => {
+      logger.error(`Exception: ${err}`);
+      if (err && err.stack) {
+        logger.error(err.stack);
+      }
     });
 }
