@@ -119,10 +119,10 @@ export class File extends Model<File> implements IFile {
           .findOrCreate({
             where: {
               file_id: file.file_id,
-              share_id: share.id
+              share_id: share.id,
             },
             defaults: record,
-            transaction: transaction
+            transaction: transaction,
           })
           .spread((savedFile: File, created) => {
             if (savedFile.downloaded === false) {
@@ -193,7 +193,7 @@ export class File extends Model<File> implements IFile {
             if (!savedFile.uploaded) {
               toUpload.push(savedFile);
             } else {
-              logger.info(`File <${file.name}>`, 'already uploaded, skipping upload...');
+              logger.debug(`File <${file.name}>`, 'already uploaded, skipping upload...');
             }
 
             return savedFile;

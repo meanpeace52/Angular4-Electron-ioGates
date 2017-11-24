@@ -80,7 +80,15 @@ export class IOGates {
 
   public createFiles(files: IFile[]): Promise<IFile[]> {
     return new Promise((resolve: Function, reject: Function) => {
-      const filesToBeCreated = files.map((file: IFile) => {
+      const filesToBeCreated = files.filter((file: IFile) => {
+        if (file.file_id === null) {
+          return true;
+        } else {
+          // TODO: test if file is still existing and not in trash at ioGates.
+          return false;
+        }
+      });
+      const fileData = filesToBeCreated.map((file: IFile) => {
         return {
           name: file.name,
           type: file.type,
@@ -92,25 +100,33 @@ export class IOGates {
         {
           url: '/files',
           json: true,
-          body: { files: filesToBeCreated },
+          body: { files: fileData },
         },
         (err: Error, r: http.IncomingMessage, response: IFiles) => {
           if (r.statusCode !== 200) {
             return reject(err);
           }
+          const bulk = [];
           const createdFiles = files.map((file: IFile) => {
             const apiFile = _.find(response.files, { name: file.name });
-            file.upload_filename = apiFile.upload_filename;
-            file.file_id = apiFile.id;
-            file.href = apiFile.href;
-            file.download = apiFile.download;
-            file.parent = apiFile.parent;
-            file.type = apiFile.type;
+            if (apiFile) {
+              file.upload_filename = apiFile.upload_filename;
+              file.file_id = apiFile.id;
+              file.href = apiFile.href;
+              file.download = apiFile.download;
+              file.parent = apiFile.parent;
+              file.type = apiFile.type;
+              file.created = apiFile.created;
+
+              bulk.push(file.save());
+            }
 
             return file;
           });
 
-          return resolve(createdFiles);
+          return Promise.all(bulk).then(() => {
+            return resolve(createdFiles);
+          });
       });
     });
   }

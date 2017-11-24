@@ -1,27 +1,45 @@
 import * as AsyncPolling from 'async-polling';
-import { Downloader } from './downloader';
-import { Share } from '../types/models/share';
-import { File } from '../types/models/file';
-import {Files} from '../types/files';
-import { UploadResponse } from '../types/uploadResponse';
-import { IOGates } from './iogates';
-import { EventEmitter } from 'events';
-import { Uploader } from './uploader';
-import {Directory} from './directory';
 import { FSWatcher, watch } from 'chokidar';
+import { EventEmitter } from 'events';
 import {IFile} from '../interfaces/ifile';
+import {ILogger} from '../interfaces/ilogger';
+import {Files} from '../types/files';
+import { File } from '../types/models/file';
+import { Share } from '../types/models/share';
+import { UploadResponse } from '../types/uploadResponse';
+import {Directory} from './directory';
+import { Downloader } from './downloader';
+import { IOGates } from './iogates';
+import { Uploader } from './uploader';
+import * as Queue from 'queue';
+import Bluebird = require('bluebird');
 
 export class Watcher extends EventEmitter {
-
+  public logger: ILogger;
+  protected api: IOGates;
   constructor() {
     super();
+  }
+  protected info(message: string) {
+    if (this.logger) {
+      this.logger.info(message);
+    }
+  }
+  protected error(message: string) {
+    if (this.logger) {
+      this.logger.error(message);
+    }
+  }
+  protected debug(message: string) {
+    if (this.logger) {
+      this.logger.debug(message);
+    }
   }
 }
 
 export class DownloadWatcher extends Watcher {
 
   public downloader: Downloader;
-  private api: IOGates;
   private delay: number;
   constructor(iogates: IOGates, downloader: Downloader, delay?: number) {
     super();
@@ -36,7 +54,6 @@ export class DownloadWatcher extends Watcher {
     }
     this.api.setToken(share.token);
     const polling = AsyncPolling((end) => {
-      // console.log('<checking...>');
       this.api
         .readFiles()
         .then((response: Files) => {
@@ -70,11 +87,11 @@ export class DownloadWatcher extends Watcher {
 
               return File
                 .update({
-                  downloaded: true
+                  downloaded: true,
                 }, {
                   where: {
-                    file_id: successIds
-                  }
+                    file_id: successIds,
+                  },
                 });
             })
             .then(() => {
@@ -93,45 +110,57 @@ export class DownloadWatcher extends Watcher {
 }
 
 export class UploadWatcher extends Watcher {
-
-  private api: IOGates;
   private uploader: Uploader;
-  private destination: string;
   private directory: Directory;
   private files: File[];
+  private share: Share;
   private watcher: FSWatcher;
+  private queue;
 
-  constructor(destination: string, public threads: number) {
+  constructor(iogates: IOGates, uploader: Uploader, directory: Directory, threads: number) {
     super();
-    this.api = new IOGates();
-    this.uploader = new Uploader(threads);
-    this.destination = destination;
-    this.directory = new Directory(this.destination);
-    this.watcher = watch(this.destination, {
+    this.api = iogates;
+    this.uploader = uploader;
+    this.directory = directory;
+    this.queue = Queue({
+      concurrency: 1,
+      autostart: true,
+    });
+
+    this.watcher = watch(directory.path, {
       awaitWriteFinish: {
         stabilityThreshold: 5000,
-        pollInterval: 100
+        pollInterval: 100,
       },
       ignorePermissionErrors: true,
-      persistent: true
+      persistent: true,
     });
   }
 
   public watch(share: Share) {
     if (!share.token) {
+      this.error('Upload File Watcher: missing share token');
       this.emit('error', new Error('<token> is not available for this share.'));
     }
-    this.api.setToken(share.token);
+    this.share = share;
 
     this.watcher
-      .on('add', () => this.initiateUpload(share))
-      .on('change', () => this.initiateUpload(share))
-      .on('addDir', () => this.initiateUpload(share))
-
+      .on('add', (path: string) => {
+        this.debug(`${path} added`);
+        this.queue.push(() => { return this.initiateUpload(); });
+      })
+      .on('change', (path: string) => {
+        this.debug(`${path} changed`);
+        this.queue.push(() => { return this.initiateUpload(); });
+      })
+      .on('addDir', (path: string) => {
+        this.debug(`${path} added`);
+        this.queue.push(() => { return this.initiateUpload(); });
+      });
   }
 
-  private initiateUpload(share: Share) {
-    this.directory
+  private initiateUpload(): Bluebird<void> {
+    return this.directory
       .read()
       .then((files: File[]) => {
         this.files = files;
@@ -139,32 +168,32 @@ export class UploadWatcher extends Watcher {
         return files;
       })
       .then(() => {
-        this.api.setApiUrlFromShareUrl(share.url);
-
-        return this.api.authenticateFromUrl(share);
+        return this.api.authenticateFromUrl(this.share);
       })
       .then(() => {
-        return File.saveReadStreamFiles(this.files, share);
+        return File.saveReadStreamFiles(this.files, this.share);
       })
       .then((files: File[]) => {
-        // winston.info('Going to create files on ioGates.');
+        this.debug('Going to create files on ioGates.');
 
         return this.api.createFiles(files);
       })
       .then((files: File[]) => {
-        // winston.info(`Files created: ${files.length}`);
+        this.debug(`Files created: ${files.length}`);
 
-        return this.uploader.uploadFiles(files, share);
+        return this.uploader.uploadFiles(files, this.share);
       })
       .then((files: File[]) => {
-        let successIds = [];
+        const successIds = [];
 
         files.forEach((file: File) => {
           if (file.uploaded) {
             successIds.push(file.file_id);
             this.emit('success', file);
+            this.debug(`Success: ${file.name}`);
+          } else {
+            this.debug(`Failure: ${file.name}`);
           }
-          // console.info(`Success(${file.uploaded}): ${file.name}`);
         });
 
         return Promise.resolve(files);

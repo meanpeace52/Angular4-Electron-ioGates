@@ -32,7 +32,7 @@ if (CONFIG.logs.devMode === false) {
     new (winston.transports.File)({
       name: 'info-file',
       filename: CONFIG.logs.info,
-      level: 'info',
+      level: 'debug',
       json: false
     }),
     new (winston.transports.File)({

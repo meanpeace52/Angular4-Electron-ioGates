@@ -60,22 +60,18 @@ export class Chunk extends Model<Chunk> {
   public upload_started: number;
 
   public static STORE_CHUNKS(chunks: Chunk[]): Bluebird<Chunk[]> {
-    return global['_DB'].transaction((t: any) => {
-      const chunkBulk = [];
-      for (const chunk of chunks) {
-        chunkBulk.push(chunk.save({
-          transaction: t
-        }));
-      }
+    const chunkBulk = [];
+    for (const chunk of chunks) {
+      chunkBulk.push(chunk.save());
+    }
 
-      return Bluebird.all(chunkBulk);
-    });
+    return Bluebird.all(chunkBulk);
   }
-  public static CREATE_CHUNKS(file: File, threads: number): Chunk[] {
+  public static CREATE_CHUNKS(file: File, threads: number, sizeLimit: number): Chunk[] {
     // let logger = global['logger'];
     const bulk = [];
     let clientSize = file.size;
-    if (file.size > 10485760) {
+    if (file.size > sizeLimit) {
       clientSize = Math.ceil(file.size / threads);
     }
     let startingPoint = 0;
