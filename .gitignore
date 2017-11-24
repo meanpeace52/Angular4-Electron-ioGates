@@ -8,4 +8,5 @@ dist
 logs/*.log
 core/node_modules
 cli/node_modules
+cli/logs
 gui/node_modules
