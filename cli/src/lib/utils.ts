@@ -3,7 +3,7 @@ import * as CliProgress from 'cli-progress';
 
 export const makeFileName = (file: File) => {
   const columns = process.stdout.columns;
-  const maxFileNameLength = columns - 80;
+  const maxFileNameLength = columns - 100;
   let fileName = file.name;
   if (fileName.length > maxFileNameLength) {
     fileName = `${fileName.substr(0, maxFileNameLength - 3)}...`;
