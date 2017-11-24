@@ -9,7 +9,11 @@ import { machineIdSync } from 'node-machine-id';
 import * as CONFIG from '../config';
 import * as path from 'path';
 import * as fs from 'fs';
-import {Database} from 'iotransfer-core';
+import { Database } from 'iotransfer-core';
+
+process.on('unhandledRejection', (err) => {
+  console.log('[BROKEN:PROMISE]', err);
+});
 
 // setup db and copy to global
 const db = new Database(CONFIG.database);
