@@ -59,7 +59,7 @@
     "reflect-metadata": "^0.1.10",
     "request": "^2.83.0",
     "rxjs": "^5.5.2",
-    "sequelize": "^4.22.15",
+    "sequelize": "^4.23.1",
     "sequelize-typescript": "^0.5.0",
     "sqlite3": "^3.1.13",
     "tslib": "^1.8.0",
