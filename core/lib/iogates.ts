@@ -15,9 +15,11 @@ const log = debug('io:lib:iogates');
 export class IOGates {
   private token: string;
   private baseUrl: string;
+  private appName: string;
   constructor() {
     this.baseUrl = 'https://share-web02-transferapp.iogates.com/api';
     this.token = '';
+    this.appName =  'iotransfer';
   }
 
   public static GET_BASE_URL(url: string): string {
@@ -40,6 +42,7 @@ export class IOGates {
           json: {
             url: share.url,
             deviceId: global['device-id'],
+            appName: this.appName,
           },
         },
         (err: Error, r: http.IncomingMessage, data: IAuth) => {
